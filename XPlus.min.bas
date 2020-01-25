@@ -1538,6 +1538,23 @@ Else
 ISERRORALL = False
 End If
 End Function
+Public Function COUNTERRORALL(ParamArray rangeArray()) As Integer
+Dim errorCount%
+Dim individualRange
+Dim individualCell As Range
+For Each individualRange In rangeArray
+For Each individualCell In individualRange
+If WorksheetFunction.IsError(individualCell.Value) Then
+errorCount = errorCount + 1
+ElseIf Left(individualCell.Value, 1) = "#" Then
+If Right(individualCell.Value, 1) = "!" Or Right(individualCell.Value, 1) = "?" Then
+errorCount = errorCount + 1
+End If
+End If
+Next
+Next
+COUNTERRORALL = errorCount
+End Function
 Public Function JAVASCRIPT(ByVal jsFuncCode$, ByVal jsFuncName$, Optional ByVal argument1, Optional ByVal argument2, Optional ByVal argument3, Optional ByVal argument4, Optional ByVal argument5, Optional ByVal argument6, Optional ByVal argument7, Optional ByVal argument8, Optional ByVal argument9, Optional ByVal argument10, Optional ByVal argument11, Optional ByVal argument12, Optional ByVal argument13, Optional ByVal argument14, Optional ByVal argument15, Optional ByVal argument16)
 Dim ScriptContoller As Object
 Set ScriptContoller = CreateObject("ScriptControl")

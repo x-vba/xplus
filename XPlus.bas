@@ -5,7 +5,6 @@ Attribute VB_Name = "XPlus"
 'The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 'THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-
 Option Explicit
 '@Module: This module contains a set of functions for working with colors
 
@@ -3797,7 +3796,7 @@ Public Function ISERRORALL( _
     ByVal range1 As Range) _
 As Boolean
 
-    '@Description: This function is an extension of Excel's =ISERROR(). It returns TRUE for all of Excel's built in errors, similar to =ISERROR() but also returns TRUE for User-Defined Error Strings. User-Defined Error Strings are strings that start with character "#" and end with either the character "!" or "?". This is similar to the format of errors in Excel, such as "#DIV/0!", "#VALUE!", "#NAME?", "#REF!", etc. User-Defined Error Strings are used all throughout X+, so this is a useful function for checking errors in X+ functions. Additionally, users can create their own User-Defined Error Strings in Excel and use this function to check for those errors.
+    '@Description: This function is an extension of Excel's =ISERROR(). It returns TRUE for all of Excel's built in errors, similar to =ISERROR() but also returns TRUE for User-Defined Error Strings. User-Defined Error Strings are strings that start with character "#" and end with either the character "!" or "?". This is similar to the format of errors in Excel, such as "#DIV/0!", "#VALUE!", "#NAME?", "#REF!", etc. User-Defined Error Strings are used all throughout XPlus, so this is a useful function for checking errors in XPlus functions. Additionally, users can create their own User-Defined Error Strings in Excel and use this function to check for those errors.
     '@Author: Anthony Mancini
     '@Version: 1.0.0
     '@License: MIT
@@ -3823,6 +3822,40 @@ As Boolean
     Else
         ISERRORALL = False
     End If
+
+End Function
+
+
+Public Function COUNTERRORALL( _
+    ParamArray rangeArray() As Variant) _
+As Integer
+
+    '@Description: This function takes a range or multiple ranges, and returns a count of all Errors and User-Defined Error Strings within those ranges. User-Defined Error Strings are strings that start with character "#" and end with either the character "!" or "?". This is similar to the format of errors in Excel, such as "#DIV/0!", "#VALUE!", "#NAME?", "#REF!", etc. User-Defined Error Strings are used all throughout XPlus, so this is a useful function for checking errors in XPlus functions. Additionally, users can create their own User-Defined Error Strings in Excel and use this function to check for those errors.
+    '@Author: Anthony Mancini
+    '@Version: 1.0.0
+    '@License: MIT
+    '@Todo: Potentially update this function so that it accepts strings as well as ranges
+    '@Param: rangeArray is the range or multiple ranges whose errors will be counted
+    '@Returns: Returns the number of errors counted
+    '@Example: =COUNTERRORALL(A1:A6) -> 4; Where A1="Hello World", A2="#DIV/0!", A3="#ErrorMessage!", A4="#ErrorMessage?", A5="#NAME?", A6="12345678"
+
+    Dim errorCount As Integer
+    Dim individualRange As Variant
+    Dim individualCell As Range
+    
+    For Each individualRange In rangeArray
+        For Each individualCell In individualRange
+            If WorksheetFunction.IsError(individualCell.Value) Then
+                errorCount = errorCount + 1
+            ElseIf Left(individualCell.Value, 1) = "#" Then
+                If Right(individualCell.Value, 1) = "!" Or Right(individualCell.Value, 1) = "?" Then
+                    errorCount = errorCount + 1
+                End If
+            End If
+        Next
+    Next
+    
+    COUNTERRORALL = errorCount
 
 End Function
 
