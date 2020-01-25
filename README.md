@@ -38,6 +38,7 @@ Below is a list of all functions within XPlus:
    - [UUID\_FOUR](http://x-vba.com/xplus/utilities.html#UUID_FOUR)
    - [HIDDEN](http://x-vba.com/xplus/utilities.html#HIDDEN)
    - [ISERRORALL](http://x-vba.com/xplus/utilities.html#ISERRORALL)
+   - [COUNTERRORALL](http://x-vba.com/xplus/utilities.html#COUNTERRORALL)
    - [JAVASCRIPT](http://x-vba.com/xplus/utilities.html#JAVASCRIPT)
    - [SUMSHEET](http://x-vba.com/xplus/utilities.html#SUMSHEET)
    - [AVERAGESHEET](http://x-vba.com/xplus/utilities.html#AVERAGESHEET)
