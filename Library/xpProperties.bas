@@ -93,7 +93,7 @@ Public Function RANGE_NAME( _
     ByVal range1 As Range) _
 As String
 
-    '@Description: This function gets the name of the selected cell when using the Name Manager to create Named Ranges.
+    '@Description: This function gets the name of the selected cell; Named Ranges can be created using the Name Manager.
     '@Author: Anthony Mancini
     '@Version: 1.0.0
     '@License: MIT
@@ -137,11 +137,33 @@ As Double
     '@License: MIT
     '@Param: range1 is the cell we want to get the height from
     '@Returns: Returns the height of the cell as a Double
-    '@Example: =GET_RANGE_WIDTH(A1) -> 14
+    '@Example: =RANGE_HEIGHT(A1) -> 14
 
     Application.Volatile
 
     RANGE_HEIGHT = range1.Height
+
+End Function
+
+
+Public Function RANGE_COLOR( _
+    ByVal range1 As Range) _
+As Long
+
+    '@Description: This function gets the color of a cell. The color returned is a number that essentially is one of 16777215 possible color combinations, with every single color being a unique number.
+    '@Author: Anthony Mancini
+    '@Version: 1.0.0
+    '@License: MIT
+    '@Param: range1 is the cell we want to get the color from
+    '@Returns: Returns the color of the cell as a number
+    '@Example: =RANGE_COLOR(A1) -> 255; Where A1 is colored Red
+    '@Example: =RANGE_COLOR(A2) -> 65535; Where A2 is colored Yellow
+    '@Example: =RANGE_COLOR(A3) -> 16777215; Where A3 is colored White
+    '@Example: =RANGE_COLOR(A4) -> 0; Where A4 is colored Black
+
+    Application.Volatile
+
+    RANGE_COLOR = range1.Interior.Color
 
 End Function
 
@@ -205,10 +227,10 @@ As String
     '@Version: 1.0.0
     '@License: MIT
     '@Param: sheetNameOrNumber is the name or number of the sheet
-    '@Returns: Returns the code name of the sheet
-    '@Example: =SHEET_CODE_NAME() -> "Worksheet"
-    '@Example: =SHEET_CODE_NAME("MyChart") -> "Chart"
-    '@Example: =SHEET_CODE_NAME(2) -> "Chart"
+    '@Returns: Returns the type of the sheet
+    '@Example: =SHEET_TYPE() -> "Worksheet"
+    '@Example: =SHEET_TYPE("MyChart") -> "Chart"
+    '@Example: =SHEET_TYPE(2) -> "Chart"
 
     Application.Volatile
 

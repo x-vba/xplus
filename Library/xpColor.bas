@@ -18,7 +18,7 @@ As String
     '@Param: greenColorInteger is the green value
     '@Param: blueColorInteger is the blue value
     '@Returns: Returns a string with the HEX value of the color
-    '@Example: =RGB2HEX(255,255,255) -> "FFFFFF"
+    '@Example: =RGB2HEX(255, 255, 255) -> "FFFFFF"
 
     RGB2HEX = WorksheetFunction.Dec2Hex(redColorInteger, 2) & WorksheetFunction.Dec2Hex(greenColorInteger, 2) & WorksheetFunction.Dec2Hex(blueColorInteger, 2)
     
@@ -29,7 +29,7 @@ Public Function HEX2RGB( _
     Optional ByVal singleColorNumberOrName As Variant = -1) _
 As Variant
 
-    '@Description: This function converts a HEX color value into an RGB color value
+    '@Description: This function converts a HEX color value into an RGB color value, or optionally a single value from the RGB value.
     '@Author: Anthony Mancini
     '@Version: 1.0.0
     '@License: MIT
@@ -75,10 +75,13 @@ As Variant
     '@Param: blueColorInteger is the blue value
     '@Param: singleColorNumberOrName is a number or string that specifies which of the single color values to return. If this is set to 0 or "Hue", the hue value will be returned. If this is set to 1 or "Saturation", the saturation value will be returned. If this is set to 2 or "Lightness", the lightness value will be returned.
     '@Returns: Returns a string with the HSL value of the color
-    '@Example: =RGB2HSL(8,64,128) -> "(212.0°, 88.2%, 26.7%)"
-    '@Example: =RGB2HSL(8,64,128,0) -> 212
-    '@Example: =RGB2HSL(8,64,128,"Saturation") -> .882
-    '@Example: =RGB2HSL(8,64,128,2) -> .267
+    '@Example: =RGB2HSL(8, 64, 128) -> "(212.0°, 88.2%, 26.7%)"
+    '@Example: =RGB2HSL(8, 64, 128, 0) -> 212
+    '@Example: =RGB2HSL(8, 64, 128, "Hue") -> 212
+    '@Example: =RGB2HSL(8, 64, 128, 1) -> .882
+    '@Example: =RGB2HSL(8, 64, 128, "Saturation") -> .882
+    '@Example: =RGB2HSL(8, 64, 128, 2) -> .267
+    '@Example: =RGB2HSL(8, 64, 128, "Lightness") -> .267
 
     ' Calculating values needed to calculate HSL
     Dim redPrime As Double
@@ -209,7 +212,7 @@ Public Function HSL2RGB( _
     Optional ByVal singleColorNumberOrName As Variant = -1) _
 As Variant
 
-    '@Description: This function converts an HSL color value into an RGB color value.
+    '@Description: This function converts an HSL color value into an RGB color value, or optionally a single value from the RGB value.
     '@Author: Anthony Mancini
     '@Version: 1.0.0
     '@License: MIT
@@ -318,7 +321,7 @@ Public Function RGB2HSV( _
     Optional ByVal singleColorNumberOrName As Variant = -1) _
 As Variant
 
-    '@Description: This function converts an RGB color value into an HSV color value.
+    '@Description: This function converts an RGB color value into an HSV color value, or optionally a single value from the HSV value.
     '@Author: Anthony Mancini
     '@Version: 1.0.0
     '@License: MIT
@@ -395,5 +398,4 @@ As Variant
         RGB2HSV = "(" & Format(hueValue, "#.0") & ", " & Format(saturationValue * 100, "#.0") & "%, " & Format(valueValue * 100, "#.0") & "%)"
     End If
     
-
 End Function

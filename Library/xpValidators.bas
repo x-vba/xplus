@@ -185,6 +185,38 @@ As Boolean
 End Function
 
 
+Public Function IS_MAC_ADDRESS( _
+    ByVal string1 As String) _
+As Boolean
+
+    '@Description: This function checks if a string is a valid 48-bit Mac Address.
+    '@Author: Anthony Mancini
+    '@Version: 1.0.0
+    '@License: MIT
+    '@Param: string1 is the string we are checking if its a valid 48-bit Mac Address
+    '@Returns: Returns TRUE if the string is a valid 48-bit Mac Address, and FALSE if its invalid
+    '@Example: =IS_MAC_ADDRESS("00:25:96:12:34:56") -> TRUE
+    '@Example: =IS_MAC_ADDRESS("FF:FF:FF:FF:FF:FF") -> TRUE
+    '@Example: =IS_MAC_ADDRESS("00-25-96-12-34-56") -> TRUE
+    '@Example: =IS_MAC_ADDRESS("123.789.abc.DEF") -> TRUE
+    '@Example: =IS_MAC_ADDRESS("Not A Mac Address") -> FALSE
+    '@Example: =IS_MAC_ADDRESS("FF:FF:FF:FF:FF:FH") -> FALSE; the H at the end is not a valid Hex number
+
+    Dim Regex As Object
+    Set Regex = CreateObject("VBScript.RegExp")
+        
+    With Regex
+        .Global = True
+        .IgnoreCase = True
+        .MultiLine = True
+        .Pattern = "^(([a-fA-F0-9]{2}([:]|[-])){5}[a-fA-F0-9]{2}|([a-fA-F0-9]{3}[.]){3}[a-fA-F0-9]{3})$"
+    End With
+
+    IS_MAC_ADDRESS = Regex.Test(string1)
+
+End Function
+
+
 Public Function CREDIT_CARD_NAME( _
     ByVal string1 As String) _
 As String
@@ -266,7 +298,7 @@ As String
     '@Example: =FORMAT_FRACTION(".35") -> "1/3"
     '@Example: =FORMAT_FRACTION(".37") -> "3/8"
     '@Example: =FORMAT_FRACTION(".7") -> "2/3"
-    '@Example: =FORMAT_FRACTION("2.5") -> "2 1/5"
+    '@Example: =FORMAT_FRACTION("2.5") -> "2 1/2"
 
     FORMAT_FRACTION = Trim(WorksheetFunction.Text(decimal1, "# ?/?"))
 
@@ -317,6 +349,62 @@ As String
     Else
         FORMAT_CREDIT_CARD = "#NotAValidCreditCardNumber!"
     End If
+
+End Function
+
+
+Public Function FORMAT_FORMULA( _
+    ByVal range1 As Range) _
+As String
+
+    '@Description: This function formats a formula in a more readable way by breaking up the formula into multiple lines, making it easier to debug larger formulas.
+    '@Author: Anthony Mancini
+    '@Version: 1.0.0
+    '@License: MIT
+    '@Param: range1 is the range with the formula we want to format
+    '@Returns: Returns a formula formatted in a more readable format
+    '@Example: =FORMAT_FORMULA(A1) -> A multiline formula with indentation. See example below:
+
+    Dim i As Integer
+    Dim k As Integer
+    Dim indentLevel As Byte
+    Dim formulaString As String
+    Dim buildFormulaString As String
+    Dim formulaStringLength As Integer
+    Dim currentIndentAmount As Byte
+    Dim currentCharacter As String
+    
+    formulaString = range1.Formula
+    formulaStringLength = Len(formulaString)
+    
+    For i = 1 To formulaStringLength
+        currentCharacter = Mid(formulaString, i, 1)
+        If currentCharacter = "(" Then
+            buildFormulaString = buildFormulaString & "(" & Chr(10)
+            indentLevel = indentLevel + 4
+            currentIndentAmount = currentIndentAmount + 1
+            For k = 1 To indentLevel
+                buildFormulaString = buildFormulaString & " "
+            Next
+        ElseIf currentCharacter = ")" Then
+            buildFormulaString = buildFormulaString & Chr(10)
+            indentLevel = indentLevel - 4
+            currentIndentAmount = currentIndentAmount - 1
+            For k = 1 To indentLevel
+                buildFormulaString = buildFormulaString & " "
+            Next
+            buildFormulaString = buildFormulaString & ")"
+        ElseIf currentCharacter = "," Then
+            buildFormulaString = buildFormulaString & "," & Chr(10)
+            For k = 1 To indentLevel
+                buildFormulaString = buildFormulaString & " "
+            Next
+        Else
+            buildFormulaString = buildFormulaString & currentCharacter
+        End If
+    Next
+    
+    FORMAT_FORMULA = buildFormulaString
 
 End Function
 

@@ -17,7 +17,7 @@ As String
     '@Version: 1.0.0
     '@License: MIT
     '@Param: string1 is the string that the regex will be performed on
-    '@Param: stringPattern is a string of the regex pattern
+    '@Param: stringPattern is the regex pattern
     '@Param: globalFlag is a boolean value that if set TRUE will perform a global search
     '@Param: ignoreCaseFlag is a boolean value that if set TRUE will perform a case insensitive search
     '@Param: multilineFlag is a boolean value that if set TRUE will perform a mulitline search
@@ -27,7 +27,6 @@ As String
     Dim Regex As Object
     Set Regex = CreateObject("VBScript.RegExp")
     Dim searchResults As Object
-    Dim regexResult As Object
     
     With Regex
         .Global = globalFlag
@@ -55,7 +54,7 @@ As Boolean
     '@Version: 1.0.0
     '@License: MIT
     '@Param: string1 is the string that the regex will be performed on
-    '@Param: stringPattern is a string of the regex pattern
+    '@Param: stringPattern is the regex pattern
     '@Param: globalFlag is a boolean value that if set TRUE will perform a global search
     '@Param: ignoreCaseFlag is a boolean value that if set TRUE will perform a case insensitive search
     '@Param: multilineFlag is a boolean value that if set TRUE will perform a mulitline search
@@ -64,8 +63,6 @@ As Boolean
 
     Dim Regex As Object
     Set Regex = CreateObject("VBScript.RegExp")
-    Dim searchResults As Object
-    Dim regexResult As Object
     
     With Regex
         .Global = globalFlag
@@ -92,18 +89,16 @@ As String
     '@Version: 1.0.0
     '@License: MIT
     '@Param: string1 is the string that the regex will be performed on
-    '@Param: stringPattern is a string of the regex pattern
+    '@Param: stringPattern is the regex pattern
     '@Param: replacementString is a string that will be replaced if the pattern is found
     '@Param: globalFlag is a boolean value that if set TRUE will perform a global search
     '@Param: ignoreCaseFlag is a boolean value that if set TRUE will perform a case insensitive search
     '@Param: multilineFlag is a boolean value that if set TRUE will perform a mulitline search
-    '@Returns: Returns a new string with the replaced string value
+    '@Returns: Returns a new string with the replaced string values
     '@Example: =REGEX_REPLACE("Hello World","[W][a-z]{4}", "VBA") -> "Hello VBA"
 
     Dim Regex As Object
     Set Regex = CreateObject("VBScript.RegExp")
-    Dim searchResults As Object
-    Dim regexResult As Object
     
     With Regex
         .Global = globalFlag

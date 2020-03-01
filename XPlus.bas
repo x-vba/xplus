@@ -5,6 +5,7 @@ Attribute VB_Name = "XPlus"
 'The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 'THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+
 Option Explicit
 '@Module: This module contains a set of functions for working with colors
 
@@ -24,7 +25,7 @@ As String
     '@Param: greenColorInteger is the green value
     '@Param: blueColorInteger is the blue value
     '@Returns: Returns a string with the HEX value of the color
-    '@Example: =RGB2HEX(255,255,255) -> "FFFFFF"
+    '@Example: =RGB2HEX(255, 255, 255) -> "FFFFFF"
 
     RGB2HEX = WorksheetFunction.Dec2Hex(redColorInteger, 2) & WorksheetFunction.Dec2Hex(greenColorInteger, 2) & WorksheetFunction.Dec2Hex(blueColorInteger, 2)
     
@@ -35,7 +36,7 @@ Public Function HEX2RGB( _
     Optional ByVal singleColorNumberOrName As Variant = -1) _
 As Variant
 
-    '@Description: This function converts a HEX color value into an RGB color value
+    '@Description: This function converts a HEX color value into an RGB color value, or optionally a single value from the RGB value.
     '@Author: Anthony Mancini
     '@Version: 1.0.0
     '@License: MIT
@@ -81,10 +82,13 @@ As Variant
     '@Param: blueColorInteger is the blue value
     '@Param: singleColorNumberOrName is a number or string that specifies which of the single color values to return. If this is set to 0 or "Hue", the hue value will be returned. If this is set to 1 or "Saturation", the saturation value will be returned. If this is set to 2 or "Lightness", the lightness value will be returned.
     '@Returns: Returns a string with the HSL value of the color
-    '@Example: =RGB2HSL(8,64,128) -> "(212.0ï¿½, 88.2%, 26.7%)"
-    '@Example: =RGB2HSL(8,64,128,0) -> 212
-    '@Example: =RGB2HSL(8,64,128,"Saturation") -> .882
-    '@Example: =RGB2HSL(8,64,128,2) -> .267
+    '@Example: =RGB2HSL(8, 64, 128) -> "(212.0ï¿½, 88.2%, 26.7%)"
+    '@Example: =RGB2HSL(8, 64, 128, 0) -> 212
+    '@Example: =RGB2HSL(8, 64, 128, "Hue") -> 212
+    '@Example: =RGB2HSL(8, 64, 128, 1) -> .882
+    '@Example: =RGB2HSL(8, 64, 128, "Saturation") -> .882
+    '@Example: =RGB2HSL(8, 64, 128, 2) -> .267
+    '@Example: =RGB2HSL(8, 64, 128, "Lightness") -> .267
 
     ' Calculating values needed to calculate HSL
     Dim redPrime As Double
@@ -215,7 +219,7 @@ Public Function HSL2RGB( _
     Optional ByVal singleColorNumberOrName As Variant = -1) _
 As Variant
 
-    '@Description: This function converts an HSL color value into an RGB color value.
+    '@Description: This function converts an HSL color value into an RGB color value, or optionally a single value from the RGB value.
     '@Author: Anthony Mancini
     '@Version: 1.0.0
     '@License: MIT
@@ -324,7 +328,7 @@ Public Function RGB2HSV( _
     Optional ByVal singleColorNumberOrName As Variant = -1) _
 As Variant
 
-    '@Description: This function converts an RGB color value into an HSV color value.
+    '@Description: This function converts an RGB color value into an HSV color value, or optionally a single value from the HSV value.
     '@Author: Anthony Mancini
     '@Version: 1.0.0
     '@License: MIT
@@ -401,7 +405,6 @@ As Variant
         RGB2HSV = "(" & Format(hueValue, "#.0") & ", " & Format(saturationValue * 100, "#.0") & "%, " & Format(valueValue * 100, "#.0") & "%)"
     End If
     
-
 End Function
 
 '@Module: This module contains a set of functions for working with dates and times.
@@ -412,7 +415,7 @@ Public Function WEEKDAY_NAME( _
     Optional ByVal dayNumber As Byte _
 ) As String
 
-    '@Description: This function takes a weekday number and returns the name of the day of the week
+    '@Description: This function takes a weekday number and returns the name of the day of the week.
     '@Author: Anthony Mancini
     '@Version: 1.0.0
     '@License: MIT
@@ -434,13 +437,14 @@ Public Function MONTH_NAME( _
     Optional ByVal monthNumber As Byte _
 ) As String
 
-    '@Description: This function takes a month number and returns the name of the month
+    '@Description: This function takes a month number and returns the name of the month.
     '@Author: Anthony Mancini
     '@Version: 1.0.0
     '@License: MIT
     '@Param: monthNumber is a number that should be between 1 and 12, with 1 being January and 12 being December. If no monthNumber is given, the value will default to the current month.
     '@Returns: Returns the month name as a string
-    '@Example: =MONTH_NAME(1) -> January
+    '@Example: =MONTH_NAME(1) -> "January"
+    '@Example: =MONTH_NAME(3) -> "March"
     '@Example: To get today's month name: =MONTH_NAME()
 
     If monthNumber = 0 Then
@@ -456,15 +460,17 @@ Public Function QUARTER( _
     Optional ByVal monthNumberOrName As Variant _
 ) As Byte
     
-    '@Description: This function takes a month as a number and returns the quarter of the year the month resides
+    '@Description: This function takes a month as a number and returns the quarter of the year the month resides.
     '@Author: Anthony Mancini
     '@Version: 1.0.0
     '@License: MIT
     '@Todo: Look further into DatePart function and see if its a better choice for generating the quarter of the year. Also look into adding the month name as well as an option for this function
-    '@Param: monthNumberOrName is a number that should be between 1 and 12, with 1 being January and 12 being December
+    '@Param: monthNumberOrName is a number that should be between 1 and 12, with 1 being January and 12 being December, or the name of a Month, such as "January" or "March".
     '@Returns: Returns the quarter of the month as a number
     '@Example: =QUARTER(4) -> 2
-    '@Example: =QUARTER(12) -> 2
+    '@Example: =QUARTER("April") -> 2
+    '@Example: =QUARTER(12) -> 4
+    '@Example: =QUARTER("December") -> 4
     '@Example: To get today's quarter: =QUARTER()
     
     If IsMissing(monthNumberOrName) Then
@@ -505,11 +511,11 @@ Public Function TIME_CONVERTER( _
     Optional ByVal yearsInteger As Integer) _
 As Date
     
-    '@Description: This function takes a date, and then a series of optional arguments for a number of seconds, minutes, hours, days, and years, and then converts the date given to a new date adding in the other date argument values
+    '@Description: This function takes a date, and then a series of optional arguments for a number of seconds, minutes, hours, days, and years, and then converts the date given to a new date adding in the other date argument values.
     '@Author: Anthony Mancini
     '@Version: 1.0.0
     '@License: MIT
-    '@Param: date1 is the origional date that will be converted into a new date
+    '@Param: date1 is the original date that will be converted into a new date
     '@Param: secondsInteger is the number of seconds that will be added
     '@Param: minutesInteger is the number of minutes that will be added
     '@Param: hoursInteger is the number of hours that will be added
@@ -517,14 +523,14 @@ As Date
     '@Param: monthsInteger is the number of months that will be added
     '@Param: yearsInteger is the number of years that will be added
     '@Returns: Returns a new date with all the date arguments added to it
-    '@Note: You can skip earlier date arguments in the function by putting a 0 in place. For example, if we only wanted to changed the month, which is the 5th argument, we can do =TIME_CONVERTER(A1,0,0,0,2) which will add 2 months to the date chosen
-    '@Example: Where A1 contains the date 1/1/2000 1:00; =TIME_CONVERTER(A1,60) -> 1/1/2000 1:01
-    '@Example: Where A1 contains the date 1/1/2000 1:00; =TIME_CONVERTER(A1,0,5) -> 1/1/2000 1:05
-    '@Example: Where A1 contains the date 1/1/2000 1:00; =TIME_CONVERTER(A1,0,0,2) -> 1/1/2000 3:00
-    '@Example: Where A1 contains the date 1/1/2000 1:00; =TIME_CONVERTER(A1,0,0,0,4) -> 1/5/2000 1:00
-    '@Example: Where A1 contains the date 1/1/2000 1:00; =TIME_CONVERTER(A1,0,0,0,0,1) -> 2/1/2000 1:00
-    '@Example: Where A1 contains the date 1/1/2000 1:00; =TIME_CONVERTER(A1,0,0,0,0,0,5) -> 1/1/2005 1:00
-    '@Example: Where A1 contains the date 1/1/2000 1:00; =TIME_CONVERTER(A1,60,5,3,10,5,15) -> 6/11/2015 4:06
+    '@Note: You can skip earlier date arguments in the function by putting a 0 in place. For example, if we only wanted to change the month, which is the 5th argument, we can do =TIME_CONVERTER(A1,0,0,0,2) which will add 2 months to the date chosen
+    '@Example: =TIME_CONVERTER(A1,60) -> 1/1/2000 1:01; Where A1 contains the date 1/1/2000 1:00
+    '@Example: =TIME_CONVERTER(A1,0,5) -> 1/1/2000 1:05; Where A1 contains the date 1/1/2000 1:00
+    '@Example: =TIME_CONVERTER(A1,0,0,2) -> 1/1/2000 3:00; Where A1 contains the date 1/1/2000 1:00
+    '@Example: =TIME_CONVERTER(A1,0,0,0,4) -> 1/5/2000 1:00; Where A1 contains the date 1/1/2000 1:00
+    '@Example: =TIME_CONVERTER(A1,0,0,0,0,1) -> 2/1/2000 1:00; Where A1 contains the date 1/1/2000 1:00
+    '@Example: =TIME_CONVERTER(A1,0,0,0,0,0,5) -> 1/1/2005 1:00; Where A1 contains the date 1/1/2000 1:00
+    '@Example: =TIME_CONVERTER(A1,60,5,3,10,5,15) -> 6/11/2015 4:06; Where A1 contains the date 1/1/2000 1:00
     
     secondsInteger = Second(date1) + secondsInteger
     minutesInteger = Minute(date1) + minutesInteger
@@ -547,7 +553,7 @@ As Variant
     '@Author: Anthony Mancini
     '@Version: 1.0.0
     '@License: MIT
-    '@Param: monthNumberOrName is the number or name of the month we want to get the number of days from. If omitted the current month will be used
+    '@Param: monthNumberOrName is a number that should be between 1 and 12, with 1 being January and 12 being December, or the name of a Month, such as "January" or "March". If omitted the current month will be used.
     '@Param: yearNumber is the year that will be used. If omitted, the current year will be used.
     '@Returns: Returns the number of days in the month and year specified
     '@Example: =DAYS_OF_MONTH() -> 31; Where the current month is January
@@ -599,8 +605,56 @@ As Variant
 End Function
 
 
+Public Function WEEK_OF_MONTH( _
+    Optional ByVal date1 As Date) _
+As Byte
 
-'@Module: This module contains a set of functions for gathering information on the environment that Excel is being run on, such as getting the location of the SystemDrive or the location of the temporary folder on the system
+    '@Description: This function takes a date and returns the number of the week of the month for that date. If no date is given, the current date is used.
+    '@Author: Anthony Mancini
+    '@Version: 1.0.0
+    '@License: MIT
+    '@Param: date1 is a date whose week number will be found
+    '@Returns: Returns the number of week in the month
+    '@Example: =WEEK_OF_MONTH() -> 5; Where the current date is 1/29/2020
+    '@Example: =WEEK_OF_MONTH(1/29/2020) -> 5
+    '@Example: =WEEK_OF_MONTH(1/28/2020) -> 5
+    '@Example: =WEEK_OF_MONTH(1/27/2020) -> 5
+    '@Example: =WEEK_OF_MONTH(1/26/2020) -> 5
+    '@Example: =WEEK_OF_MONTH(1/25/2020) -> 4
+    '@Example: =WEEK_OF_MONTH(1/24/2020) -> 4
+    '@Example: =WEEK_OF_MONTH(1/1/2020) -> 1
+    
+
+    Dim weekNumber As Byte
+    Dim currentDay As Byte
+    Dim currentWeekday As Byte
+    
+    weekNumber = 1
+    
+    ' When year is 1899, no year was given as an input
+    If Year(date1) = 1899 Then
+        currentDay = Day(Now())
+        currentWeekday = Weekday(Now())
+    Else
+        currentDay = Day(date1)
+        currentWeekday = Weekday(date1)
+    End If
+    
+    While currentDay <> 0
+        If currentWeekday = 0 Then
+            weekNumber = weekNumber + 1
+            currentWeekday = 7
+        End If
+        
+        currentDay = currentDay - 1
+        currentWeekday = currentWeekday - 1
+    Wend
+    
+    WEEK_OF_MONTH = weekNumber
+
+End Function
+
+'@Module: This module contains a set of functions for gathering information on the environment that Excel is being run on, such as the UserName of the computer, the OS Excel is being run on, and other Environment Variable values.
 
 
 
@@ -608,31 +662,100 @@ Public Function ENVIRONMENT( _
     ByVal environmentVariableNameString As String) _
 As String
 
-    '@Description: This function takes a string of the name of an environment variable and returns the value of that EV as a string. A list of EV key/value pairs can be found by using the SET command on the command prompt.
+    '@Description: This function takes a string of the name of an environment variable and returns the value of that EV as a string.
     '@Author: Anthony Mancini
-    '@Version: 1.0.0
+    '@Version: 1.1.0
     '@License: MIT
-    '@Todo: Check out if using Environ() or Environ$() has better performance
-    '@Param: environmentVariableNameString is the string of the environment variable name
-    '@Returns: Returns a string of the environment variable value associated with that name
-    '@Note: A list of Environment Variable Key/Value pairs can be found by using the Set command on the Command Prompt
+    '@Param: environmentVariableNameString is the string of the environment variable name.
+    '@Returns: Returns a string of the environment variable value associated with that name.
+    '@Note: A list of Environment Variable Key/Value pairs can be found by using the Set command on the Command Prompt.
     '@Example: =ENVIRONMENT("HOMEDRIVE") -> "C:"
-    '@Example: =ENVIRONMENT("OS") -> "Windows_NT"
-    
-    Dim WshShell As Object
-    Set WshShell = CreateObject("Wscript.Shell")
+    '@Example: =ENVIRONMENT("PUBLIC") -> "C:\Users\Public"
 
-    ENVIRONMENT = WshShell.ExpandEnvironmentStrings("%" & environmentVariableNameString & "%")
+    ENVIRONMENT = Environ(environmentVariableNameString)
 
 End Function
 
 
+Public Function OS() As String
 
-'@Module: This module contains a set of functions for gathering info about the excel workbook that is currently open
+    '@Description: This function returns the Operating System name. Currently it will return either "Windows" or "Mac" depending on the OS used.
+    '@Author: Anthony Mancini
+    '@Version: 1.0.0
+    '@License: MIT
+    '@Returns: Returns the name of the Operating System
+    '@Example: =OS() -> "Windows"; When running this function on Windows
+    '@Example: =OS() -> "Mac"; When running this function on MacOS
+
+    #If Mac Then
+        OS = "Mac"
+    #Else
+        OS = "Windows"
+    #End If
+
+End Function
+
+
+Public Function USER_NAME() As String
+
+    '@Description: This function takes no arguments and returns a string of the USERNAME of the computer
+    '@Author: Anthony Mancini
+    '@Version: 1.1.0
+    '@License: MIT
+    '@Returns: Returns a string of the username
+    '@Example: =USER_NAME() -> "Anthony"
+
+    #If Mac Then
+        USER_NAME = Environ("USER")
+    #Else
+        USER_NAME = Environ("USERNAME")
+    #End If
+
+End Function
+
+
+Public Function USER_DOMAIN() As String
+
+    '@Description: This function takes no arguments and returns a string of the USERDOMAIN of the computer
+    '@Author: Anthony Mancini
+    '@Version: 1.1.0
+    '@License: MIT
+    '@Returns: Returns a string of the user domain of the computer
+    '@Example: =USER_DOMAIN() -> "DESKTOP-XYZ1234"
+    
+    #If Mac Then
+        USER_DOMAIN = Environ("HOST")
+    #Else
+        USER_DOMAIN = Environ("USERDOMAIN")
+    #End If
+
+End Function
+
+
+Public Function COMPUTER_NAME() As String
+
+    '@Description: This function takes no arguments and returns a string of the COMPUTERNAME of the computer
+    '@Author: Anthony Mancini
+    '@Version: 1.1.0
+    '@License: MIT
+    '@Returns: Returns a string of the computer name of the computer
+    '@Example: =COMPUTER_NAME() -> "DESKTOP-XYZ1234"
+
+    COMPUTER_NAME = Environ("COMPUTERNAME")
+
+End Function
+
+'@Module: This module contains a set of functions for gathering info on files. It includes functions for gathering file info on the current workbook, as well as functions for reading and writing to files, and functions for manipulating file path strings.
 
 
 
 Private Function GetActiveWorkbookPath() As Variant
+
+    '@Description: This function returns the path of the current workbook
+    '@Author: Anthony Mancini
+    '@Version: 1.0.0
+    '@License: MIT
+    '@Returns: Returns a string of the current workbook path
 
     Dim filePath As String
     filePath = ThisWorkbook.Path & "\" & ThisWorkbook.Name
@@ -650,8 +773,9 @@ As String
     '@Author: Anthony Mancini
     '@Version: 1.0.0
     '@License: MIT
-    '@Param: filePath is a string path to the file on the system
+    '@Param: filePath is a string path to the file on the system, such as "C:\hello\world.txt"
     '@Returns: Returns the file creation time of the file as a string
+    '@Note: You can find the path of a file via Shift+RightClick -> Copy as Path; on a file in the Windows Explorer
     '@Example: =FILE_CREATION_TIME() -> "1/1/2020 1:23:45 PM"
     '@Example: =FILE_CREATION_TIME("C:\hello\world.txt") -> "1/1/2020 5:55:55 PM"
     '@Example: =FILE_CREATION_TIME("vba.txt") -> "12/25/2000 1:00:00 PM"; Where "vba.txt" resides in the same folder as the workbook this function resides in
@@ -680,11 +804,12 @@ As String
     '@Author: Anthony Mancini
     '@Version: 1.0.0
     '@License: MIT
-    '@Param: filePath is a string path to the file on the system
+    '@Param: filePath is a string path to the file on the system, such as "C:\hello\world.txt"
     '@Returns: Returns the file last modified time of the file as a string
-    '@Example: =FILE_CREATION_TIME() -> "1/1/2020 2:23:45 PM"
-    '@Example: =FILE_CREATION_TIME("C:\hello\world.txt") -> "1/1/2020 7:55:55 PM"
-    '@Example: =FILE_CREATION_TIME("vba.txt") -> "12/25/2000 3:00:00 PM"; Where "vba.txt" resides in the same folder as the workbook this function resides in
+    '@Note: You can find the path of a file via Shift+RightClick -> Copy as Path; on a file in the Windows Explorer
+    '@Example: =FILE_LAST_MODIFIED_TIME() -> "1/1/2020 2:23:45 PM"
+    '@Example: =FILE_LAST_MODIFIED_TIME("C:\hello\world.txt") -> "1/1/2020 7:55:55 PM"
+    '@Example: =FILE_LAST_MODIFIED_TIME("vba.txt") -> "12/25/2000 3:00:00 PM"; Where "vba.txt" resides in the same folder as the workbook this function resides in
 
     Dim FSO As Object
     Set FSO = CreateObject("Scripting.FileSystemObject")
@@ -710,11 +835,12 @@ As String
     '@Author: Anthony Mancini
     '@Version: 1.0.0
     '@License: MIT
-    '@Param: filePath is a string path to the file on the system
+    '@Param: filePath is a string path to the file on the system, such as "C:\hello\world.txt"
     '@Returns: Returns the file drive of the file as a string
-    '@Example: =FILE_CREATION_TIME() -> "A:"; Where the current workbook resides on the A: drive
-    '@Example: =FILE_CREATION_TIME("C:\hello\world.txt") -> "C:"
-    '@Example: =FILE_CREATION_TIME("vba.txt") -> "B:"; Where "vba.txt" resides in the same folder as the workbook this function resides in, and where the workbook resides in the B: drive
+    '@Note: You can find the path of a file via Shift+RightClick -> Copy as Path; on a file in the Windows Explorer
+    '@Example: =FILE_DRIVE() -> "A:"; Where the current workbook resides on the A: drive
+    '@Example: =FILE_DRIVE("C:\hello\world.txt") -> "C:"
+    '@Example: =FILE_DRIVE("vba.txt") -> "B:"; Where "vba.txt" resides in the same folder as the workbook this function resides in, and where the workbook resides in the B: drive
 
     Dim FSO As Object
     Set FSO = CreateObject("Scripting.FileSystemObject")
@@ -740,8 +866,9 @@ As String
     '@Author: Anthony Mancini
     '@Version: 1.0.0
     '@License: MIT
-    '@Param: filePath is a string path to the file on the system
+    '@Param: filePath is a string path to the file on the system, such as "C:\hello\world.txt"
     '@Returns: Returns the name of the file as a string
+    '@Note: You can find the path of a file via Shift+RightClick -> Copy as Path; on a file in the Windows Explorer
     '@Example: =FILE_NAME() -> "MyWorkbook.xlsm"
     '@Example: =FILE_NAME("C:\hello\world.txt") -> "world.txt"
     '@Example: =FILE_NAME("vba.txt") -> "vba.txt"; Where "vba.txt" resides in the same folder as the workbook this function resides in
@@ -770,8 +897,9 @@ As String
     '@Author: Anthony Mancini
     '@Version: 1.0.0
     '@License: MIT
-    '@Param: filePath is a string path to the file on the system
-    '@Returns: Returns the path of the folder of the file as a string
+    '@Param: filePath is a string path to the file on the system, such as "C:\hello\world.txt"
+    '@Returns: Returns the path of the folder where the file resides in as a string
+    '@Note: You can find the path of a file via Shift+RightClick -> Copy as Path; on a file in the Windows Explorer
     '@Example: =FILE_FOLDER() -> "C:\my_excel_files"
     '@Example: =FILE_FOLDER("C:\hello\world.txt") -> "C:\hello"
     '@Example: =FILE_FOLDER("vba.txt") -> "C:\my_excel_files"; Where "vba.txt" resides in the same folder as the workbook this function resides in
@@ -800,8 +928,9 @@ As String
     '@Author: Anthony Mancini
     '@Version: 1.0.0
     '@License: MIT
-    '@Param: filePath is a string path of the file on the system
+    '@Param: filePath is a string path of the file on the system, such as "C:\hello\world.txt"
     '@Returns: Returns the path of the file as a string
+    '@Note: You can find the path of a file via Shift+RightClick -> Copy as Path; on a file in the Windows Explorer
     '@Example: =FILE_PATH() -> "C:\my_excel_files\MyWorkbook.xlsx"
     '@Example: =FILE_PATH("C:\hello\world.txt") -> "C:\hello\world.txt"
     '@Example: =FILE_PATH("vba.txt") -> "C:\hello\world.txt"; Where "vba.txt" resides in the same folder as the workbook this function resides in
@@ -831,9 +960,10 @@ As Double
     '@Author: Anthony Mancini
     '@Version: 1.0.0
     '@License: MIT
-    '@Param: filePath is a string path of the file on the system
+    '@Param: filePath is a string path of the file on the system, such as "C:\hello\world.txt"
     '@Param: byteSize is a string of value "KB", "MB", or "GB"
     '@Returns: Returns the size of the file as a Double
+    '@Note: You can find the path of a file via Shift+RightClick -> Copy as Path; on a file in the Windows Explorer
     '@Example: =FILE_SIZE() -> 1024
     '@Example: =FILE_SIZE(,"KB") -> 1
     '@Example: =FILE_SIZE("vba.txt", "KB") -> 0.25; Where "vba.txt" resides in the same folder as the workbook this function resides in
@@ -875,8 +1005,9 @@ As String
     '@Author: Anthony Mancini
     '@Version: 1.0.0
     '@License: MIT
-    '@Param: filePath is a string path to the file on the system
+    '@Param: filePath is a string path to the file on the system, such as "C:\hello\world.txt"
     '@Returns: Returns the file type of the file as a string
+    '@Note: You can find the path of a file via Shift+RightClick -> Copy as Path; on a file in the Windows Explorer
     '@Example: FILE_TYPE() -> "Microsoft Excel Macro-Enabled Worksheet"
     '@Example: FILE_TYPE("C:\hello\world.txt") -> "Text Document"
     '@Example: FILE_TYPE("vba.txt") -> "Text Document"; Where "vba.txt" resides in the same folder as the workbook this function resides in
@@ -905,8 +1036,9 @@ As String
     '@Author: Anthony Mancini
     '@Version: 1.0.0
     '@License: MIT
-    '@Param: filePath is a string path of the file on the system
+    '@Param: filePath is a string path of the file on the system, such as "C:\hello\world.txt"
     '@Returns: Returns the extension of the file as a string
+    '@Note: You can find the path of a file via Shift+RightClick -> Copy as Path; on a file in the Windows Explorer
     '@Example: =FILE_EXTENSION() = "xlsx"
     '@Example: =FILE_EXTENSION("C:\hello\world.txt") -> "txt"
     '@Example: =FILE_EXTENSION("vba.txt") -> "txt"; Where "vba.txt" resides in the same folder as the workbook this function resides in
@@ -935,13 +1067,14 @@ Public Function READ_FILE( _
     Optional ByVal lineNumber As Integer) _
 As String
 
-    '@Description: This function reads the file specified in the file path argument and returns it's contents. Optionally, a line number can be specified so that only a single line is read. If no file path is specified, the current Excel workbook is used. Also, if a full path isn't used, a path relative to the folder the workbook resides in will be used.
+    '@Description: This function reads the file specified in the file path argument and returns it's contents. Optionally, a line number can be specified so that only a single line is read. If a full path isn't used, a path relative to the folder the workbook resides in will be used.
     '@Author: Anthony Mancini
     '@Version: 1.0.0
     '@License: MIT
-    '@Param: filePath is a string path of the file on the system
+    '@Param: filePath is a string path of the file on the system, such as "C:\hello\world.txt"
     '@Param: lineNumber is the number of the line that will be read, and if left blank all the file contents will be read. Note that the first line starts at line number 1.
     '@Returns: Returns the contents of the file as a string
+    '@Note: You can find the path of a file via Shift+RightClick -> Copy as Path; on a file in the Windows Explorer
     '@Warning: This function may run very slowly when running it on large files. Also, for files that are not in text format (such as compressed zip files) this file contents returned will not be in a usable format.
     '@Example: =READ_FILE("C:\hello\world.txt") -> "Hello" World
     '@Example: =READ_FILE("vba.txt") -> "This is my VBA text file"; Where "vba.txt" resides in the same folder as the workbook this function resides in
@@ -992,12 +1125,14 @@ As String
     '@Author: Anthony Mancini
     '@Version: 1.0.0
     '@License: MIT
-    '@Param: filePath is a string path of the file on the system
+    '@Param: filePath is a string path of the file on the system, such as "C:\hello\world.txt"
     '@Param: fileText is the text that will be written to the file
     '@Param: appendModeFlag is a Boolean value that if set to TRUE will append to the existing file instead of creating a new file and writing over the contents.
-    '@Returns: Returns a message stating the file written
-    '@Warning: Be careful when writing files, as misuse of this function can results in files being overwritten accidently as well as creating large numbers of files if misused.
-    '@Example: =WRITE_FILE("hello.txt","Hello World") -> "Successfully wrote to: C:\MyWorkbookFolder\hello.txt"
+    '@Returns: Returns a message stating the file written to successfully
+    '@Note: You can find the path of a file via Shift+RightClick -> Copy as Path; on a file in the Windows Explorer
+    '@Warning: Be careful when writing files, as misuse of this function can results in files being overwritten accidently as well as creating large numbers of files accidently.
+    '@Example: =WRITE_FILE("C:\MyWorkbookFolder\hello.txt", "Hello World") -> "Successfully wrote to: C:\MyWorkbookFolder\hello.txt"
+    '@Example: =WRITE_FILE("hello.txt", "Hello World") -> "Successfully wrote to: C:\MyWorkbookFolder\hello.txt"; Where the Workbook resides in "C:\MyWorkbookFolder\"
 
     Dim FSO As Object
     Set FSO = CreateObject("Scripting.FileSystemObject")
@@ -1035,7 +1170,7 @@ Public Function PATH_JOIN( _
     ParamArray pathArray() As Variant) _
 As String
 
-    '@Description: This function combines multiple strings or a range of values into a file path by placing seperators "\" between the arguments
+    '@Description: This function combines multiple strings or a range of values into a file path by placing the separator "\" between the arguments
     '@Author: Anthony Mancini
     '@Version: 1.0.0
     '@License: MIT
@@ -1064,7 +1199,151 @@ As String
     
 End Function
 
-'@Module: This module contains a set of basic mathematical functions where those functions don't already exist in the base Excel functions
+
+Public Function COUNT_FILES( _
+    Optional ByVal filePath As String) _
+As Integer
+
+    '@Description: This function returns the number of files at the specified folder path. If no path is given, the current workbook path will be used.
+    '@Author: Anthony Mancini
+    '@Version: 1.0.0
+    '@License: MIT
+    '@Param: filePath is a string path to the file on the system, such as "C:\hello\world.txt"
+    '@Returns: Returns the number of files in the folder
+    '@Note: You can find the path of a file via Shift+RightClick -> Copy as Path; on a file in the Windows Explorer
+    '@Warning: This function includes the count for hidden files as well. For example, when a workbook is open, a hidden file for the workbook is created, so if you run this function in the same folder as the workbook and notice the file count is one higher than expected, it is likely due to the hidden file.
+    '@Example: =COUNT_FILES() -> 6
+    '@Example: =COUNT_FILES("C:\hello") -> 10
+
+    Dim FSO As Object
+    Set FSO = CreateObject("Scripting.FileSystemObject")
+    
+    If filePath = "" Then
+        COUNT_FILES = FSO.GetFolder(FSO.GetParentFolderName(GetActiveWorkbookPath())).Files.Count
+    Else
+        If FSO.FileExists(ThisWorkbook.Path & "\" & filePath) Then
+            COUNT_FILES = FSO.GetFolder(ThisWorkbook.Path & "\" & filePath).Files.Count
+        Else
+            COUNT_FILES = FSO.GetFolder(filePath).Files.Count
+        End If
+    End If
+
+End Function
+
+
+Public Function COUNT_FOLDERS( _
+    Optional ByVal filePath As String) _
+As Integer
+
+    '@Description: This function returns the number of folders at the specified folder path. If no path is given, the current workbook path will be used.
+    '@Author: Anthony Mancini
+    '@Version: 1.0.0
+    '@License: MIT
+    '@Param: filePath is a string path to the file on the system, such as "C:\hello\world.txt"
+    '@Returns: Returns the number of folders in the folder
+    '@Note: You can find the path of a file via Shift+RightClick -> Copy as Path; on a file in the Windows Explorer
+    '@Warning: This function includes the count for hidden folders as well. Hidden folders are often prefixed with a . character at the beginning
+    '@Example: =COUNT_FOLDERS() -> 2
+    '@Example: =COUNT_FOLDERS("C:\hello") -> 20
+
+    Dim FSO As Object
+    Set FSO = CreateObject("Scripting.FileSystemObject")
+    
+    If filePath = "" Then
+        COUNT_FOLDERS = FSO.GetFolder(FSO.GetParentFolderName(GetActiveWorkbookPath())).SubFolders.Count
+    Else
+        If FSO.FileExists(ThisWorkbook.Path & "\" & filePath) Then
+            COUNT_FOLDERS = FSO.GetFolder(ThisWorkbook.Path & "\" & filePath).SubFolders.Count
+        Else
+            COUNT_FOLDERS = FSO.GetFolder(filePath).SubFolders.Count
+        End If
+    End If
+
+End Function
+
+
+Public Function COUNT_FILES_AND_FOLDERS( _
+    Optional ByVal filePath As String) _
+As Integer
+
+    '@Description: This function returns the number of files and folders at the specified folder path. If no path is given, the current workbook path will be used.
+    '@Author: Anthony Mancini
+    '@Version: 1.0.0
+    '@License: MIT
+    '@Param: filePath is a string path to the file on the system, such as "C:\hello\world.txt"
+    '@Returns: Returns the number of files and folders in the folder
+    '@Note: You can find the path of a file via Shift+RightClick -> Copy as Path; on a file in the Windows Explorer
+    '@Warning: This function includes the count for hidden files and folders as well
+    '@Example: =COUNT_FILES_AND_FOLDERS() -> 8
+    '@Example: =COUNT_FILES_AND_FOLDERS("C:\hello") -> 30
+
+    Dim FSO As Object
+    Set FSO = CreateObject("Scripting.FileSystemObject")
+    
+    If filePath = "" Then
+        COUNT_FILES_AND_FOLDERS = FSO.GetFolder(FSO.GetParentFolderName(GetActiveWorkbookPath())).Files.Count + FSO.GetFolder(FSO.GetParentFolderName(GetActiveWorkbookPath())).SubFolders.Count
+    Else
+        If FSO.FileExists(ThisWorkbook.Path & "\" & filePath) Then
+            COUNT_FILES_AND_FOLDERS = FSO.GetFolder(ThisWorkbook.Path & "\" & filePath).Files.Count + FSO.GetFolder(ThisWorkbook.Path & "\" & filePath).SubFolders.Count
+        Else
+            COUNT_FILES_AND_FOLDERS = FSO.GetFolder(filePath).Files.Count + FSO.GetFolder(filePath).SubFolders.Count
+        End If
+    End If
+
+End Function
+
+
+Public Function GET_FILE_NAME( _
+    Optional ByVal filePath As String, _
+    Optional ByVal fileNumber As Integer = -1) _
+As String
+
+    '@Description: This function returns the name of a file in a folder given the number of the file in the list of all files
+    '@Author: Anthony Mancini
+    '@Version: 1.0.0
+    '@License: MIT
+    '@Param: filePath is a string path to the file on the system, such as "C:\hello\world.txt"
+    '@Param: fileNumber is the number of the file in the folder. For example, if there are 3 files in a folder, this should be a number between 1 and 3
+    '@Returns: Returns the name of the specified file
+    '@Note: You can find the path of a file via Shift+RightClick -> Copy as Path; on a file in the Windows Explorer
+    '@Warning: This function includes hidden files as well. For example, when a workbook is open, a hidden file for the workbook is created, so if you run this function in the same folder as the workbook and notice the file count is one higher than expected, it is likely due to the hidden file.
+    '@Example: =GET_FILE_NAME(,1) -> "hello.txt"
+    '@Example: =GET_FILE_NAME(,1) -> "world.txt"
+    '@Example: =GET_FILE_NAME("C:\hello", 1) -> "one.txt"
+    '@Example: =GET_FILE_NAME("C:\hello", 1) -> "two.txt"
+    '@Example: =GET_FILE_NAME("C:\hello", 1) -> "three.txt"
+
+    Dim FSO As Object
+    Set FSO = CreateObject("Scripting.FileSystemObject")
+    
+    Dim fileCounter As Integer
+    Dim individualFile As Object
+    Dim fileCollection As Object
+    
+    If filePath = "" Then
+        Set fileCollection = FSO.GetFolder(FSO.GetParentFolderName(GetActiveWorkbookPath())).Files
+    Else
+        If FSO.FileExists(ThisWorkbook.Path & "\" & filePath) Then
+            Set fileCollection = FSO.GetFolder(ThisWorkbook.Path & "\" & filePath).Files
+        Else
+            Set fileCollection = FSO.GetFolder(filePath).Files
+        End If
+    End If
+    
+    For Each individualFile In fileCollection
+        fileCounter = fileCounter + 1
+        If fileNumber = -1 Then
+            GET_FILE_NAME = individualFile.Name
+            Exit Function
+        ElseIf fileCounter = fileNumber Then
+            GET_FILE_NAME = individualFile.Name
+            Exit Function
+        End If
+    Next
+
+End Function
+
+'@Module: This module contains a set of basic mathematical functions where those functions don't already exist as base Excel functions.
 
 
 
@@ -1081,9 +1360,9 @@ As Double
     '@Param: startingNumber is the beginning number of the interpolation
     '@Param: endingNumber is the ending number of the interpolation
     '@Param: interpolationPercentage is the percentage that will be interpolated linearly between the startingNumber and the endingNumber
-    '@Returns: Returns a the linearly interpolated number between the two points
-    '@Example: =INTERPOLATE_NUMBER(10,20,0.5) -> 15
-    '@Example: =INTERPOLATE_NUMBER(16,124,0.64) -> 85.12
+    '@Returns: Returns the linearly interpolated number between the two points
+    '@Example: =INTERPOLATE_NUMBER(10, 20, 0.5) -> 15; Where 0.5 would be 50% between 10 and 20
+    '@Example: =INTERPOLATE_NUMBER(16, 124, 0.64) -> 85.12; Where 0.64 would be 64% between 16 and 124
 
     INTERPOLATE_NUMBER = startingNumber + ((endingNumber - startingNumber) * interpolationPercentage)
 
@@ -1103,66 +1382,777 @@ As Double
     '@Param: startingNumber is the beginning number of the interpolation
     '@Param: endingNumber is the ending number of the interpolation
     '@Param: interpolationNumber is the number that will be interpolated linearly between the startingNumber and the endingNumber to calculate a percentage
-    '@Returns: Returns a the linearly interpolated number between the two points
-    '@Example: =INTERPOLATE(10,20,0.5) -> 15
-    '@Example: =INTERPOLATE(16,124,0.64) -> 85.12
+    '@Returns: Returns the linearly interpolated percent between the two points given the interpolation number
+    '@Example: =INTERPOLATE_PERCENT(10, 18, 12) -> 0.25; As 12 is 25% of the way from 10 to 18
+    '@Example: =INTERPOLATE_PERCENT(10, 20, 15) -> 0.5; As 15 is 50% of the way from 10 to 20
 
     INTERPOLATE_PERCENT = (interpolationNumber - startingNumber) / (endingNumber - startingNumber)
 
 End Function
 
 
-'@Module: This module contains a set of functions for getting the UserName and ComputerName and other values from the Network Module.
+'@Module: This module contains a set of functions that return information on the XPlus library, such as the version number, credits, and a link to the documentation.
 
 
 
-Public Function USER_NAME() As String
+Public Function VERSION() As String
 
-    '@Description: This function takes no arguments and returns a string of the USERNAME of the computer
+    '@Description: This function returns the version number of XPlus
     '@Author: Anthony Mancini
     '@Version: 1.0.0
     '@License: MIT
-    '@Returns: Returns a string of the username
-    '@Example: =USER_NAME() -> "Anthony"
+    '@Returns: Returns the XPlus version number
+    '@Example: =VERSION() -> "1.2.0"; Where the version of XPlus you are using is 1.2.0
 
-    Dim WshNetwork As Object
-    Set WshNetwork = CreateObject("WScript.Network")
-
-    USER_NAME = WshNetwork.UserName
+    VERSION = "1.2.0"
 
 End Function
 
-Public Function USER_DOMAIN() As String
 
-    '@Description: This function takes no arguments and returns a string of the USERDOMAIN of the computer
+Public Function CREDITS() As String
+
+    '@Description: This function returns credits for the XPlus library
     '@Author: Anthony Mancini
     '@Version: 1.0.0
     '@License: MIT
-    '@Returns: Returns a string of the user domain of the computer
-    '@Example: =USER_DOMAIN() -> "DESKTOP-XYZ1234"
+    '@Returns: Returns the XPlus credits
+    '@Example: =CREDITS() -> "Copyright (c) 2020 Anthony Mancini. XPlus is Licensed under an MIT License."
 
-    Dim WshNetwork As Object
-    Set WshNetwork = CreateObject("WScript.Network")
-
-    USER_DOMAIN = WshNetwork.UserDomain
+    CREDITS = "Copyright (c) 2020 Anthony Mancini. XPlus is Licensed under an MIT License."
 
 End Function
 
-Public Function COMPUTER_NAME() As String
 
-    '@Description: This function takes no arguments and returns a string of the COMPUTERNAME of the computer
+Public Function DOCUMENTATION() As String
+
+    '@Description: This function returns a link to the Documentation for XPlus
     '@Author: Anthony Mancini
     '@Version: 1.0.0
     '@License: MIT
-    '@Returns: Returns a string of the computer name of the computer
-    '@Example: =COMPUTER_NAME() -> "DESKTOP-XYZ1234"
+    '@Returns: Returns the XPlus Documentation link
+    '@Example: =DOCUMENTATION() -> "https://x-vba.com"
 
-    Dim WshNetwork As Object
-    Set WshNetwork = CreateObject("WScript.Network")
-
-    COMPUTER_NAME = WshNetwork.ComputerName
+    DOCUMENTATION = "https://x-vba.com"
 
 End Function
+
+
+'@Module: This module contains a set of functions for performing networking tasks such as performing HTTP requests and parsing HTML.
+
+
+
+Public Function HTTP( _
+    ByVal url As String, _
+    Optional ByVal httpMethod As String = "GET", _
+    Optional ByRef headers As Variant, _
+    Optional ByVal postData As Variant = "", _
+    Optional ByVal asyncFlag As Boolean, _
+    Optional ByVal statusErrorHandlerFlag As Boolean, _
+    Optional ByRef parseArguments As Variant) _
+As String
+
+    '@Description: This function performs an HTTP request to the web and returns the response as a string. It provides many options to change the http method, provide data for a POST request, change the headers, handle errors for non-successful requests, and parse out text from a request using a light parsing language.
+    '@Author: Anthony Mancini
+    '@Version: 1.0.0
+    '@License: MIT
+    '@Param: url is a string of the URL of the website you want to fetch data from
+    '@Param: httpMethod is a string with the http method, with the default being a GET request. For POST requests, use "POST", for PUT use "PUT", and for DELETE use "DELETE"
+    '@Param: headers is either an array or a Scripting Dictionary of headers that will be used in the request. For an array, the 1st, 3rd, 5th... will be used as the key and the 2nd, 4th, 6th... will be used as the values. For a Scripting Dictionary, the dictionary keys will be used as header keys, and the values as values. Finally, in the case when no headers are set, the User-Agent will be set to "XPlus" as a courtesy to the web server.
+    '@Param: postData is a string that will contain data for a POST request
+    '@Param: asyncFlag is a Boolean value that if set to TRUE will make the request asynchronous. By default requests will be synchronous, which will lock Excel while fetching but will also prevent errors when performing calculations based on fetched data.
+    '@Param: statusErrorHandlerFlag is a Boolean value that if set to TRUE will result in a User-Defined Error String being returned for all non 200 requests that tells the user the status code that occured. This flag is useful in cases where requests need to be successful and if not errors should be thrown.
+    '@Param: parseArguments is an array of arguments that perform string parsing on the response. It uses a light scripting language that includes commands similar to the Excel Built-in LEFT(), RIGHT(), and MID() that allow you to parse the request before it gets returned. See the Note on the scripting language, and the Warning on why this argument should be used.
+    '@Returns: Returns the parsed HTTP response as a string
+    '@Note: The parseArguments parameter uses a light scripting language to perform string manipulations on the HTTP response text that allows you to parse out the relevant information to you. The language contains 5 commands that can be used for parsing. Please check out the examples as well below for a better understanding of how to use the parsing language:<br><br> {"ID", "idOfAnElement"} -> HTML inside of the element with the specified ID <br> {"TAG", "div", 2} -> HTML inside of the second div tag found <br> {"LEFT", 100} -> The 100 leftmost characters <br> {"LEFT", "Hello World"} -> All characters left of the first "Hello World" found in the HTML <br> {"RIGHT", 100} -> The 100 rightmost characters <br> {"RIGHT", "Hello World"} -> All characters right of the last "Hello World" found in the HTML <br> {"MID", 100} -> All character to the right of the 100th character in the string <br> {"MID", "Hello World"} -> All characters right of the first "Hello World" found in the HTML
+    '@Warning: Excel has a limit on the number of characters that can be placed within a cell. This limit is a max of 32767 characters. If the request returns any more than this, a #VALUE! error will be returned. Most webpages surpass this number of characters, which makes the Excel Built-in function WEBSERVICE() not very useful. However, internally VBA can handle around 2,000,000,000 characters, which more characters that found on virtually every single webpage. As a result, parsing arguments should be used with this function so that you can parse out the relevant information for a request without this function failing. See the Note on the syntax of the light parsing language.
+    '@Example: =HTTP("https://httpbin.org/uuid") -> "{"uuid: "41416bcf-ef11-4256-9490-63853d14e4e8"}"
+    '@Example: =HTTP("https://httpbin.org/user-agent", "GET", {"User-Agent","MicrosoftExcel"}) -> "{"user-agent": "MicrosoftExcel"}"
+    '@Example: =HTTP("https://httpbin.org/status/404",,,,,TRUE) -> "#RequestFailedStatusCode404!"; Since the status error handler flag is set and since this URL returns a 404 status code. Also note that this formula is easier to construct using the Excel Formula Builder
+    '@Example: =HTTP("https://en.wikipedia.org/wiki/Visual_Basic_for_Applications",,{"User-Agent","MicrosoftExcel"},,,,{"ID","mw-content-text","LEFT",3000}) -> Returning a string with the leftmost 3000 characters found within the element with the ID "mw-content-text" (we are trying to get the release date of VBA from the VBA wikipedia page, but we need to do more parsing first)
+    '@Example: =HTTP("https://en.wikipedia.org/wiki/Visual_Basic_for_Applications",,{"User-Agent","MicrosoftExcel"},,,,{"ID","mw-content-text","LEFT",3000,"MID","appeared"}) -> Returns the prior string, but now with all characters right of the first occurance of the word "appeared" in the HTML (getting closer to parsing the VBA creation date)
+    '@Example: =HTTP("https://en.wikipedia.org/wiki/Visual_Basic_for_Applications",,{"User-Agent","MicrosoftExcel"},,,,{"ID","mw-content-text","LEFT",3000,"MID","appeared","MID","<TD>"}) -> From the prior result, now returning everything after the first occurance of the "<TD>" in the prior string
+    '@Example: =HTTP("https://en.wikipedia.org/wiki/Visual_Basic_for_Applications",,{"User-Agent","MicrosoftExcel"},,,,{"ID","mw-content-text","LEFT",3000,"MID","appeared","MID","<TD>","LEFT","<span"}) -> "1993"; Finally this is all the parsing needed to be able to return the date 1993 that we were looking for
+
+    Dim WinHttpRequest As Object
+    Set WinHttpRequest = CreateObject("WinHttp.WinHttpRequest.5.1")
+    
+    WinHttpRequest.Open httpMethod, url, asyncFlag
+    
+    ' Setting the request headers
+    ' Case where headers come in the form of an Array
+    If IsArray(headers) Then
+        Dim i As Integer
+        
+        If TypeName(Application.Caller) = "Range" Then
+            For i = 0 To UBound(headers) - LBound(headers) Step 2
+                WinHttpRequest.SetRequestHeader headers(i + 1), headers(i + 2)
+            Next
+        Else
+            For i = 0 To UBound(headers) - LBound(headers) Step 2
+                WinHttpRequest.SetRequestHeader headers(i), headers(i + 1)
+            Next
+        End If
+        
+    ' Case where headers come in the form of a Dictionary
+    ElseIf TypeName(headers) = "Dictionary" Then
+        Dim dictKey As Variant
+        
+        For Each dictKey In headers.Keys()
+            WinHttpRequest.SetRequestHeader dictKey, headers(dictKey)
+        Next
+        
+    ' In cases where no headers are given by the user, set a base User-Agent to
+    ' "XPlus" as a courtesy to the webserver
+    Else
+        WinHttpRequest.SetRequestHeader "User-Agent", "XPlus"
+    End If
+    
+    ' Sending the HTTP request
+    If postData = "" Then
+        WinHttpRequest.Send
+    Else
+        WinHttpRequest.Send postData
+    End If
+    
+    ' If the status error handler flag is set to True, then enable error returns
+    ' in cases where the status code is not a 200
+    If statusErrorHandlerFlag Then
+        If WinHttpRequest.Status = 200 Then
+            HTTP = WinHttpRequest.ResponseText
+        Else
+            HTTP = "#RequestFailedStatusCode" & WinHttpRequest.Status & "!"
+        End If
+    
+    ' Case when the status code error handler is not used
+    Else
+        HTTP = WinHttpRequest.ResponseText
+    End If
+    
+    ' Parsing Html Response
+    If IsArray(parseArguments) Then
+        Dim reorderedParseArguments() As Variant
+        i = UBound(parseArguments) - LBound(parseArguments)
+        ReDim reorderedParseArguments(i)
+        
+        ' Reordering for Range
+        If TypeName(Application.Caller) = "Range" Then
+            For i = 0 To UBound(parseArguments) - LBound(parseArguments)
+                reorderedParseArguments(i) = parseArguments(i + 1)
+            Next
+            
+            HTTP = PARSE_HTML_STRING(HTTP, reorderedParseArguments)
+            
+        ' Also reordering here, as possibly had some name collision with the name parseArguments somewhere
+        Else
+            For i = 0 To UBound(parseArguments) - LBound(parseArguments)
+                reorderedParseArguments(i) = parseArguments(i)
+            Next
+            
+            HTTP = PARSE_HTML_STRING(HTTP, reorderedParseArguments)
+        End If
+    End If
+
+End Function
+
+
+Public Function SIMPLE_HTTP( _
+    ByVal url As String, _
+    ParamArray parseArguments() As Variant) _
+As String
+
+    '@Description: This function performs an HTTP request to the web and returns the response as a string, similar to the HTTP() function, except that only requires one parameter, the URL, and then takes an infinite number of strings after it as the parsing arguments instead of requiring an Array to use. Essentially, this function is a little cleaner to set up when performing very basic GET requests.
+    '@Author: Anthony Mancini
+    '@Version: 1.0.0
+    '@License: MIT
+    '@Param: url is a string of the URL of the website you want to fetch data from
+    '@Param: parseArguments is an array of arguments that perform string parsing on the response. It uses a light scripting language that includes commands similar to the Excel Built-in LEFT(), RIGHT(), and MID() that allow you to parse the request before it gets returned. See the Note on the HTTP() function, and the Warning on the HTTP() function on why this argument should be used.
+    '@Returns: Returns the parsed HTTP response as a string
+    '@Example: =SIMPLE_HTTP("https://en.wikipedia.org/wiki/Visual_Basic_for_Applications","ID","mw-content-text","LEFT",3000,"MID","appeared","MID","<TD>","LEFT","<span") -> "1993"; See the examples in the HTTP() function, as this example has the same result as the example in the HTTP() function. You can see that this function is cleaner and easier to set up than the corresponding HTTP() function.
+
+    ' Case where parse arguments are provided
+    If UBound(parseArguments) > 0 Then
+        ' Need to reorder the arguments of the Array since when the caller is a
+        ' Range, the Array is 1-based, where as when the caller is another VBA function,
+        ' the Array is 0-based
+        Dim i As Integer
+        Dim reorderedParseArguments() As Variant
+        i = UBound(parseArguments) - LBound(parseArguments)
+        ReDim reorderedParseArguments(i)
+        
+        ' Reordering for Range
+        For i = 0 To UBound(parseArguments) - LBound(parseArguments)
+            reorderedParseArguments(i) = parseArguments(i)
+        Next
+        
+        SIMPLE_HTTP = PARSE_HTML_STRING(HTTP(url), reorderedParseArguments)
+    
+    ' In case of no parse arguments, simply perform an HTTP request
+    Else
+        SIMPLE_HTTP = HTTP(url)
+    End If
+
+End Function
+
+
+Public Function PARSE_HTML_STRING( _
+    ByVal htmlString As String, _
+    ByRef parseArguments() As Variant) _
+As Variant
+
+    '@Description: This function parses an HTML string using the same parsing language that the HTTP() function uses. See the HTTP() function for more information on how to use this function.
+    '@Author: Anthony Mancini
+    '@Version: 1.0.0
+    '@License: MIT
+    '@Param: htmlString is a string of the HTML
+    '@Param: parseArguments is an array of arguments that perform string parsing on the response. It uses a light scripting language that includes commands similar to the Excel Built-in LEFT(), RIGHT(), and MID() that allow you to parse the request before it gets returned. See the Note on the HTTP() function, and the Warning on the HTTP() function on why this argument should be used.
+    '@Returns: Returns the parsed HTTP response as a string
+    '@Example: =PARSE_HTML_STRING("HTML String from the webpage: https://en.wikipedia.org/wiki/Visual_Basic_for_Applications","ID","mw-content-text","LEFT",3000,"MID","appeared","MID","<TD>","LEFT","<span") -> "1993"
+
+    Dim partialHtml As String
+    Dim html As Object
+    Set html = CreateObject("HtmlFile")
+    
+    ' Setting the HTML Document
+    html.body.innerHTML = htmlString
+    
+    ' Parsing out info from the HTML Document
+    Dim i As Integer
+    
+    For i = LBound(parseArguments) To UBound(parseArguments)
+        ' Note that id and tag will truncate poorly formatted HTML
+        ' Works with late bindings
+        If LCase(parseArguments(i)) = "id" Then
+            If partialHtml <> "" Then
+                html.body.innerHTML = partialHtml
+            End If
+            partialHtml = html.getElementById(parseArguments(i + 1)).innerHTML
+            html.body.innerHTML = partialHtml
+            i = i + 1
+            
+        ' Requires early bindings. Don't include in final code, but potentially consider for future updates
+        'ElseIf LCase(parseArguments(i)) = "class" Then
+        '    partialHtml = html.getElementsByClassName(parseArguments(i + 1))(i + 2).innerHTML
+        '    i = i + 2
+        
+        ' Works with late bindings
+        ElseIf LCase(parseArguments(i)) = "tag" Then
+            If partialHtml <> "" Then
+                html.body.innerHTML = partialHtml
+            End If
+            partialHtml = html.getElementsByTagName(parseArguments(i + 1))(i + 2).innerHTML
+            html.body.innerHTML = partialHtml
+            i = i + 2
+            
+        ' Left string manipulation
+        ElseIf LCase(parseArguments(i)) = "left" Then
+            If IsNumeric(parseArguments(i + 1)) And TypeName(parseArguments(i + 1)) <> "String" Then
+                partialHtml = Left(partialHtml, parseArguments(i + 1))
+            Else
+                partialHtml = Left(partialHtml, InStr(1, partialHtml, CStr(parseArguments(i + 1)), vbTextCompare) - 1)
+            End If
+            i = i + 1
+            
+        ' Right string manipulation
+        ElseIf LCase(parseArguments(i)) = "right" Then
+            If IsNumeric(parseArguments(i + 1)) And TypeName(parseArguments(i + 1)) <> "String" Then
+                partialHtml = Right(partialHtml, parseArguments(i + 1))
+            Else
+                partialHtml = Right(partialHtml, Len(partialHtml) - Len(parseArguments(i + 1)) + 1 - InStrRev(partialHtml, CStr(parseArguments(i + 1)), Compare:=vbTextCompare))
+            End If
+            i = i + 1
+            
+        ' Mid string manipulation. Possibly update this to allow Mid length argument
+        ElseIf LCase(parseArguments(i)) = "mid" Then
+            If IsNumeric(parseArguments(i + 1)) And TypeName(parseArguments(i + 1)) <> "String" Then
+                partialHtml = Mid(partialHtml, parseArguments(i + 1))
+            Else
+                partialHtml = Mid(partialHtml, Len(parseArguments(i + 1)) + InStr(1, partialHtml, CStr(parseArguments(i + 1)), vbTextCompare))
+            End If
+            i = i + 1
+        End If
+    Next
+    
+    PARSE_HTML_STRING = partialHtml
+
+End Function
+
+
+
+'@Module: This module contains a set of functions that act as polyfills for functions in later versions of Excel. For example, MAXIF() is available in some later versions of Excel, but a user may not have access to this function if they are using an older version of Excel. In this case, this module adds a polyfill called MAX_IF() which works very similar to the MAXIF() function
+
+
+
+Public Function CONCAT_TEXT( _
+    ParamArray rangeOrStringArray() As Variant) _
+As String
+
+    '@Description: This function takes multiple ranges and strings and concatenates all of them together. It is a polyfill for the CONCAT() function.
+    '@Author: Anthony Mancini
+    '@Version: 1.0.0
+    '@License: MIT
+    '@Param: rangeOrStringArray is any number of strings and ranges that will be concatenated together
+    '@Returns: Returns a concatenated string
+    '@Example: =CONCAT_TEXT(A1:A2, B1, "Two", B2) -> "HelloWorldOneTwoThree"; Where A1:A2=["Hello", "World"] and B1="One", B2="Three"
+
+    Dim individualElement As Variant
+    Dim individualRange As Range
+
+    For Each individualElement In rangeOrStringArray
+        If TypeName(individualElement) = "Range" Then
+            For Each individualRange In individualElement
+                CONCAT_TEXT = CONCAT_TEXT + individualRange.Value
+            Next
+        Else
+            CONCAT_TEXT = CONCAT_TEXT + individualElement
+        End If
+    Next
+
+End Function
+
+
+Public Function MAX_IF( _
+    ByVal maxRange As Range, _
+    ByVal criteriaRange As Range, _
+    ByVal criteriaValue As Variant) _
+As Variant
+
+    '@Description: This function takes a max range, a criteria range, and then a criteria value, and finds the maximum value given the criteria
+    '@Author: Anthony Mancini
+    '@Version: 1.0.0
+    '@License: MIT
+    '@Param: maxRange is the range that the max value will be chosen from given the criteria
+    '@Param: criteriaRange is the range that will be checked against the criteria
+    '@Param: criteriaValue is the value of the criteria. The criteria allowed is similar to the SUMIF() function
+    '@Returns: Returns the max value that passes the criteria
+    '@Example: =MAX_IF(A1:A3, B1:B3, 10) -> 2; Where A1:A3=[1, 2, 3] and B1:B3=[20, 10, 5]
+    '@Example: =MAX_IF(A1:A3, B1:B3, "<10") -> 3; Where A1:A3=[1, 2, 3] and B1:B3=[20, 10, 5]
+
+    MAX_IF = MAX_IFS(maxRange, criteriaRange, criteriaValue)
+
+End Function
+
+
+Public Function MAX_IFS( _
+    ByVal maxRange As Range, _
+    ParamArray criteraRangeAndCriteria() As Variant) _
+As Variant
+
+    '@Description: This function takes a max range, and then any number or criteria ranges and criteria values, and returns the max value in the max range conditional on the values passing the criteria. It uses very similar criteria and syntax to the Excel Built-in SUMIFS().
+    '@Author: Anthony Mancini
+    '@Version: 1.0.0
+    '@License: MIT
+    '@Param: maxRange is the range that the max value will be chosen from given the criteria
+    '@Param: criteraRangeAndCriteria is either a range that will be checked against a criteria, or the criteria. These values should alternate between criteria range and criteria value
+    '@Returns: Returns the max value that passes all the criteria
+    '@Example: =MAX_IFS(A1:A3, B1:B3, ">=10", C1:C3, "A") -> 2; Where A1:A3=[1, 2, 3], B1:B3=[20, 10, 5], and C1:C3=["A", "A", "C"]
+
+    Dim i As Integer
+    Dim k As Integer
+    Dim maxValue As Variant
+    Dim temporaryValueHolder As Variant
+    Dim individualRange As Range
+    Dim criteraRangeLength As Integer
+    Dim currentCriteria As Variant
+    Dim maxArray() As Variant
+    
+    criteraRangeLength = UBound(criteraRangeAndCriteria) - LBound(criteraRangeAndCriteria)
+    
+    ReDim maxArray(maxRange.Count, 1)
+    For i = 1 To maxRange.Count
+        maxArray(i, 0) = maxRange(i).Value
+        maxArray(i, 1) = True
+    Next
+    
+    For i = 0 To criteraRangeLength Step 2
+        
+        ' Checking if the criteria is a single cell, and if so set its value as
+        ' the current criteria
+        currentCriteria = criteraRangeAndCriteria(i + 1)
+        If TypeName(currentCriteria) = "Range" Then
+            If currentCriteria.Count = 1 Then
+                currentCriteria = currentCriteria.Value
+            End If
+        End If
+        
+        ' Check if string, and then check for >, <, or <> symbols at the beginning
+        If TypeName(currentCriteria) = "String" Then
+        
+            ' The not equal to case
+            If Left(currentCriteria, 2) = "<>" Then
+                temporaryValueHolder = CDbl(Mid(currentCriteria, 3))
+                For k = 1 To criteraRangeAndCriteria(i).Count
+                    If criteraRangeAndCriteria(i)(k).Value <> temporaryValueHolder Then
+                        If maxArray(k, 1) <> False Then
+                            maxArray(k, 1) = True
+                        End If
+                    Else
+                        maxArray(k, 1) = False
+                    End If
+                Next
+                
+            ' The greater than or equal to case
+            ElseIf Left(currentCriteria, 2) = ">=" Then
+                temporaryValueHolder = CDbl(Mid(currentCriteria, 3))
+                For k = 1 To criteraRangeAndCriteria(i).Count
+                    If criteraRangeAndCriteria(i)(k).Value >= temporaryValueHolder Then
+                        If maxArray(k, 1) <> False Then
+                            maxArray(k, 1) = True
+                        End If
+                    Else
+                        maxArray(k, 1) = False
+                    End If
+                Next
+            
+            ' The less than or equal to case
+            ElseIf Left(currentCriteria, 2) = "<=" Then
+                temporaryValueHolder = CDbl(Mid(currentCriteria, 3))
+                For k = 1 To criteraRangeAndCriteria(i).Count
+                    If criteraRangeAndCriteria(i)(k).Value <= temporaryValueHolder Then
+                        If maxArray(k, 1) <> False Then
+                            maxArray(k, 1) = True
+                        End If
+                    Else
+                        maxArray(k, 1) = False
+                    End If
+                Next
+                
+            ' The greater than case
+            ElseIf Left(currentCriteria, 1) = ">" Then
+                temporaryValueHolder = CDbl(Mid(currentCriteria, 2))
+                For k = 1 To criteraRangeAndCriteria(i).Count
+                    If criteraRangeAndCriteria(i)(k).Value > temporaryValueHolder Then
+                        If maxArray(k, 1) <> False Then
+                            maxArray(k, 1) = True
+                        End If
+                    Else
+                        maxArray(k, 1) = False
+                    End If
+                Next
+            
+            
+            ' The less than case
+            ElseIf Left(currentCriteria, 1) = "<" Then
+                temporaryValueHolder = CDbl(Mid(currentCriteria, 2))
+                For k = 1 To criteraRangeAndCriteria(i).Count
+                    If criteraRangeAndCriteria(i)(k).Value < temporaryValueHolder Then
+                        If maxArray(k, 1) <> False Then
+                            maxArray(k, 1) = True
+                        End If
+                    Else
+                        maxArray(k, 1) = False
+                    End If
+                Next
+            
+            ' The pure string equality case when the string doesn't specify some greater than,
+            ' less than, or not equal to criteria
+            Else
+                temporaryValueHolder = currentCriteria
+                For k = 1 To criteraRangeAndCriteria(i).Count
+                    If CStr(criteraRangeAndCriteria(i)(k).Value) = temporaryValueHolder Then
+                        If maxArray(k, 1) <> False Then
+                            maxArray(k, 1) = True
+                        End If
+                    Else
+                        maxArray(k, 1) = False
+                    End If
+                Next
+            
+            End If
+        
+        ' If numeric, then has to be purely equality comparison
+        ElseIf IsNumeric(currentCriteria) Then
+            temporaryValueHolder = currentCriteria
+            For k = 1 To criteraRangeAndCriteria(i).Count
+                If criteraRangeAndCriteria(i)(k).Value = temporaryValueHolder Then
+                    If maxArray(k, 1) <> False Then
+                        maxArray(k, 1) = True
+                    End If
+                Else
+                    maxArray(k, 1) = False
+                End If
+            Next
+        
+        ' If range, then perform comparison to everything within the criteria
+        ElseIf TypeName(currentCriteria) = "Range" Then
+            For Each individualRange In currentCriteria
+                temporaryValueHolder = individualRange.Value
+                For k = 1 To criteraRangeAndCriteria(i).Count
+                    If criteraRangeAndCriteria(i)(k).Value = temporaryValueHolder Then
+                        If maxArray(k, 1) <> False Then
+                            maxArray(k, 1) = True
+                        End If
+                    Else
+                        maxArray(k, 1) = False
+                    End If
+                Next
+            Next
+        
+        End If
+    Next
+
+    ' Finding the max given all TRUE values
+    For i = 1 To maxRange.Count
+        If maxArray(i, 1) Then
+            If IsEmpty(maxValue) Then
+                maxValue = maxArray(i, 0)
+            ElseIf maxValue < maxArray(i, 0) Then
+                maxValue = maxArray(i, 0)
+            End If
+        End If
+    Next
+
+    ' If no criteria ia met, return an error string
+    If IsEmpty(maxValue) Then
+        MAX_IFS = "#NoCriteriaSatisfied!"
+    Else
+        MAX_IFS = maxValue
+    End If
+
+End Function
+
+
+Public Function MIN_IF( _
+    ByVal minRange As Range, _
+    ByVal criteriaRange As Range, _
+    ByVal criteriaValue As Variant) _
+As Variant
+
+    '@Description: This function takes a min range, a criteria range, and then a criteria value, and finds the minimum value given the criteria
+    '@Author: Anthony Mancini
+    '@Version: 1.0.0
+    '@License: MIT
+    '@Param: minRange is the range that the min value will be chosen from given the criteria
+    '@Param: criteriaRange is the range that will be checked against the criteria
+    '@Param: criteriaValue is the value of the criteria. The criteria allowed is similar to the SUMIF() function
+    '@Returns: Returns the min value that passes the criteria
+    '@Example: =MIN_IF(A1:A3, B1:B3, 5) -> 3; Where A1:A3=[1, 2, 3] and B1:B3=[20, 10, 5]
+    '@Example: =MIN_IF(A1:A3, B1:B3, "<=10") -> 2; Where A1:A3=[1, 2, 3] and B1:B3=[20, 10, 5]
+
+    MIN_IF = MIN_IFS(minRange, criteriaRange, criteriaValue)
+
+End Function
+
+
+Public Function MIN_IFS( _
+    ByVal minRange As Range, _
+    ParamArray criteraRangeAndCriteria() As Variant) _
+As Variant
+
+    '@Description: This function takes a min range, and then any number or criteria ranges and criteria values, and returns the min value in the min range conditional on the values passing the criteria. It uses very similar criteria and syntax to the Excel Built-in SUMIFS().
+    '@Author: Anthony Mancini
+    '@Version: 1.0.0
+    '@License: MIT
+    '@Param: minRange is the range that the min value will be chosen from given the criteria
+    '@Param: criteraRangeAndCriteria is either a range that will be checked against a criteria, or the criteria. These values should alternate between criteria range and criteria value
+    '@Returns: Returns the min value that passes all the criteria
+    '@Example: =MIN_IFS(A1:A3, B1:B3, ">=10", C1:C3, "A") -> 1; Where A1:A3=[1, 2, 3], B1:B3=[20, 10, 5], and C1:C3=["A", "A", "C"]
+
+    Dim i As Integer
+    Dim k As Integer
+    Dim minValue As Variant
+    Dim temporaryValueHolder As Variant
+    Dim individualRange As Range
+    Dim criteraRangeLength As Integer
+    Dim currentCriteria As Variant
+    Dim minArray() As Variant
+    
+    criteraRangeLength = UBound(criteraRangeAndCriteria) - LBound(criteraRangeAndCriteria)
+    
+    ReDim minArray(minRange.Count, 1)
+    For i = 1 To minRange.Count
+        minArray(i, 0) = minRange(i).Value
+        minArray(i, 1) = True
+    Next
+    
+    For i = 0 To criteraRangeLength Step 2
+        
+        ' Checking if the criteria is a single cell, and if so set its value as
+        ' the current criteria
+        currentCriteria = criteraRangeAndCriteria(i + 1)
+        If TypeName(currentCriteria) = "Range" Then
+            If currentCriteria.Count = 1 Then
+                currentCriteria = currentCriteria.Value
+            End If
+        End If
+        
+        ' Check if string, and then check for >, <, or <> symbols at the beginning
+        If TypeName(currentCriteria) = "String" Then
+        
+            ' The not equal to case
+            If Left(currentCriteria, 2) = "<>" Then
+                temporaryValueHolder = CDbl(Mid(currentCriteria, 3))
+                For k = 1 To criteraRangeAndCriteria(i).Count
+                    If criteraRangeAndCriteria(i)(k).Value <> temporaryValueHolder Then
+                        If minArray(k, 1) <> False Then
+                            minArray(k, 1) = True
+                        End If
+                    Else
+                        minArray(k, 1) = False
+                    End If
+                Next
+            
+            ' The greater than or equal to case
+            ElseIf Left(currentCriteria, 2) = ">=" Then
+                temporaryValueHolder = CDbl(Mid(currentCriteria, 3))
+                For k = 1 To criteraRangeAndCriteria(i).Count
+                    If criteraRangeAndCriteria(i)(k).Value >= temporaryValueHolder Then
+                        If minArray(k, 1) <> False Then
+                            minArray(k, 1) = True
+                        End If
+                    Else
+                        minArray(k, 1) = False
+                    End If
+                Next
+            
+            ' The less than or equal to case
+            ElseIf Left(currentCriteria, 2) = "<=" Then
+                temporaryValueHolder = CDbl(Mid(currentCriteria, 3))
+                For k = 1 To criteraRangeAndCriteria(i).Count
+                    If criteraRangeAndCriteria(i)(k).Value <= temporaryValueHolder Then
+                        If minArray(k, 1) <> False Then
+                            minArray(k, 1) = True
+                        End If
+                    Else
+                        minArray(k, 1) = False
+                    End If
+                Next
+                
+            ' The greater than case
+            ElseIf Left(currentCriteria, 1) = ">" Then
+                temporaryValueHolder = CDbl(Mid(currentCriteria, 2))
+                For k = 1 To criteraRangeAndCriteria(i).Count
+                    If criteraRangeAndCriteria(i)(k).Value > temporaryValueHolder Then
+                        If minArray(k, 1) <> False Then
+                            minArray(k, 1) = True
+                        End If
+                    Else
+                        minArray(k, 1) = False
+                    End If
+                Next
+            
+            
+            ' The less than case
+            ElseIf Left(currentCriteria, 1) = "<" Then
+                temporaryValueHolder = CDbl(Mid(currentCriteria, 2))
+                For k = 1 To criteraRangeAndCriteria(i).Count
+                    If criteraRangeAndCriteria(i)(k).Value < temporaryValueHolder Then
+                        If minArray(k, 1) <> False Then
+                            minArray(k, 1) = True
+                        End If
+                    Else
+                        minArray(k, 1) = False
+                    End If
+                Next
+            
+            ' The pure string equality case when the string doesn't specify some greater than,
+            ' less than, or not equal to criteria
+            Else
+                temporaryValueHolder = currentCriteria
+                For k = 1 To criteraRangeAndCriteria(i).Count
+                    If CStr(criteraRangeAndCriteria(i)(k).Value) = temporaryValueHolder Then
+                        If minArray(k, 1) <> False Then
+                            minArray(k, 1) = True
+                        End If
+                    Else
+                        minArray(k, 1) = False
+                    End If
+                Next
+            
+            End If
+        
+        ' If numeric, then has to be purely equality comparison
+        ElseIf IsNumeric(currentCriteria) Then
+            temporaryValueHolder = currentCriteria
+            For k = 1 To criteraRangeAndCriteria(i).Count
+                If criteraRangeAndCriteria(i)(k).Value = temporaryValueHolder Then
+                    If minArray(k, 1) <> False Then
+                        minArray(k, 1) = True
+                    End If
+                Else
+                    minArray(k, 1) = False
+                End If
+            Next
+        
+        ' If range, then perform comparison to everything within the criteria
+        ElseIf TypeName(currentCriteria) = "Range" Then
+            For Each individualRange In currentCriteria
+                temporaryValueHolder = individualRange.Value
+                For k = 1 To criteraRangeAndCriteria(i).Count
+                    If criteraRangeAndCriteria(i)(k).Value = temporaryValueHolder Then
+                        If minArray(k, 1) <> False Then
+                            minArray(k, 1) = True
+                        End If
+                    Else
+                        minArray(k, 1) = False
+                    End If
+                Next
+            Next
+        
+        End If
+    Next
+
+    ' Finding the max given all TRUE values
+    For i = 1 To minRange.Count
+        If minArray(i, 1) Then
+            If IsEmpty(minValue) Then
+                minValue = minArray(i, 0)
+            ElseIf minValue > minArray(i, 0) Then
+                minValue = minArray(i, 0)
+            End If
+        End If
+    Next
+
+    ' If no criteria ia met, return an error string
+    If IsEmpty(minValue) Then
+        MIN_IFS = "#NoCriteriaSatisfied!"
+    Else
+        MIN_IFS = minValue
+    End If
+
+End Function
+
+
+Public Function TEXT_JOIN( _
+    ByVal rangeArray As Range, _
+    Optional ByVal delimiterCharacter As String, _
+    Optional ByVal ignoreEmptyCellsFlag As Boolean) _
+As String
+
+    '@Description: This function takes a range of cells and combines all the text together, optionally allowing a character delimiter between all the combined strings, and optionally allowing blank cells to be ignored when combining the text. Finally note that this function is very similar to the TEXTJOIN function available in Excel 2019, and thus is a polyfill for that function for earlier versions of Excel.
+    '@Author: Anthony Mancini
+    '@Version: 1.0.0
+    '@License: MIT
+    '@Param: rangeArray is the range with all the strings we want to combine
+    '@Param: delimiterCharacter is an optional character that will be used as the delimiter between the combined text. By default, no delimiter character will be used.
+    '@Param: ignoreEmptyCellsFlag if set to TRUE will skip combining empty cells into the combined string, and is useful when specifying a delimiter so that the delimiter does not repeat for empty cells.
+    '@Returns: Returns a new combined string containing the strings in the range delimited by the delimiter character.
+    '@Example: =TEXT_JOIN(A1:A3) -> "123"; Where A1:A3 contains ["1", "2", "3"]
+    '@Example: =TEXT_JOIN(A1:A3, "--") -> "1--2--3"; Where A1:A3 contains ["1", "2", "3"]
+    '@Example: =TEXT_JOIN(A1:A3, "--") -> "1----3"; Where A1:A3 contains ["1", "", "3"]
+    '@Example: =TEXT_JOIN(A1:A3, "-") -> "1--3"; Where A1:A3 contains ["1", "", "3"]
+    '@Example: =TEXT_JOIN(A1:A3, "-", TRUE) -> "1-3"; Where A1:A3 contains ["1", "", "3"]
+
+    Dim individualRange As Range
+    Dim combinedString As String
+    
+    For Each individualRange In rangeArray
+        If ignoreEmptyCellsFlag Then
+            If Not IsEmpty(individualRange.Value) Then
+                combinedString = combinedString & individualRange.Value & delimiterCharacter
+            End If
+        Else
+            combinedString = combinedString & individualRange.Value & delimiterCharacter
+        End If
+    Next
+    
+    If delimiterCharacter <> "" Then
+        combinedString = Left(combinedString, InStrRev(combinedString, delimiterCharacter) - 1)
+    End If
+    
+    TEXT_JOIN = combinedString
+
+End Function
+
 
 '@Module: This module contains a set of functions for getting properties from Ranges, Worksheets, and Workbooks.
 
@@ -1257,7 +2247,7 @@ Public Function RANGE_NAME( _
     ByVal range1 As Range) _
 As String
 
-    '@Description: This function gets the name of the selected cell when using the Name Manager to create Named Ranges.
+    '@Description: This function gets the name of the selected cell; Named Ranges can be created using the Name Manager.
     '@Author: Anthony Mancini
     '@Version: 1.0.0
     '@License: MIT
@@ -1301,11 +2291,33 @@ As Double
     '@License: MIT
     '@Param: range1 is the cell we want to get the height from
     '@Returns: Returns the height of the cell as a Double
-    '@Example: =GET_RANGE_WIDTH(A1) -> 14
+    '@Example: =RANGE_HEIGHT(A1) -> 14
 
     Application.Volatile
 
     RANGE_HEIGHT = range1.Height
+
+End Function
+
+
+Public Function RANGE_COLOR( _
+    ByVal range1 As Range) _
+As Long
+
+    '@Description: This function gets the color of a cell. The color returned is a number that essentially is one of 16777215 possible color combinations, with every single color being a unique number.
+    '@Author: Anthony Mancini
+    '@Version: 1.0.0
+    '@License: MIT
+    '@Param: range1 is the cell we want to get the color from
+    '@Returns: Returns the color of the cell as a number
+    '@Example: =RANGE_COLOR(A1) -> 255; Where A1 is colored Red
+    '@Example: =RANGE_COLOR(A2) -> 65535; Where A2 is colored Yellow
+    '@Example: =RANGE_COLOR(A3) -> 16777215; Where A3 is colored White
+    '@Example: =RANGE_COLOR(A4) -> 0; Where A4 is colored Black
+
+    Application.Volatile
+
+    RANGE_COLOR = range1.Interior.Color
 
 End Function
 
@@ -1369,10 +2381,10 @@ As String
     '@Version: 1.0.0
     '@License: MIT
     '@Param: sheetNameOrNumber is the name or number of the sheet
-    '@Returns: Returns the code name of the sheet
-    '@Example: =SHEET_CODE_NAME() -> "Worksheet"
-    '@Example: =SHEET_CODE_NAME("MyChart") -> "Chart"
-    '@Example: =SHEET_CODE_NAME(2) -> "Chart"
+    '@Returns: Returns the type of the sheet
+    '@Example: =SHEET_TYPE() -> "Worksheet"
+    '@Example: =SHEET_TYPE("MyChart") -> "Chart"
+    '@Example: =SHEET_TYPE(2) -> "Chart"
 
     Application.Volatile
 
@@ -1720,7 +2732,7 @@ As String
 
 End Function
 
-'@Module: This module contains a set of functions for generating and sampling random data
+'@Module: This module contains a set of functions for generating and sampling random data.
 
 
 
@@ -1733,9 +2745,10 @@ As Variant
     '@Version: 1.0.0
     '@License: MIT
     '@Todo: Check if there is native randbetween function besides the worksheet function
-    '@Param: rangeArray a single cell or multiple cells
+    '@Param: rangeArray a single cell or multiple cells where the sample will be pulled from
     '@Returns: Returns a random cell value from the array of cells chosen
-    '@Example: =RANDOM_SAMPLE(A1:A5) -> "Hello World"; where "Hello World" is the value in cell A3
+    '@Example: =RANDOM_SAMPLE(A1:A5) -> "Hello"; where "Hello" is the value in cell A3, and where A3 was the chosen random cell
+    '@Example: =RANDOM_SAMPLE(A1:A5) -> "World"; where "World" is the value in cell A2, and where A2 was the chosen random cell
 
     Dim randomNumber As Integer
     
@@ -1761,7 +2774,13 @@ As Integer
     '@Param: stopNumber is the end value of the range
     '@Param: stepNumber is the step of the range
     '@Returns: Returns a random number between the start and stop that is a multiple of the step
-    '@Example: =RANDOM_RANGE(50,100,10) -> 60
+    '@Example: =RANDOM_RANGE(50, 100, 10) -> 60
+    '@Example: =RANDOM_RANGE(50, 100, 10) -> 50
+    '@Example: =RANDOM_RANGE(50, 100, 10) -> 90
+    '@Example: =RANDOM_RANGE(0, 10, 2) -> 8
+    '@Example: =RANDOM_RANGE(0, 10, 2) -> 0
+    '@Example: =RANDOM_RANGE(0, 10, 2) -> 4
+    '@Example: =RANDOM_RANGE(0, 10, 2) -> 10
 
     Dim randomNumber As Integer
     
@@ -1784,7 +2803,15 @@ As Variant
     '@Param: valueRange is the range containing values of which one will be sampled
     '@Param: percentRange is the range that contains the percent chances of the values in the valueRange
     '@Returns: Returns a random value from the valueRange
-    '@Example: =RANDOM_SAMPLE_PERCENT(A1:A2, B1:B2) -> "Hello" ;Assuming the valueRange contains ["Hello", "World"], and percentRange contains [.9, .1]
+    '@Warning: Internally this function sums up all the number in the percentRange to calculate percentage chances of a sample. For example, if the percentRange contains the values 10 and 90, the first value will have a 10/(10+90) = 10% chance of being chosen. Similarly, if the values in the percentRange contains the values 5 and 45, the first value will have a 5/(5+45) = 10% chance of being chosen. This means you have to be careful when choosing percentages in the percentRange, as if you choose 0.1 and 0.8 for the percentRange, the percentage chance the first value is chosen is NOT 10%, but rather 0.1/(0.1+0.8) = 11.1%. Thus, you should be careful to only interpret a 0.1 in the percentRange as a 10% chance only if the values in the percentRange actually sum up to 1.0.
+    '@Example: =RANDOM_SAMPLE_PERCENT(A1:A2, B1:B2) -> "Hello"; Assuming the valueRange contains ["Hello", "World"], and percentRange contains [.9, .1]
+    '@Example: =RANDOM_SAMPLE_PERCENT(A1:A2, B1:B2) -> "Hello"; Assuming the valueRange contains ["Hello", "World"], and percentRange contains [.9, .1]
+    '@Example: =RANDOM_SAMPLE_PERCENT(A1:A2, B1:B2) -> "Hello"; Assuming the valueRange contains ["Hello", "World"], and percentRange contains [.9, .1]
+    '@Example: =RANDOM_SAMPLE_PERCENT(A1:A2, B1:B2) -> "Hello"; Assuming the valueRange contains ["Hello", "World"], and percentRange contains [.9, .1]
+    '@Example: =RANDOM_SAMPLE_PERCENT(A1:A2, B1:B2) -> "Hello"; Assuming the valueRange contains ["Hello", "World"], and percentRange contains [.9, .1]
+    '@Example: =RANDOM_SAMPLE_PERCENT(A1:A2, B1:B2) -> "Hello"; Assuming the valueRange contains ["Hello", "World"], and percentRange contains [.9, .1]
+    '@Example: =RANDOM_SAMPLE_PERCENT(A1:A2, B1:B2) -> "Hello"; Assuming the valueRange contains ["Hello", "World"], and percentRange contains [.9, .1]
+    '@Example: =RANDOM_SAMPLE_PERCENT(A1:A2, B1:B2) -> "World"; Assuming the valueRange contains ["Hello", "World"], and percentRange contains [.9, .1]; Notice how "World" shows up less since there is only a 10% chance it is chosen.
 
     Application.Volatile
 
@@ -1828,7 +2855,59 @@ As Variant
 End Function
 
 
-'@Module: This module contains a set of functions for manipulating and working with ranges of cells
+Public Function RANDBOOL() As Boolean
+
+    '@Description: This function generates a random Boolean (TRUE or FALSE) value
+    '@Author: Anthony Mancini
+    '@Version: 1.0.0
+    '@License: MIT
+    '@Returns: Returns either TRUE or FALSE based on the random value choosen
+    '@Example: =RANDBOOL() -> TRUE
+    '@Example: =RANDBOOL() -> FALSE
+    '@Example: =RANDBOOL() -> TRUE
+    '@Example: =RANDBOOL() -> TRUE
+    '@Example: =RANDBOOL() -> FALSE
+    '@Example: =RANDBOOL() -> FALSE
+
+    RANDBOOL = CBool(WorksheetFunction.RandBetween(0, 1))
+
+End Function
+
+
+Public Function RANDBETWEENS( _
+    ParamArray startOrEndNumberArray() As Variant) _
+As Variant
+
+    '@Description: This function is similar to RANDBETWEEN, except that it allows multiple ranges from which to pick a random number. One of the ranges from which to generate a random number between is chosen at an equal probably.
+    '@Author: Anthony Mancini
+    '@Version: 1.0.0
+    '@License: MIT
+    '@Returns: Returns either TRUE or FALSE based on the random value choosen
+    '@Note: This function always requires an even number of inputs. Essentially, when using multiple numbers, the 1st and 2nd will make up a range from which to pull a random number between, the 3rd and 4th will make a different range, and so on. If an even number is used, this function will return a User-Defined Error. See the ISERRORALL() function for how to handle these numbers.
+    '@Example: =RANDBETWEENS(1, 10, 5000, 5010) -> 6
+    '@Example: =RANDBETWEENS(1, 10, 5000, 5010) -> 5002
+    '@Example: =RANDBETWEENS(1, 10, 5000, 5010) -> 8
+    '@Example: =RANDBETWEENS(1, 10, 5000, 5010) -> 3
+    '@Example: =RANDBETWEENS(1, 10, 5000, 5010) -> 5010
+    '@Example: =RANDBETWEENS(1, 10, 5000, 5010) -> 2
+    '@Example: =RANDBETWEENS(5, 10, 15, 20, 25, 30, 35, 40) -> 32
+
+    Dim pickNumber As Byte
+
+    ' Checking for ParamArray length, as it needs to be even or it won't be
+    ' possible to generate and min and max number.
+    If (UBound(startOrEndNumberArray) - LBound(startOrEndNumberArray) + 1) Mod 2 = 1 Then
+        RANDBETWEENS = "#NotAnEvenNumberOfParameters!"
+    End If
+
+    pickNumber = WorksheetFunction.Ceiling_Math(WorksheetFunction.RandBetween(1, (UBound(startOrEndNumberArray) - LBound(startOrEndNumberArray) + 1)) / 2) * 2
+    
+    RANDBETWEENS = WorksheetFunction.RandBetween(startOrEndNumberArray(pickNumber - 2), startOrEndNumberArray(pickNumber - 1))
+
+End Function
+
+
+'@Module: This module contains a set of functions for manipulating and working with ranges of cells.
 
 
 
@@ -1841,11 +2920,11 @@ As Boolean
     '@Author: Anthony Mancini
     '@Version: 1.0.0
     '@License: MIT
-    '@Param: range1 is the range we want to check if the value is the first unique value in the larger range
-    '@Param: rangeArray is the group of cells we are checking to see if range1 is the first unique occurance in the range
+    '@Param: range1 is the range we want to check if the value is the first unique value in the rangeArray
+    '@Param: rangeArray is the group of cells we are checking to see if range1 is the first unique occurrence in the rangeArray
     '@Returns: Returns TRUE if the cell selected is the first unique value in the range array, and FALSE if it isn't
-    '@Example: =FIRST_UNIQUE(A1,$A$1:$A$10) -> TRUE, where A1 is the first unique occurance of the word "Hello" in the range array
-    '@Example: =FIRST_UNIQUE(A5,$A$1:$A$10) -> FALSE, where A5 is the second unique occurance of the word "Hello" in the range array
+    '@Example: =FIRST_UNIQUE(A1, $A$1:$A$10) -> TRUE, where A1 is the first unique occurrence of the word "Hello" in the range array
+    '@Example: =FIRST_UNIQUE(A5, $A$1:$A$10) -> FALSE, where A5 is the second unique occurrence of the word "Hello" in the range array
 
     Dim individualRange As Range
     
@@ -1861,6 +2940,46 @@ As Boolean
         End If
     Next
 
+End Function
+
+
+Public Function COUNT_UNIQUE( _
+    ParamArray rangeArray() As Variant) _
+As Integer
+    
+    '@Description: This function counts the number of unique occurances of values within a range or multiple ranges
+    '@Author: Anthony Mancini
+    '@Version: 1.0.0
+    '@License: MIT
+    '@Param: rangeArray is the group of cells we are counting the unique values of
+    '@Returns: Returns the number of unique values
+    '@Example: =COUNT_UNIQUE(A1:A5) -> 3; Where A1-A5 contains ["A", "A", "B", "A", "C"]
+    
+    Dim individualValue As Variant
+    Dim individualRange As Range
+    Dim uniqueDictionary As Object
+    Dim uniqueCount As Integer
+    
+    Set uniqueDictionary = CreateObject("Scripting.Dictionary")
+    
+    For Each individualValue In rangeArray
+        If TypeName(individualValue) = "Range" Then
+            For Each individualRange In individualValue
+                If Not uniqueDictionary.exists(individualRange.Value) Then
+                    uniqueDictionary.Add individualRange.Value, 0
+                    uniqueCount = uniqueCount + 1
+                End If
+            Next
+        Else
+            If Not uniqueDictionary.exists(individualValue) Then
+                uniqueDictionary.Add individualValue, 0
+                uniqueCount = uniqueCount + 1
+            End If
+        End If
+    Next
+    
+    COUNT_UNIQUE = uniqueCount
+    
 End Function
 
 
@@ -1926,7 +3045,7 @@ Function SORT_RANGE( _
     Optional ByVal descendingFlag As Boolean) _
 As Variant
 
-    '@Description: This function takes a single cell and an large range of cells and sorts the cells in ascending or descending order.
+    '@Description: This function takes a single cell and a large range of cells and sorts the cells in ascending or descending order.
     '@Author: Anthony Mancini
     '@Version: 1.0.0
     '@License: MIT
@@ -1934,8 +3053,8 @@ As Variant
     '@Param: rangeArray is the group of cells we are sorting
     '@Param: descendingFlag is a Boolean value that if set to TRUE will set the sort to Descending
     '@Returns: Returns the value of the cell sorted
-    '@Example: =SORT_RANGE(A1,$A$1:$A$3) -> 1, where A1="3", A2="1", A3="4", A4="2"
-    '@Example: =SORT_RANGE(A1,$A$1:$A$3, TRUE) -> 4, where A1="3", A2="1", A3="4", A4="2"
+    '@Example: =SORT_RANGE(A1, $A$1:$A$4) -> 1, where A1="3", A2="1", A3="4", A4="2"
+    '@Example: =SORT_RANGE(A1, $A$1:$A$4, TRUE) -> 4, where A1="3", A2="1", A3="4", A4="2"
 
     ' Sorting the values from rangeArray
     Dim variantArray() As Variant
@@ -1974,16 +3093,16 @@ Public Function REVERSE_RANGE( _
     ByVal rangeArray As Range) _
 As Variant
 
-    '@Description: This function takes a single cell and an large range of cells and reverses all values in the range.
+    '@Description: This function takes a single cell and a large range of cells and reverses all values in the range.
     '@Author: Anthony Mancini
     '@Version: 1.0.0
     '@License: MIT
-    '@Param: range1 is the range we want to be reversed in order of the larger range
+    '@Param: range1 is the range we want to be reversed in order of the rangeArray
     '@Param: rangeArray is the group of cells we are reversing the order of
     '@Returns: Returns the value of the cell in the reversed position
-    '@Example: =REVERSE_RANGE(A1,$A$1:$A$3) -> "C", where A1="A", A2="B", A3="C"
-    '@Example: =REVERSE_RANGE(A2,$A$1:$A$3) -> "B", where A1="A", A2="B", A3="C"
-    '@Example: =REVERSE_RANGE(A3,$A$1:$A$3) -> "A", where A1="A", A2="B", A3="C"
+    '@Example: =REVERSE_RANGE(A1, $A$1:$A$3) -> "C", where A1="A", A2="B", A3="C"
+    '@Example: =REVERSE_RANGE(A2, $A$1:$A$3) -> "B", where A1="A", A2="B", A3="C"
+    '@Example: =REVERSE_RANGE(A3, $A$1:$A$3) -> "A", where A1="A", A2="B", A3="C"
 
     Dim i As Integer
     
@@ -2002,15 +3121,15 @@ Public Function COLUMNIFY( _
     ByVal rowRangeArray As Range) _
 As Variant
 
-    '@Description: This function takes 2 ranges, a column range which will be filled in with data in the row range, allowing for easily convering a row of data into a column of data
+    '@Description: This function takes 2 ranges, a column range which will be filled in with data in the row range, allowing for easily converting a row of data into a column of data
     '@Author: Anthony Mancini
     '@Version: 1.0.0
     '@License: MIT
     '@Param: columnRangeArray is a range that will be populated with data from a rowRangeArray
     '@Param: rowRangeArray is a range that will be used to populate the columnRangeArray
     '@Returns: Returns the value at the same location in the rowRangeArray
-    '@Example: =COLUMNIFY(A1:A2,B1:C1) -> "B"; Where this function resides in cell A1 and where B1="B" and C1="C"
-    '@Example: =COLUMNIFY(A1:A2,B1:C1) -> "C"; Where this function resides in cell A2 and where B1="B" and C1="C"
+    '@Example: =COLUMNIFY(A1:A2, B1:C1) -> "B"; Where this function resides in cell A1 and where B1="B" and C1="C"
+    '@Example: =COLUMNIFY(A1:A2, B1:C1) -> "C"; Where this function resides in cell A2 and where B1="B" and C1="C"
 
     Dim i As Integer
     Dim individualRange As Range
@@ -2034,15 +3153,15 @@ Public Function ROWIFY( _
     ByVal columnRangeArray As Range) _
 As Variant
 
-    '@Description: This function takes 2 ranges, a row range which will be filled in with data in the column range, allowing for easily convering a column of data into a row of data
+    '@Description: This function takes 2 ranges, a row range which will be filled in with data in the column range, allowing for easily converting a column of data into a row of data
     '@Author: Anthony Mancini
     '@Version: 1.0.0
     '@License: MIT
     '@Param: rowRangeArray is a range that will be populated with data from a columnRangeArray
     '@Param: columnRangeArray is a range that will be used to populate the rowRangeArray
     '@Returns: Returns the value at the same location in the columnRangeArray
-    '@Example: =ROWIFY(B1:C1,A1:A2) -> "A1"; Where this function resides in cell B1 and where A1="A1" and A2="A2"
-    '@Example: =ROWIFY(B1:C1,A1:A2) -> "A2"; Where this function resides in cell C1 and where A1="A1" and A2="A2"
+    '@Example: =ROWIFY(B1:C1, A1:A2) -> "A1"; Where this function resides in cell B1 and where A1="A1" and A2="A2"
+    '@Example: =ROWIFY(B1:C1, A1:A2) -> "A2"; Where this function resides in cell C1 and where A1="A1" and A2="A2"
 
     Dim i As Integer
     Dim individualRange As Range
@@ -2251,8 +3370,8 @@ As Variant
     '@Param: rangeArray is the range that will be summed
     '@Param: numberSummed is the number of the top values that will be summed
     '@Returns: Returns the sum of the top numbers specified
-    '@Example: =SUMHIGH(A1:A4, 2) -> 7; Where A1=1, A2=2, A3=3, A4=4
-    '@Example: =SUMHIGH(A1:A4, 3) -> 9; Where A1=1, A2=2, A3=3, A4=4
+    '@Example: =SUMHIGH(A1:A4, 2) -> 7; Where A1=1, A2=2, A3=3, A4=4; 4 and 3 are summed to 7
+    '@Example: =SUMHIGH(A1:A4, 3) -> 9; Where A1=1, A2=2, A3=3, A4=4; 4, 3, and 2 are summed to 9
 
     Dim i As Integer
     Dim sumValue As Double
@@ -2279,8 +3398,8 @@ As Variant
     '@Param: rangeArray is the range that will be summed
     '@Param: numberSummed is the number of the bottom values that will be summed
     '@Returns: Returns the sum of the bottom numbers specified
-    '@Example: =SUMLOW(A1:A4, 2) -> 3; Where A1=1, A2=2, A3=3, A4=4
-    '@Example: =SUMLOW(A1:A4, 3) -> 6; Where A1=1, A2=2, A3=3, A4=4
+    '@Example: =SUMLOW(A1:A4, 2) -> 3; Where A1=1, A2=2, A3=3, A4=4; 1 and 2 are summed to 3
+    '@Example: =SUMLOW(A1:A4, 3) -> 6; Where A1=1, A2=2, A3=3, A4=4; 1, 2, and 3 are summed to 6
 
     Dim i As Integer
     Dim sumValue As Double
@@ -2307,8 +3426,8 @@ As Variant
     '@Param: rangeArray is the range that will be averaged
     '@Param: numberAveraged is the number of the top values that will be averaged
     '@Returns: Returns the average of the top numbers specified
-    '@Example: =AVERAGEHIGH(A1:A4, 2) -> 3.5; Where A1=1, A2=2, A3=3, A4=4
-    '@Example: =AVERAGEHIGH(A1:A4, 3) -> 3; Where A1=1, A2=2, A3=3, A4=4
+    '@Example: =AVERAGEHIGH(A1:A4, 2) -> 3.5; Where A1=1, A2=2, A3=3, A4=4; 4 and 3 are averaged to 3.5
+    '@Example: =AVERAGEHIGH(A1:A4, 3) -> 3; Where A1=1, A2=2, A3=3, A4=4; 4, 3, and 2 are averaged to 3
 
     Dim i As Integer
     Dim sumValue As Double
@@ -2335,8 +3454,8 @@ As Variant
     '@Param: rangeArray is the range that will be averaged
     '@Param: numberAveraged is the number of the bottom values that will be averaged
     '@Returns: Returns the average of the bottom numbers specified
-    '@Example: =AVERAGEHIGH(A1:A4, 2) -> 3.5; Where A1=1, A2=2, A3=3, A4=4
-    '@Example: =AVERAGEHIGH(A1:A4, 3) -> 3; Where A1=1, A2=2, A3=3, A4=4
+    '@Example: =AVERAGELOW(A1:A4, 2) -> 1.5; Where A1=1, A2=2, A3=3, A4=4; 1 and 2 are averaged as 1.5
+    '@Example: =AVERAGELOW(A1:A4, 3) -> 2; Where A1=1, A2=2, A3=3, A4=4; 1, 2, and 3 are averaged to 2
 
     Dim i As Integer
     Dim sumValue As Double
@@ -2391,6 +3510,123 @@ As Boolean
 
 End Function
 
+
+Public Function COUNT_UNIQUE_COLORS( _
+    ParamArray rangeArray() As Variant) _
+As Integer
+
+    '@Description: This function counts the number of unique background colors of the cells in a range or multiple ranges
+    '@Author: Anthony Mancini
+    '@Version: 1.0.0
+    '@License: MIT
+    '@Param: rangeArray is a range or multiple ranges whose colors will be counted
+    '@Returns: Returns the number of unique background colors of all the cells
+    '@Example: =COUNT_UNIQUE_COLORS(A1:A3) -> 3; Where all the cells have a unique background color
+    '@Example: =COUNT_UNIQUE_COLORS(A1:A3) -> 2; Where A1 and A2 have the same background color
+
+    Dim colorCount As Integer
+    Dim colorDictionary As Object
+    Dim individualRange As Variant
+    Dim individualCell As Range
+    
+    Set colorDictionary = CreateObject("Scripting.Dictionary")
+    
+    For Each individualRange In rangeArray
+        For Each individualCell In individualRange
+            If Not colorDictionary.exists(individualCell.Interior.Color) Then
+                colorDictionary.Add individualCell.Interior.Color, "0"
+                colorCount = colorCount + 1
+            End If
+        Next
+    Next
+    
+    COUNT_UNIQUE_COLORS = colorCount
+
+End Function
+
+
+Public Function ALTERNATE_COLUMNS( _
+    ByVal rangeGrid As Range, _
+    ByVal outputRange As Range) _
+As Variant
+
+    '@Description: This function takes a grid of cells, and converts the grid into a single columns where the values of the grid alternate between the columns in the grid.
+    '@Author: Anthony Mancini
+    '@Version: 1.0.0
+    '@License: MIT
+    '@Param: rangeGrid is a grid of cells
+    '@Param: outputRange is the column that will be populated with the data from the grid
+    '@Returns: Returns one of the values from the grid in alternating column order
+    '@Example: =ALTERNATE_COLUMNS($A$1:$B$2, $C$1:$C$4) -> "A1 Value"; Where this function is the 1st cell in the column
+    '@Example: =ALTERNATE_COLUMNS($A$1:$B$2, $C$1:$C$4) -> "B1 Value"; Where this function is the 2nd cell in the column
+    '@Example: =ALTERNATE_COLUMNS($A$1:$B$2, $C$1:$C$4) -> "A2 Value"; Where this function is the 3rd cell in the column
+    '@Example: =ALTERNATE_COLUMNS($A$1:$B$2, $C$1:$C$4) -> "B2 Value"; Where this function is the 4th cell in the column
+
+    Dim cellPosition As Integer
+    Dim individualRange As Range
+    Dim addressFoundFlag As Boolean
+    
+    For Each individualRange In outputRange
+        cellPosition = cellPosition + 1
+        If individualRange.Address = Application.Caller.Address Then
+            addressFoundFlag = True
+            Exit For
+        End If
+    Next
+    
+    If addressFoundFlag Then
+        ALTERNATE_COLUMNS = rangeGrid(cellPosition).Value
+    Else
+        ALTERNATE_COLUMNS = ""
+    End If
+
+End Function
+
+
+Public Function ALTERNATE_ROWS( _
+    ByVal rangeGrid As Range, _
+    ByVal outputRange As Range) _
+As Variant
+
+    '@Description: This function takes a grid of cells, and converts the grid into a single columns where the values of the grid alternate between the rows in the grid.
+    '@Author: Anthony Mancini
+    '@Version: 1.0.0
+    '@License: MIT
+    '@Param: rangeGrid is a grid of cells
+    '@Param: outputRange is the column that will be populated with the data from the grid
+    '@Returns: Returns one of the values from the grid in alternating row order
+    '@Example: =ALTERNATE_ROWS($A$1:$B$2, $C$1:$C$4) -> "A1 Value"; Where this function is the 1st cell in the column
+    '@Example: =ALTERNATE_ROWS($A$1:$B$2, $C$1:$C$4) -> "A2 Value"; Where this function is the 2nd cell in the column
+    '@Example: =ALTERNATE_ROWS($A$1:$B$2, $C$1:$C$4) -> "B1 Value"; Where this function is the 3rd cell in the column
+    '@Example: =ALTERNATE_ROWS($A$1:$B$2, $C$1:$C$4) -> "B2 Value"; Where this function is the 4th cell in the column
+
+    Dim cellPosition As Integer
+    Dim individualRange As Range
+    Dim addressFoundFlag As Boolean
+    
+    For Each individualRange In outputRange
+        If individualRange.Address = Application.Caller.Address Then
+            addressFoundFlag = True
+            Exit For
+        End If
+        cellPosition = cellPosition + 1
+    Next
+    
+    Dim rowNumber As Integer
+    Dim cellNumber As Integer
+    
+    rowNumber = cellPosition Mod rangeGrid.Rows().Count
+    cellNumber = WorksheetFunction.Floor_Math(cellPosition / rangeGrid.Rows().Count) + 1
+    
+    If addressFoundFlag Then
+        ALTERNATE_ROWS = rangeGrid(rowNumber * rangeGrid.Rows().Count + cellNumber).Value
+    Else
+        ALTERNATE_ROWS = ""
+    End If
+
+End Function
+
+
 '@Module: This module contains a set of functions for performing Regular Expressions, which are a type of string pattern matching. For more info on Regular Expression Pattern matching, please check "https://docs.microsoft.com/en-us/dotnet/standard/base-types/regular-expression-language-quick-reference"
 
 
@@ -2408,7 +3644,7 @@ As String
     '@Version: 1.0.0
     '@License: MIT
     '@Param: string1 is the string that the regex will be performed on
-    '@Param: stringPattern is a string of the regex pattern
+    '@Param: stringPattern is the regex pattern
     '@Param: globalFlag is a boolean value that if set TRUE will perform a global search
     '@Param: ignoreCaseFlag is a boolean value that if set TRUE will perform a case insensitive search
     '@Param: multilineFlag is a boolean value that if set TRUE will perform a mulitline search
@@ -2418,7 +3654,6 @@ As String
     Dim Regex As Object
     Set Regex = CreateObject("VBScript.RegExp")
     Dim searchResults As Object
-    Dim regexResult As Object
     
     With Regex
         .Global = globalFlag
@@ -2446,7 +3681,7 @@ As Boolean
     '@Version: 1.0.0
     '@License: MIT
     '@Param: string1 is the string that the regex will be performed on
-    '@Param: stringPattern is a string of the regex pattern
+    '@Param: stringPattern is the regex pattern
     '@Param: globalFlag is a boolean value that if set TRUE will perform a global search
     '@Param: ignoreCaseFlag is a boolean value that if set TRUE will perform a case insensitive search
     '@Param: multilineFlag is a boolean value that if set TRUE will perform a mulitline search
@@ -2455,8 +3690,6 @@ As Boolean
 
     Dim Regex As Object
     Set Regex = CreateObject("VBScript.RegExp")
-    Dim searchResults As Object
-    Dim regexResult As Object
     
     With Regex
         .Global = globalFlag
@@ -2483,18 +3716,16 @@ As String
     '@Version: 1.0.0
     '@License: MIT
     '@Param: string1 is the string that the regex will be performed on
-    '@Param: stringPattern is a string of the regex pattern
+    '@Param: stringPattern is the regex pattern
     '@Param: replacementString is a string that will be replaced if the pattern is found
     '@Param: globalFlag is a boolean value that if set TRUE will perform a global search
     '@Param: ignoreCaseFlag is a boolean value that if set TRUE will perform a case insensitive search
     '@Param: multilineFlag is a boolean value that if set TRUE will perform a mulitline search
-    '@Returns: Returns a new string with the replaced string value
+    '@Returns: Returns a new string with the replaced string values
     '@Example: =REGEX_REPLACE("Hello World","[W][a-z]{4}", "VBA") -> "Hello VBA"
 
     Dim Regex As Object
     Set Regex = CreateObject("VBScript.RegExp")
-    Dim searchResults As Object
-    Dim regexResult As Object
     
     With Regex
         .Global = globalFlag
@@ -2508,7 +3739,7 @@ As String
 End Function
 
 
-'@Module: This module contains a set of basic functions for manipulating strings
+'@Module: This module contains a set of basic functions for manipulating strings.
 
 
 
@@ -2541,8 +3772,8 @@ As String
     '@Param: string1 is the string that will be searched
     '@Param: searchString is the string that will be used to search within string1
     '@Returns: Returns a new string with all characters to the left of the first search string within string1
-    '@Example: =LEFT_FIND("Hello World","r") -> "Hello Wo"
-    '@Example: =LEFT_FIND("Hello World","R") -> "#VALUE!"; Since string1 does not contain "R" in it.
+    '@Example: =LEFT_FIND("Hello World", "r") -> "Hello Wo"
+    '@Example: =LEFT_FIND("Hello World", "R") -> "#VALUE!"; Since string1 does not contain "R" in it.
 
     LEFT_FIND = Left(string1, InStr(1, string1, searchString) - 1)
 
@@ -2561,8 +3792,8 @@ As String
     '@Param: string1 is the string that will be searched
     '@Param: searchString is the string that will be used to search within string1
     '@Returns: Returns a new string with all characters to the right of the last search string within string1
-    '@Example: =RIGHT_FIND("Hello World","o") -> "rld"
-    '@Example: =RIGHT_FIND("Hello World","O") -> "#VALUE!"; Since string1 does not contain "O" in it.
+    '@Example: =RIGHT_FIND("Hello World", "o") -> "rld"
+    '@Example: =RIGHT_FIND("Hello World", "O") -> "#VALUE!"; Since string1 does not contain "O" in it.
 
     RIGHT_FIND = Right(string1, Len(string1) - InStrRev(string1, searchString))
 
@@ -2581,8 +3812,8 @@ As String
     '@Param: string1 is the string that will be searched
     '@Param: searchString is the string that will be used to search within string1
     '@Returns: Returns a new string with all characters to the left of the first search string within string1
-    '@Example: =LEFT_SEARCH("Hello World","r") -> "Hello Wo"
-    '@Example: =LEFT_SEARCH("Hello World","R") -> "Hello Wo"
+    '@Example: =LEFT_SEARCH("Hello World", "r") -> "Hello Wo"
+    '@Example: =LEFT_SEARCH("Hello World", "R") -> "Hello Wo"
 
     LEFT_SEARCH = Left(string1, InStr(1, string1, searchString, vbTextCompare) - 1)
 
@@ -2601,8 +3832,8 @@ As String
     '@Param: string1 is the string that will be searched
     '@Param: searchString is the string that will be used to search within string1
     '@Returns: Returns a new string with all characters to the right of the last search string within string1
-    '@Example: =RIGHT_SEARCH("Hello World","o") -> "rld"
-    '@Example: =RIGHT_SEARCH("Hello World","O") -> "rld"
+    '@Example: =RIGHT_SEARCH("Hello World", "o") -> "rld"
+    '@Example: =RIGHT_SEARCH("Hello World", "O") -> "rld"
 
     RIGHT_SEARCH = Right(string1, Len(string1) - InStrRev(string1, searchString, Compare:=vbTextCompare))
 
@@ -2623,9 +3854,50 @@ As String
     '@Param: startCharacterNumber is the character number of the start of the substring, with 1 being the first character in the string
     '@Param: endCharacterNumber is the character number of the end of the substring
     '@Returns: Returns a substring between the two numbers.
-    '@Example: =SUBSTR("Hello World",2,6) -> "ello"
+    '@Example: =SUBSTR("Hello World", 2, 6) -> "ello"
 
     SUBSTR = Mid(string1, startCharacterNumber, endCharacterNumber - startCharacterNumber)
+
+End Function
+
+
+Public Function SUBSTR_FIND( _
+    ByVal string1 As String, _
+    ByVal leftSearchString As String, _
+    ByVal rightSearchString As String, _
+    Optional ByVal noninclusiveFlag As Boolean) _
+As String
+
+    '@Description: This function takes a string and a left string and right string, and returns a substring between those two strings. The left string will find the first matching string starting from the left, and the right string will find the first matching string starting from the right. Finally, and optional final parameter can be set to TRUE to make the substring noninclusive of the two searched strings. SUBSTR_FIND is case-sensitive. For case-insensitive version, see SUBSTR_SEARCH
+    '@Author: Anthony Mancini
+    '@Version: 1.0.0
+    '@License: MIT
+    '@Param: string1 is the string that we will get a substring from
+    '@Param: leftSearchString is the string that will be searched from the left
+    '@Param: rightSearchString is the string that will be searched from the right
+    '@Param: noninclusiveFlag is an optional parameter that if set to TRUE will result in the substring not including the left and right searched characters
+    '@Returns: Returns a substring between the two strings.
+    '@Example: =SUBSTR_FIND("Hello World", "e", "o") -> "ello Wo"
+    '@Example: =SUBSTR_FIND("Hello World", "e", "o", TRUE) -> "llo W"
+    '@Example: =SUBSTR_FIND("One Two Three", "ne ", " Thr") -> "ne Two Thr"
+    '@Example: =SUBSTR_FIND("One Two Three", "NE ", " THR") -> "#VALUE!"; Since SUBSTR_FIND() is case-sensitive
+    '@Example: =SUBSTR_FIND("One Two Three", "ne ", " Thr", TRUE) -> "Two"
+    '@Example: =SUBSTR_FIND("Country Code: +51; Area Code: 315; Phone Number: 762-5929;", "Area Code: ", "; Phone", TRUE) -> 315
+    '@Example: =SUBSTR_FIND("Country Code: +313; Area Code: 423; Phone Number: 284-2468;", "Area Code: ", "; Phone", TRUE) -> 423
+    '@Example: =SUBSTR_FIND("Country Code: +171; Area Code: 629; Phone Number: 731-5456;", "Area Code: ", "; Phone", TRUE) -> 629
+
+    Dim leftCharacterNumber As Integer
+    Dim rightCharacterNumber As Integer
+    
+    leftCharacterNumber = InStr(1, string1, leftSearchString)
+    rightCharacterNumber = InStrRev(string1, rightSearchString)
+    
+    If noninclusiveFlag = True Then
+        leftCharacterNumber = leftCharacterNumber + Len(leftSearchString)
+        rightCharacterNumber = rightCharacterNumber - Len(rightSearchString)
+    End If
+    
+    SUBSTR_FIND = Mid(string1, leftCharacterNumber, rightCharacterNumber - leftCharacterNumber + Len(rightSearchString))
 
 End Function
 
@@ -2637,50 +3909,54 @@ Public Function SUBSTR_SEARCH( _
     Optional ByVal noninclusiveFlag As Boolean) _
 As String
 
-    '@Description: This function takes a string and a left character and right character, and returns a substring between those two characters. The left character will find the first matching character starting from the left, and the right character will find the first matching character starting from the right. Finally, and optional final parameter can be set to TRUE to make the substring noninclusive of the two searched characters.
+    '@Description: This function takes a string and a left string and right string, and returns a substring between those two strings. The left string will find the first matching string starting from the left, and the right string will find the first matching string starting from the right. Finally, and optional final parameter can be set to TRUE to make the substring noninclusive of the two searched strings. SUBSTR_SEARCH is case-insensitive. For case-sensitive version, see SUBSTR_FIND
     '@Author: Anthony Mancini
-    '@Version: 1.0.0
+    '@Version: 1.1.0
     '@License: MIT
-    '@Todo: Currently this function only supports single characters, but in the future include the ability to use substrings of longer length than 1
     '@Param: string1 is the string that we will get a substring from
     '@Param: leftSearchString is the string that will be searched from the left
     '@Param: rightSearchString is the string that will be searched from the right
-    '@Param: noninclusiveFlag is an optional paramater that if set to TRUE will result in the substring not including the left and right searched chracters
-    '@Returns: Returns a substring between the two chracters.
+    '@Param: noninclusiveFlag is an optional parameter that if set to TRUE will result in the substring not including the left and right searched characters
+    '@Returns: Returns a substring between the two strings.
     '@Example: =SUBSTR_SEARCH("Hello World", "e", "o") -> "ello Wo"
     '@Example: =SUBSTR_SEARCH("Hello World", "e", "o", TRUE) -> "llo W"
-    '@Example: =SUBSTR_SEARCH("Phone Number: 123 456 789 - Name: John Doe", ":", "-", TRUE) -> " 123 456 789 "
+    '@Example: =SUBSTR_SEARCH("One Two Three", "ne ", " Thr") -> "ne Two Thr"
+    '@Example: =SUBSTR_SEARCH("One Two Three", "NE ", " THR") -> "ne Two Thr"; No error, since SUBSTR_SEARCH is case-insensitive
+    '@Example: =SUBSTR_SEARCH("One Two Three", "ne ", " Thr", TRUE) -> "Two"
+    '@Example: =SUBSTR_SEARCH("Country Code: +51; Area Code: 315; Phone Number: 762-5929;", "Area Code: ", "; Phone", TRUE) -> 315
+    '@Example: =SUBSTR_SEARCH("Country Code: +313; Area Code: 423; Phone Number: 284-2468;", "Area Code: ", "; Phone", TRUE) -> 423
+    '@Example: =SUBSTR_SEARCH("Country Code: +171; Area Code: 629; Phone Number: 731-5456;", "Area Code: ", "; Phone", TRUE) -> 629
 
     Dim leftCharacterNumber As Integer
     Dim rightCharacterNumber As Integer
     
-    leftCharacterNumber = InStr(1, string1, leftSearchString)
-    rightCharacterNumber = InStrRev(string1, rightSearchString)
+    leftCharacterNumber = InStr(1, string1, leftSearchString, vbTextCompare)
+    rightCharacterNumber = InStrRev(string1, rightSearchString, Compare:=vbTextCompare)
     
     If noninclusiveFlag = True Then
-        leftCharacterNumber = leftCharacterNumber + 1
-        rightCharacterNumber = rightCharacterNumber - 1
+        leftCharacterNumber = leftCharacterNumber + Len(leftSearchString)
+        rightCharacterNumber = rightCharacterNumber - Len(rightSearchString)
     End If
     
-    SUBSTR_SEARCH = Mid(string1, leftCharacterNumber, rightCharacterNumber - leftCharacterNumber + 1)
+    SUBSTR_SEARCH = Mid(string1, leftCharacterNumber, rightCharacterNumber - leftCharacterNumber + Len(rightSearchString))
 
 End Function
-    
+
     
 Public Function REPEAT( _
     ByVal string1 As String, _
     ByVal numberOfRepeats As Integer) _
 As String
 
-    '@Description: This function takes a string and a left character and right character, and returns a substring between those two characters. The left character will find the first matching character starting from the left, and the right character will find the first matching character starting from the right. Finally, and optional final parameter can be set to TRUE to make the substring noninclusive of the two searched characters.
+    '@Description: This function repeats string1 based on the number of repeats specified in the second argument
     '@Author: Anthony Mancini
     '@Version: 1.0.0
     '@License: MIT
-    '@Todo: Currently this function only supports single characters, but in the future include the ability to use substrings of longer length than 1
     '@Param: string1 is the string that will be repeated
     '@Param: numberOfRepeats is the number of times string1 will be repeated
     '@Returns: Returns a string repeated multiple times based on the numberOfRepeats
-    '@Example: =REPEAT("=",10) -> "=========="
+    '@Example: =REPEAT("Hello", 2) -> HelloHello"
+    '@Example: =REPEAT("=", 10) -> "=========="
 
     Dim i As Integer
     Dim combinedString As String
@@ -2699,7 +3975,7 @@ Public Function FORMATTER( _
     ParamArray textArray() As Variant) _
 As String
 
-    '@Description: This function takes a formatter string and then an array of ranges or strings, and replaces the format placeholders with the values in the range or strings. The format needed is "{1} - {2}" where the "{1}" and "{2}" will be replaced with the values given in the text array.
+    '@Description: This function takes a formatter string and then an array of ranges or strings, and replaces the format placeholders with the values in the range or strings. The format syntax is "{1} - {2}" where the "{1}" and "{2}" will be replaced with the values given in the text array.
     '@Author: Anthony Mancini
     '@Version: 1.0.0
     '@License: MIT
@@ -2740,7 +4016,7 @@ End Function
 Public Function ZFILL( _
     ByVal string1 As String, _
     ByVal fillLength As Byte, _
-    Optional ByVal fillCharacter As String, _
+    Optional ByVal fillCharacter As String = "0", _
     Optional ByVal rightToLeftFlag As Boolean) _
 As String
 
@@ -2758,10 +4034,6 @@ As String
     '@Example: =ZFILL(12345678, 5) -> "12345678"
     '@Example: =ZFILL(123, 5, "X") -> "XX123"
     '@Example: =ZFILL(123, 5, "X", TRUE) -> "123XX"
-
-    If fillCharacter = "" Then
-        fillCharacter = "0"
-    End If
     
     While Len(string1) < fillLength
         If rightToLeftFlag = False Then
@@ -2776,51 +4048,10 @@ As String
 End Function
 
 
-Public Function TEXT_JOIN( _
-    ByVal rangeArray As Range, _
-    Optional ByVal delimiterCharacter As String, _
-    Optional ByVal ignoreEmptyCellsFlag As Boolean) _
-As String
-
-    '@Description: This function takes a range of cells and combines all the text together, optionally allowing a character delimiter between all the combined strings, and optionally allowing blank cells to be ignored when combining the text. Finally note that this function is very similar to the TEXTJOIN function available in Excel 2019
-    '@Author: Anthony Mancini
-    '@Version: 1.0.0
-    '@License: MIT
-    '@Param: rangeArray is the range with all the strings we want to combine
-    '@Param: delimiterCharacter is an optional character that will be used as the delimiter between the combined text. By default no delimiter character will be used.
-    '@Param: ignoreEmptyCellsFlag if set to TRUE will skip combining empty cells into the combined string, and is useful when specifying a delimiter so that the delimiter does not repeat for empty cells.
-    '@Returns: Returns a new combined string containing the strings in the range delimited by the delimiter character.
-    '@Example: Where A1:A3 contains ["1", "2", "3"] =TEXT_JOIN(A1:A3) -> "123"
-    '@Example: Where A1:A3 contains ["1", "2", "3"] =TEXT_JOIN(A1:A3, "--") -> "1--2--3"
-    '@Example: Where A1:A3 contains ["1", "", "3"] =TEXT_JOIN(A1:A3, "--") -> "1----3"
-    '@Example: Where A1:A3 contains ["1", "", "3"] =TEXT_JOIN(A1:A3, "-", TRUE) -> "1--3"
-
-    Dim individualRange As Range
-    Dim combinedString As String
-    
-    For Each individualRange In rangeArray
-        If ignoreEmptyCellsFlag Then
-            If Not IsEmpty(individualRange.Value) Then
-                combinedString = combinedString & individualRange.Value & delimiterCharacter
-            End If
-        Else
-            combinedString = combinedString & individualRange.Value & delimiterCharacter
-        End If
-    Next
-    
-    If delimiterCharacter <> "" Then
-        combinedString = Left(combinedString, InStrRev(combinedString, delimiterCharacter) - 1)
-    End If
-    
-    TEXT_JOIN = combinedString
-
-End Function
-
-
 Public Function SPLIT_TEXT( _
     ByVal string1 As String, _
     ByVal substringNumber As Integer, _
-    Optional ByVal delimiterString As String) _
+    Optional ByVal delimiterString As String = " ") _
 As String
     
     '@Description: This function takes a string and a number, splits the string by the space characters, and returns the substring in the position of the number specified in the second argument.
@@ -2836,18 +4067,14 @@ As String
     '@Example: =SPLIT_TEXT("One Two Three", 2) -> "Two"
     '@Example: =SPLIT_TEXT("One-Two-Three", 2, "-") -> "Two"
     
-    If delimiterString = "" Then
-        SPLIT_TEXT = SPLIT(string1, " ")(substringNumber - 1)
-    Else
-        SPLIT_TEXT = SPLIT(string1, delimiterString)(substringNumber - 1)
-    End If
+    SPLIT_TEXT = SPLIT(string1, delimiterString)(substringNumber - 1)
 
 End Function
 
 
 Public Function COUNT_WORDS( _
     ByVal string1 As String, _
-    Optional ByVal delimiterString As String) _
+    Optional ByVal delimiterString As String = " ") _
 As Integer
 
     '@Description: This function takes a string and returns the number of words in the string
@@ -2857,18 +4084,14 @@ As Integer
     '@Note: If the number given is higher than the number of words, its possible that the string contains excess whitespace. Try using the =TRIM() function first to remove the excess whitespace
     '@Param: string1 is the string whose number of words will be counted
     '@Param: delimiterString is an optional parameter that can be used to specify a different delimiter
-    '@Returns: Returns a substring of the split text in the location specified
+    '@Returns: Returns the number of words in the string
     '@Example: =COUNT_WORDS("Hello World") -> 2
     '@Example: =COUNT_WORDS("One Two Three") -> 3
     '@Example: =COUNT_WORDS("One-Two-Three", "-") -> 3
 
     Dim stringArray() As String
 
-    If delimiterString = "" Then
-        stringArray = SPLIT(string1, " ")
-    Else
-        stringArray = SPLIT(string1, delimiterString)
-    End If
+    stringArray = SPLIT(string1, delimiterString)
     
     COUNT_WORDS = UBound(stringArray) - LBound(stringArray) + 1
 
@@ -2926,7 +4149,7 @@ Public Function REMOVE_CHARACTERS( _
     ParamArray removedCharacters() As Variant) _
 As String
 
-    '@Description: This function takes a string and either another string or mutliple strings and removes all characters from the first string that are in the second string.
+    '@Description: This function takes a string and either another string or multiple strings and removes all characters from the first string that are in the second string.
     '@Author: Anthony Mancini
     '@Version: 1.0.0
     '@License: MIT
@@ -3061,7 +4284,581 @@ As String
 End Function
 
 
-'@Module: This module contains a set of functions for performing fuzzy string matches. It can be useful when you have 2 columns containing text that is close but not 100% the same. However, since the functions in this module only perform fuzzy matches, there is no guarentee that there will be 100% accuracy in the matches. However, for small groups of string where each string is very different than the other (such as a small group of fairly disimilar names), these functions can be highly accurate. Finally, some of the functions in this Module will take a long time to calculate for large numbers of cells, as the number of calculations for some functions will grow exponentially, but for small sets of data (such as 100 strings to compare), these functions perform fairly quickly.
+Public Function REVERSE_TEXT( _
+    ByVal string1 As String) _
+As String
+
+    '@Description: This function takes a string and reverses all the characters in it so that the returned string is backwards
+    '@Author: Anthony Mancini
+    '@Version: 1.0.0
+    '@License: MIT
+    '@Param: string1 is the string that will be reversed
+    '@Returns: Returns the origional string in reverse
+    '@Example: =REVERSE_TEXT("Hello World") -> "dlroW olleH"
+
+    Dim i As Integer
+    Dim reversedString As String
+    
+    For i = 1 To Len(string1)
+        reversedString = reversedString & Mid(string1, Len(string1) - i + 1, 1)
+    Next
+    
+    REVERSE_TEXT = reversedString
+
+End Function
+
+
+Public Function REVERSE_WORDS( _
+    ByVal string1 As String, _
+    Optional ByVal delimiterCharacter As String = " ") _
+As String
+
+    '@Description: This function takes a string and reverses all the words in it so that the returned string's words are backwards. By default, this function uses the space character as a delimiter, but you can optionally specify a different delimiter.
+    '@Author: Anthony Mancini
+    '@Version: 1.0.0
+    '@License: MIT
+    '@Param: string1 is the string whose words will be reversed
+    '@Param: delimiterCharacter is the delimiter that will be used, with the default being " "
+    '@Returns: Returns the origional string with it's words reversed
+    '@Example: =REVERSE_WORDS("Hello World") -> "World Hello"
+    '@Example: =REVERSE_WORDS("One Two Three") -> "Three Two One"
+    '@Example: =REVERSE_WORDS("One-Two-Three", "-") -> "Three-Two-One"
+
+    Dim i As Integer
+    Dim stringArray() As String
+    Dim stringArrayLength As Integer
+    Dim reversedStringArray() As String
+    
+    stringArray = SPLIT(string1, delimiterCharacter)
+    stringArrayLength = (UBound(stringArray) - LBound(stringArray))
+    
+    ReDim reversedStringArray(stringArrayLength)
+    
+    For i = 0 To stringArrayLength
+        reversedStringArray(i) = stringArray(stringArrayLength - i)
+    Next
+    
+    REVERSE_WORDS = Join(reversedStringArray, delimiterCharacter)
+
+End Function
+
+
+Public Function INDENT( _
+    ByVal string1 As String, _
+    Optional ByVal indentAmount As Byte = 4) _
+As String
+
+    '@Description: This function takes a string and indents all of its lines by a specified number of space characters (or 4 space characters if left blank)
+    '@Author: Anthony Mancini
+    '@Version: 1.0.0
+    '@License: MIT
+    '@Param: string1 is the string that will be indented
+    '@Param: indentAmount is the amount of " " characters that will be indented to the left of string1
+    '@Returns: Returns the origional string indented by a specified number of space characters
+    '@Example: =INDENT("Hello") -> "    Hello"
+    '@Example: =INDENT("Hello", 4) -> "    Hello"
+    '@Example: =INDENT("Hello", 3) -> "   Hello"
+    '@Example: =INDENT("Hello", 2) -> "  Hello"
+    '@Example: =INDENT("Hello", 1) -> " Hello"
+
+    Dim i As Integer
+    Dim stringArray() As String
+
+    stringArray = SPLIT(string1, Chr(10))
+    
+    string1 = ""
+    For i = 1 To indentAmount
+        string1 = string1 & " "
+    Next
+    
+    For i = 0 To (UBound(stringArray) - LBound(stringArray))
+        stringArray(i) = string1 & stringArray(i)
+    Next
+
+    INDENT = Join(stringArray, Chr(10))
+
+End Function
+
+
+Public Function DEDENT( _
+    ByVal string1 As String) _
+As String
+
+    '@Description: This function takes a string and dedents all of its lines so that there are no space characters to the left or right of each line
+    '@Author: Anthony Mancini
+    '@Version: 1.0.0
+    '@License: MIT
+    '@Param: string1 is the string that will be dedented
+    '@Returns: Returns the origional string dedented on each line
+    '@Note: Unlike the Excel built-in TRIM() function, this function will dedent every single line, so for strings that span multiple lines in a cell, this will dedent all lines.
+    '@Example: =DEDENT("    Hello") -> "Hello"
+
+    Dim i As Integer
+    Dim stringArray() As String
+
+    stringArray = SPLIT(string1, Chr(10))
+    
+    For i = 0 To (UBound(stringArray) - LBound(stringArray))
+        stringArray(i) = Trim(stringArray(i))
+    Next
+
+    DEDENT = Join(stringArray, Chr(10))
+
+End Function
+
+
+Public Function SHORTEN( _
+    ByVal string1 As String, _
+    Optional ByVal shortenWidth As Integer = 80, _
+    Optional ByVal placeholderText As String = "[...]", _
+    Optional ByVal delimiterCharacter As String = " ") _
+As String
+
+    '@Description: This function takes a string and shortens it with placeholder text so that it is no longer in length than the specified width.
+    '@Author: Anthony Mancini
+    '@Version: 1.0.0
+    '@License: MIT
+    '@Param: string1 is the string that will be shortened
+    '@Param: shortenWidth is the max width of the string. By default this is set to 80
+    '@Param: placeholderText is the text that will be placed at the end of the string if it is longer than the shortenWidth. By default this placeholder string is "[...]
+    '@Param: delimiterCharacter is the character that will be used as the word delimiter. By default this is the space character " "
+    '@Returns: Returns a shortened string with placeholder text if it is longer than the shorten width
+    '@Example: =SHORTEN("Hello World One Two Three", 20) -> "Hello World [...]"; Only the first two words and the placeholder will result in a string that is less than or equal to 20 in length
+    '@Example: =SHORTEN("Hello World One Two Three", 15) -> "Hello [...]"; Only the first word and the placeholder will result in a string that is less than or equal to 15 in length
+    '@Example: =SHORTEN("Hello World One Two Three") -> "Hello World One Two Three"; Since this string is shorter than the default 80 shorten width value, no placeholder will be used and the string wont be shortened
+    '@Example: =SHORTEN("Hello World One Two Three", 15, "-->") -> "Hello World -->"; A new placeholder is used
+    '@Example: =SHORTEN("Hello_World_One_Two_Three", 15, "-->", "_") -> "Hello_World_-->"; A new placeholder andd delimiter is used
+
+    Dim shortenedString As String
+    Dim individualString As Variant
+    Dim stringArray() As String
+    
+    ' In cases where the origional string is less than the threshold needed to
+    ' shorten the string, simply return the origional string
+    If Len(string1) <= (shortenWidth - Len(placeholderText) - Len(delimiterCharacter)) Then
+        SHORTEN = string1
+        Exit Function
+    End If
+    
+    stringArray = SPLIT(string1, delimiterCharacter)
+
+    For Each individualString In stringArray
+        If Len(shortenedString & individualString) > (shortenWidth - Len(placeholderText) - Len(delimiterCharacter)) Then
+            shortenedString = shortenedString & placeholderText
+            Exit For
+        Else
+            shortenedString = shortenedString & individualString & delimiterCharacter
+        End If
+    Next
+
+    SHORTEN = shortenedString
+
+End Function
+
+
+Public Function INSPLIT( _
+    ByVal string1 As String, _
+    ByVal splitString As String, _
+    Optional ByVal delimiterCharacter As String = " ") _
+As Boolean
+
+    '@Description: This function takes a search string and checks if it exists within a larger string that is split by a delimiter character.
+    '@Author: Anthony Mancini
+    '@Version: 1.0.0
+    '@License: MIT
+    '@Param: string1 is the string that will be checked if it exists within the splitString after the split
+    '@Param: splitString is the string that will be split and of which string1 will be searched in
+    '@Param: delimiterCharacter is the character that will be used as the delimiter for the split. By default this is the space character " "
+    '@Returns: Returns TRUE if string1 is found in splitString after the split occurs
+    '@Example: =INSPLIT("Hello", "Hello World One Two Three") -> TRUE; Since "Hello" is found within the searchString after being split
+    '@Example: =INSPLIT("NotInString", "Hello World One Two Three") -> FALSE; Since "NotInString" is not found within the searchString after being split
+    '@Example: =INSPLIT("Hello", "Hello-World-One-Two-Three", "-") -> TRUE; Since "Hello" is found and since the delimiter is set to "-"
+
+    Dim individualString As Variant
+    
+    For Each individualString In SPLIT(splitString, delimiterCharacter)
+        If string1 = individualString Then
+            INSPLIT = True
+            Exit Function
+        End If
+    Next
+    
+    INSPLIT = False
+
+End Function
+
+
+Public Function ELITE_CASE( _
+    ByVal string1 As String) _
+As String
+
+    '@Description: This function takes a string and returns the string with characters replaced by similar in appearance numbers
+    '@Author: Anthony Mancini
+    '@Version: 1.0.0
+    '@License: MIT
+    '@Param: string1 is the string that will have characters replaced
+    '@Returns: Returns the string with characters replaced with similar in appearance numbers
+    '@Example: =ELITE_CASE("Hello World") -> "H3110 W0r1d"
+
+    string1 = Replace(string1, "o", "0", Compare:=vbTextCompare)
+    string1 = Replace(string1, "l", "1", Compare:=vbTextCompare)
+    string1 = Replace(string1, "z", "2", Compare:=vbTextCompare)
+    string1 = Replace(string1, "e", "3", Compare:=vbTextCompare)
+    string1 = Replace(string1, "a", "4", Compare:=vbTextCompare)
+    string1 = Replace(string1, "s", "5", Compare:=vbTextCompare)
+    string1 = Replace(string1, "t", "7", Compare:=vbTextCompare)
+
+    ELITE_CASE = string1
+
+End Function
+
+
+Public Function SCRAMBLE_CASE( _
+    ByVal string1 As String) _
+As String
+
+    '@Description: This function takes a string scrambles the case on each character in the string
+    '@Author: Anthony Mancini
+    '@Version: 1.0.0
+    '@License: MIT
+    '@Param: string1 is the string whose character's cases will be scrambled
+    '@Returns: Returns the origional string with cases scrambled
+    '@Example: =SCRAMBLE_CASE("Hello World") -> "helLo WORlD"
+    '@Example: =SCRAMBLE_CASE("Hello World") -> "HElLo WorLD"
+    '@Example: =SCRAMBLE_CASE("Hello World") -> "hELlo WOrLd"
+
+    Dim i As Integer
+
+    For i = 1 To Len(string1)
+        If WorksheetFunction.RandBetween(0, 1) = 1 Then
+            Mid(string1, i, 1) = UCase(Mid(string1, i, 1))
+        Else
+            Mid(string1, i, 1) = LCase(Mid(string1, i, 1))
+        End If
+    Next
+    
+    SCRAMBLE_CASE = string1
+
+End Function
+
+
+Public Function LEFT_SPLIT( _
+    ByVal string1 As String, _
+    ByVal numberOfSplit As Integer, _
+    Optional ByVal delimiterCharacter As String = " ") _
+As String
+
+    '@Description: This function takes a string, splits it based on a delimiter, and returns all characters to the left of the specified position of the split.
+    '@Author: Anthony Mancini
+    '@Version: 1.0.0
+    '@License: MIT
+    '@Param: string1 is the string that will be split to get a substring
+    '@Param: numberOfSplit is the number of the location within the split that we will get all characters to the left of
+    '@Param: delimiterCharacter is the delimiter that will be used for the split. By default, the delimiter will be the space character " "
+    '@Returns: Returns all characters to the left of the number of the split
+    '@Example: =LEFT_SPLIT("Hello World One Two Three", 1) -> "Hello"
+    '@Example: =LEFT_SPLIT("Hello World One Two Three", 2) -> "Hello World"
+    '@Example: =LEFT_SPLIT("Hello World One Two Three", 3) -> "Hello World One"
+    '@Example: =LEFT_SPLIT("Hello World One Two Three", 10) -> "Hello World One Two Three"
+    '@Example: =LEFT_SPLIT("Hello-World-One-Two-Three", 2, "-") -> "Hello-World"
+
+    Dim i As Integer
+    Dim newString As String
+    Dim stringArray() As String
+    Dim stringArrayLength As Integer
+    
+    numberOfSplit = numberOfSplit - 1
+    stringArray = SPLIT(string1, delimiterCharacter)
+    stringArrayLength = (UBound(stringArray) - LBound(stringArray) + 1)
+    
+    ' Checking if the number of split is greater than the length of the split
+    ' array, and if so returns the origional string
+    If numberOfSplit >= stringArrayLength Then
+        LEFT_SPLIT = string1
+        Exit Function
+    End If
+    
+    For i = 0 To numberOfSplit
+        If i = numberOfSplit Then
+            newString = newString & stringArray(i)
+        Else
+            newString = newString & stringArray(i) & delimiterCharacter
+        End If
+    Next
+    
+    LEFT_SPLIT = newString
+
+End Function
+
+
+Public Function RIGHT_SPLIT( _
+    ByVal string1 As String, _
+    ByVal numberOfSplit As Integer, _
+    Optional ByVal delimiterCharacter As String = " ") _
+As String
+
+    '@Description: This function takes a string, splits it based on a delimiter, and returns all characters to the right of the specified position of the split.
+    '@Author: Anthony Mancini
+    '@Version: 1.0.0
+    '@License: MIT
+    '@Param: string1 is the string that will be split to get a substring
+    '@Param: numberOfSplit is the number of the location within the split that we will get all characters to the right of
+    '@Param: delimiterCharacter is the delimiter that will be used for the split. By default, the delimiter will be the space character " "
+    '@Returns: Returns all characters to the right of the number of the split
+    '@Example: =RIGHT_SPLIT("Hello World One Two Three", 1) -> "Three"
+    '@Example: =RIGHT_SPLIT("Hello World One Two Three", 2) -> "Two Three"
+    '@Example: =RIGHT_SPLIT("Hello World One Two Three", 3) -> "One Two Three"
+    '@Example: =RIGHT_SPLIT("Hello World One Two Three", 10) -> "Hello World One Two Three"
+    '@Example: =RIGHT_SPLIT("Hello-World-One-Two-Three", 2, "-") -> "Two-Three"
+
+    Dim i As Integer
+    Dim newString As String
+    Dim stringArray() As String
+    Dim stringArrayLength As Integer
+    
+    numberOfSplit = numberOfSplit - 1
+    stringArray = SPLIT(string1, delimiterCharacter)
+    stringArrayLength = (UBound(stringArray) - LBound(stringArray) + 1)
+    
+    ' Checking if the number of split is greater than the length of the split
+    ' array, and if so returns the origional string
+    If numberOfSplit >= stringArrayLength Then
+        RIGHT_SPLIT = string1
+        Exit Function
+    End If
+    
+    For i = 0 To numberOfSplit
+        If i = numberOfSplit Then
+            newString = newString & stringArray(stringArrayLength - (numberOfSplit - i) - 1)
+        Else
+            newString = newString & stringArray(stringArrayLength - (numberOfSplit - i) - 1) & delimiterCharacter
+        End If
+    Next
+    
+    RIGHT_SPLIT = newString
+
+End Function
+
+
+Public Function SUBSTITUTE_ALL( _
+    ByVal string1 As String, _
+    ByVal oldTextRange As Range, _
+    ByVal newTextRange As Range) _
+As String
+
+    '@Description: This function takes a string, and old text range, and a new text range, and replaces all the strings in the old text range with the ones in the new text range.
+    '@Author: Anthony Mancini
+    '@Version: 1.0.0
+    '@License: MIT
+    '@Param: string1 is the string that will have substrings replaced
+    '@Param: oldTextRange is a range containing the text that will be replaced by the text in the newTextRange
+    '@Param: newTextRange is the replacement range
+    '@Returns: Returns the origional string with all the replacements from the two ranges
+    '@Example: =SUBSTITUTE_ALL("Hello World", A1:A2, B1:B2) -> "One Two"; Where A1:A2=["Hello", "World"] and B1:B2=["One", "Two"]
+
+    ' Throwing an error if the ranges are not the same length and shape
+    If oldTextRange.Count <> newTextRange.Count Then
+        SUBSTITUTE_ALL = "#OldAndNewRangeNotSameLength!"
+        Exit Function
+    End If
+    
+    If oldTextRange.Columns.Count <> newTextRange.Columns.Count Then
+        SUBSTITUTE_ALL = "#OldAndNewRangeNotSameLength!"
+        Exit Function
+    End If
+    
+    If oldTextRange.Rows.Count <> newTextRange.Rows.Count Then
+        SUBSTITUTE_ALL = "#OldAndNewRangeNotSameLength!"
+        Exit Function
+    End If
+    
+    ' Performing the substitutions
+    Dim i As Integer
+    
+    For i = 1 To oldTextRange.Count
+        string1 = Replace(string1, oldTextRange(i), newTextRange(i))
+    Next
+    
+    SUBSTITUTE_ALL = string1
+
+End Function
+
+
+Public Function INSTRING( _
+    ByVal string1 As String, _
+    ParamArray stringArray() As Variant) _
+As Boolean
+
+    '@Description: This function takes a string, and then any number of substrings, and will check if any of the substrings can be found within the string
+    '@Author: Anthony Mancini
+    '@Version: 1.0.0
+    '@License: MIT
+    '@Param: string1 is the string that will be checked against the substrings
+    '@Param: stringArray is any number of substrings that will be used to check if they exist within the string
+    '@Returns: Returns Boolean TRUE if any of the substrings can be found within the string, and FALSE if none are found
+    '@Example: =INSTRING("112 - 312 - 221 - 132", "111", "222", "333") -> FALSE; None of the substrings are found
+    '@Example: =INSTRING("123 - 222 - 122 - 311", "111", "222", "333") -> TRUE; "222" is found
+    '@Example: =INSTRING("222 - 322 - 233 - 232", "111", "222", "333") -> TRUE; "222" is found
+    '@Example: =INSTRING("312 - 131 - 123 - 333", "111", "222", "333") -> TRUE; "333" is found
+    '@Example: =INSTRING("212 - 232 - 213 - 323", "111", "222", "333") -> FALSE
+    '@Example: =INSTRING("111 - 212 - 222 - 333", "111", "222", "333") -> TRUE; "111", "222", and "333" are found
+
+    Dim individualString As Variant
+    
+    For Each individualString In stringArray
+        If InStr(1, string1, individualString) > 0 Then
+            INSTRING = True
+            Exit Function
+        End If
+    Next
+    
+    INSTRING = False
+
+End Function
+
+
+Public Function TRIM_CHAR( _
+    ByVal string1 As String, _
+    Optional ByVal trimCharacter As String = " ") _
+As String
+
+    '@Description: This function takes a string trims characters to the left and right of the string, similar to Excel's Built-in TRIM() function, except that an optional different character can be used for the trim.
+    '@Author: Anthony Mancini
+    '@Version: 1.0.0
+    '@License: MIT
+    '@Todo: Allow more than 1 character to be used for trimming
+    '@Param: string1 is the string that will be trimmed
+    '@Param: trimCharacter is an optional character that will be trimmed from the string. By default, this character will be the space character " "
+    '@Returns: Returns the origional string with characters trimmed from the left and right
+    '@Note: This function currently supports only single characters for trimming
+    '@Example: =TRIM_CHAR("   Hello World   ") -> "Hello World"
+    '@Example: =TRIM_CHAR("---Hello World---", "-") -> "Hello World"
+
+    While Left(string1, 1) = trimCharacter
+        Mid(string1, 1) = Chr(1)
+        string1 = Replace(string1, Chr(1), "")
+    Wend
+    
+    While Right(string1, 1) = trimCharacter
+        Mid(string1, Len(string1)) = Chr(1)
+        string1 = Replace(string1, Chr(1), "")
+    Wend
+    
+    TRIM_CHAR = string1
+
+End Function
+
+
+Public Function TRIM_LEFT( _
+    ByVal string1 As String, _
+    Optional ByVal trimCharacter As String = " ") _
+As String
+
+    '@Description: This function takes a string trims characters to the left of the string, similar to Excel's Built-in TRIM() function, except that an optional different character can be used for the trim.
+    '@Author: Anthony Mancini
+    '@Version: 1.0.0
+    '@License: MIT
+    '@Todo: Allow more than 1 character to be used for trimming
+    '@Param: string1 is the string that will be trimmed
+    '@Param: trimCharacter is an optional character that will be trimmed from the string. By default, this character will be the space character " "
+    '@Returns: Returns the origional string with characters trimmed from the left only
+    '@Note: This function currently supports only single characters for trimming
+    '@Example: =TRIM_LEFT("   Hello World   ") -> "Hello World   "
+    '@Example: =TRIM_LEFT("---Hello World---", "-") -> "Hello World---"
+
+    While Left(string1, 1) = trimCharacter
+        Mid(string1, 1) = Chr(1)
+        string1 = Replace(string1, Chr(1), "")
+    Wend
+    
+    TRIM_LEFT = string1
+
+End Function
+
+
+Public Function TRIM_RIGHT( _
+    ByVal string1 As String, _
+    Optional ByVal trimCharacter As String = " ") _
+As String
+
+    '@Description: This function takes a string trims characters to the right of the string, similar to Excel's Built-in TRIM() function, except that an optional different character can be used for the trim.
+    '@Author: Anthony Mancini
+    '@Version: 1.0.0
+    '@License: MIT
+    '@Todo: Allow more than 1 character to be used for trimming
+    '@Param: string1 is the string that will be trimmed
+    '@Param: trimCharacter is an optional character that will be trimmed from the string. By default, this character will be the space character " "
+    '@Returns: Returns the origional string with characters trimmed from the right only
+    '@Note: This function currently supports only single characters for trimming
+    '@Example: =TRIM_RIGHT("   Hello World   ") -> "   Hello World"
+    '@Example: =TRIM_RIGHT("---Hello World---", "-") -> "---Hello World"
+    
+    While Right(string1, 1) = trimCharacter
+        Mid(string1, Len(string1)) = Chr(1)
+        string1 = Replace(string1, Chr(1), "")
+    Wend
+    
+    TRIM_RIGHT = string1
+
+End Function
+
+
+Public Function COUNT_UPPERCASE_CHARACTERS( _
+    ByVal string1 As String) _
+As Integer
+
+    '@Description: This function takes a string and counts the number of uppercase characters in it
+    '@Author: Anthony Mancini
+    '@Version: 1.0.0
+    '@License: MIT
+    '@Param: string1 is the string whose characters will be counted
+    '@Returns: Returns the number of uppercase characters in the string
+    '@Example: =COUNT_UPPERCASE_CHARACTERS("Hello World") -> 2; As the "H" and the "E" are the only 2 uppercase characters in the string
+
+    Dim i As Integer
+    Dim characterAsciiCode As Byte
+    Dim uppercaseCounter As Integer
+    
+    For i = 1 To Len(string1)
+        characterAsciiCode = Asc(Mid(string1, i, 1))
+        If characterAsciiCode >= 65 And characterAsciiCode <= 90 Then
+            uppercaseCounter = uppercaseCounter + 1
+        End If
+    Next
+    
+    COUNT_UPPERCASE_CHARACTERS = uppercaseCounter
+
+End Function
+
+
+Public Function COUNT_LOWERCASE_CHARACTERS( _
+    ByVal string1 As String) _
+As Integer
+
+    '@Description: This function takes a string and counts the number of lowercase characters in it
+    '@Author: Anthony Mancini
+    '@Version: 1.0.0
+    '@License: MIT
+    '@Param: string1 is the string whose characters will be counted
+    '@Returns: Returns the number of lowercase characters in the string
+    '@Example: =COUNT_LOWERCASE_CHARACTERS("Hello World") -> 8; As the "ello" and the "orld" are lowercase
+
+    Dim i As Integer
+    Dim characterAsciiCode As Byte
+    Dim lowercaseCounter As Integer
+    
+    For i = 1 To Len(string1)
+        characterAsciiCode = Asc(Mid(string1, i, 1))
+        If characterAsciiCode >= 97 And characterAsciiCode <= 122 Then
+            lowercaseCounter = lowercaseCounter + 1
+        End If
+    Next
+    
+    COUNT_LOWERCASE_CHARACTERS = lowercaseCounter
+
+End Function
+
+'@Module: This module contains a set of functions for performing fuzzy string matches. It can be useful when you have 2 columns containing text that is close but not 100% the same. However, since the functions in this module only perform fuzzy matches, there is no guarantee that there will be 100% accuracy in the matches. However, for small groups of string where each string is very different than the other (such as a small group of fairly dissimilar names), these functions can be highly accurate. Finally, some of the functions in this Module will take a long time to calculate for large numbers of cells, as the number of calculations for some functions will grow exponentially, but for small sets of data (such as 100 strings to compare), these functions perform fairly quickly.
 
 
 
@@ -3074,7 +4871,7 @@ Public Function HAMMING( _
     string2 As String) _
 As Integer
 
-    '@Description: This function takes two strings of the same length and calculates the Hamming Distance between them. Hamming Distance measures how close two strings are by checking how many Subsitutions are needed to turn one string into the other. Lower numbers mean the strings are closer than high numbers.
+    '@Description: This function takes two strings of the same length and calculates the Hamming Distance between them. Hamming Distance measures how close two strings are by checking how many Substitutions are needed to turn one string into the other. Lower numbers mean the strings are closer than high numbers.
     '@Author: Anthony Mancini
     '@Version: 1.0.0
     '@License: MIT
@@ -3115,9 +4912,9 @@ Public Function LEVENSHTEIN( _
     string2 As String) _
 As Long
 
-    '@Description: This function takes two strings of any length and calculates the Levenshtein Distance between them. Levenshtein Distance measures how close two strings are by checking how many Insertions, Deletions, or Subsitutions are needed to turn one string into the other. Lower numbers mean the strings are closer than high numbers. Unlike Hamming Distance, Levenshtein Distance works for strings of any length and includes 2 more operations. However, calculation time will be slower than Hamming Distance for same length strings, so if you know the two strings are the same length, its preferred to use Hamming Distance.
+    '@Description: This function takes two strings of any length and calculates the Levenshtein Distance between them. Levenshtein Distance measures how close two strings are by checking how many Insertions, Deletions, or Substitutions are needed to turn one string into the other. Lower numbers mean the strings are closer than high numbers. Unlike Hamming Distance, Levenshtein Distance works for strings of any length and includes 2 more operations. However, calculation time will be slower than Hamming Distance for same length strings, so if you know the two strings are the same length, its preferred to use Hamming Distance.
     '@Author: Anthony Mancini
-    '@Version: 1.0.0
+    '@Version: 1.1.0
     '@License: MIT
     '@Param: string1 is the first string
     '@Param: string2 is the second string that will be compared to the first string
@@ -3179,37 +4976,11 @@ As Long
                 operationCost = 1
             End If
                                                            
-            distanceArray(r, c) = Min3(distanceArray(r - 1, c) + 1, distanceArray(r, c - 1) + 1, distanceArray(r - 1, c - 1) + operationCost)
+            distanceArray(r, c) = WorksheetFunction.Min(distanceArray(r - 1, c) + 1, distanceArray(r, c - 1) + 1, distanceArray(r - 1, c - 1) + operationCost)
         Next
     Next
     
     LEVENSHTEIN = distanceArray(numberOfRows, numberOfColumns)
-
-End Function
-
-
-Private Function Min3( _
-    integer1 As Integer, _
-    integer2 As Integer, _
-    integer3 As Integer) _
-As Integer
-
-    '@Description: This function takes 3 integers and returns the minimum of them.
-    '@Author: Anthony Mancini
-    '@Version: 1.0.0
-    '@License: MIT
-    '@Todo: Check if WorksheetFunction.Min() is quicker than this function at calculating the minimum value, or check if there are alternative ways to calculate the min.
-    '@Param: integer1 - integer3 are the integers to be compared
-    '@Returns: Returns a the minimum integer
-    '@Example: =Min3(4,10,6) -> 4
-
-    If integer1 <= integer2 And integer1 <= integer3 Then
-        Min3 = integer1
-    ElseIf integer2 <= integer1 And integer2 <= integer3 Then
-        Min3 = integer2
-    ElseIf integer3 <= integer1 And integer3 <= integer2 Then
-        Min3 = integer3
-    End If
 
 End Function
 
@@ -3224,7 +4995,7 @@ As String
     '@Version: 1.0.0
     '@License: MIT
     '@Todo: See if I can replace the first argument as a range with a string instead.
-    '@Warning: This function will require exponential numbers of calculations for large amounts of strings. In cases where the number of strings are very large (more than 1000 strings), a better solution would be to use an external program other than Excel.
+    '@Warning: This function will require exponential numbers of calculations for large amounts of strings. In cases where the number of strings are very large (a couple thousand strings for example), a better solution would be to use an external program other than Excel.
     '@Param: range1 contains the string we want to find the closest string in the rangeArray to
     '@Param: rangeArray is a range of all strings that will be compared to the string in range1
     '@Returns: Returns the string that is closest from the rangeArray
@@ -3270,7 +5041,7 @@ Public Function LEV_STR_OPT( _
     plusOrMinusLengthBound As Integer) _
 As String
 
-    '@Description: This function is the same as LEV_STR except that it adds two more arguments which can be used to optimize the speed of searches when the number of strings to search is very large. Since the number of calculations will increase exponentially to find the best fit string, this function can exclude a lot of strings that are unlikely to have the lowest Levenshtein Distance. The additional two parameters are a paramter that first checks a certain number of characters at the left of the strings and if the strings don't have the same characters on the left, then that string is excluded. The second of the two parameters sets the maximum length difference between the two strings, and if the length of string2 is not within the bounds of string1 length +/- the length bound, then this string is excluded. Setting high values for these parameters will essentially conver this function into a slightly slower version of LEV_STR.
+    '@Description: This function is the same as LEV_STR except that it adds two more arguments which can be used to optimize the speed of searches when the number of strings to search is very large. Since the number of calculations will increase exponentially to find the best fit string, this function can exclude a lot of strings that are unlikely to have the lowest Levenshtein Distance. The additional two parameters are a parameter that first checks a certain number of characters at the left of the strings and if the strings don't have the same characters on the left, then that string is excluded. The second of the two parameters sets the maximum length difference between the two strings, and if the length of string2 is not within the bounds of string1 length +/- the length bound, then this string is excluded. Setting high values for these parameters will essentially convert this function into a slightly slower version of LEV_STR.
     '@Author: Anthony Mancini
     '@Version: 1.0.0
     '@License: MIT
@@ -3281,7 +5052,7 @@ As String
     '@Param: numberOfLeftCharactersBound is the number of left characters that will be checked first on both strings before calculating their Levenshtein Distance
     '@Param: plusOrMinusLengthBound is the number plus or minus the length of the first string that will be checked compared to the second string before calculating their Levenshtein Distance
     '@Returns: Returns the string that is closest from the rangeArray
-    '@Example: Where A1:A3 contains ["Car", "C Programming Langauge", "Dog"] =LEV_STR_OPT("Cat", A1:A3, 1, 2) -> "Car"; The calculation won't be performed on "Dog" since "Dog" doesn't start with the character "C", and "C Programming Langauge" won't be calculated either since its length is greating than LEN("Cat") +/- 2 (its length is not between 0-5 characters long).
+    '@Example: =LEV_STR_OPT("Cat", A1:A3, 1, 2) -> "Car"; Where A1:A3 contains ["Car", "C Programming Langauge", "Dog"]; The calculation won't be performed on "Dog" since "Dog" doesn't start with the character "C", and "C Programming Langauge" won't be calculated either since its length is greating than LEN("Cat") +/- 2 (its length is not between 0-5 characters long).
 
     Dim lngBestDistance As Long
     Dim lngCurrentDistance As Long
@@ -3336,7 +5107,7 @@ As Integer
 
     '@Description: This function takes two strings of any length and calculates the Damerau-Levenshtein Distance between them. Damerau-Levenshtein Distance differs from Levenshtein Distance in that it includes an additional operation, called Transpositions, which occurs when two adjacent characters are swapped. Thus, Damerau-Levenshtein Distance calculates the number of Insertions, Deletions, Substitutions, and Transpositons needed to convert string1 into string2. As a result, this function is good when it is likely that spelling errors have occured between two string where the error is simply a transposition of 2 adjacent characters.
     '@Author: Anthony Mancini
-    '@Version: 1.0.0
+    '@Version: 1.1.0
     '@License: MIT
     '@Param: string1 is the first string
     '@Param: string2 is the second string that will be compared to the first string
@@ -3414,10 +5185,10 @@ As Integer
                 db = k
             End If
             
-            H(i + 1, k + 1) = Min4(H(i, k) + cost, _
-                                   H(i + 1, k) + 1, _
-                                   H(i, k + 1) + 1, _
-                                   H(i1, k1) + (i - i1 - 1) + 1 + (k - k1 - 1))
+            H(i + 1, k + 1) = WorksheetFunction.Min(H(i, k) + cost, _
+                                                    H(i + 1, k) + 1, _
+                                                    H(i, k + 1) + 1, _
+                                                    H(i1, k1) + (i - i1 - 1) + 1 + (k - k1 - 1))
                            
             
         Next
@@ -3436,35 +5207,6 @@ As Integer
 End Function
 
 
-Private Function Min4( _
-    integer1 As Integer, _
-    integer2 As Integer, _
-    integer3 As Integer, _
-    integer4 As Integer) _
-As Long
-
-    '@Description: This function takes 4 integers and returns the minimum of them.
-    '@Author: Anthony Mancini
-    '@Version: 1.0.0
-    '@License: MIT
-    '@Todo: Check if WorksheetFunction.Min() is quicker than this function at calculating the minimum value, or check if there are alternative ways to calculate the min.
-    '@Param: integer1 - integer4 are the integers to be compared
-    '@Returns: Returns a the minimum integer
-    '@Example: =Min4(4,10,6,3) -> 3
-
-    If integer1 <= integer2 And integer1 <= integer3 And integer1 <= integer4 Then
-        Min4 = integer1
-    ElseIf integer2 <= integer1 And integer2 <= integer3 And integer2 <= integer4 Then
-        Min4 = integer2
-    ElseIf integer3 <= integer1 And integer3 <= integer2 And integer3 <= integer4 Then
-        Min4 = integer3
-    ElseIf integer4 <= integer1 And integer4 <= integer2 And integer4 <= integer3 Then
-        Min4 = integer4
-    End If
-
-End Function
-
-
 Public Function DAM_STR( _
     range1 As Range, _
     rangeArray As Range) _
@@ -3475,11 +5217,11 @@ As String
     '@Version: 1.0.0
     '@License: MIT
     '@Todo: See if I can replace the first argument as a range with a string instead.
-    '@Warning: This function will require exponential numbers of calculations for large amounts of strings. In cases where the number of strings are very large (more than 1000 strings), a better solution would be to use an external program other than Excel. Also this function will perform well in the case of comparing two lists with the same content but with spelling errors, but in cases where transpositions are unlikely, this LEV_STR should be used as this function will be slower.
+    '@Warning: This function will require exponential numbers of calculations for large amounts of strings. In cases where the number of strings are very large (a couple thousand strings for example), a better solution would be to use an external program other than Excel. Also this function will perform well in the case of comparing two lists with the same content but with spelling errors, but in cases where transpositions are unlikely, thus LEV_STR should be used as this function will be slower.
     '@Param: range1 contains the string we want to find the closest string in the rangeArray to
     '@Param: rangeArray is a range of all strings that will be compared to the string in range1
     '@Returns: Returns the string that is closest from the rangeArray
-    '@Example: Where A1:A3 contains ["Bath", "Hello", "Cta"] =DAM_STR("Cat", A1:A3) -> "Cta"; LEV_STR will actually return "Bath" in this case since it comes first in the range and since "Bath" and "Cta" will actually both have a LEV=2, but while "Bath" with have DAM=2, for "Cta" only one operation is required (a single Transposition instead of a Substitution and a Deletion) and thus for "Cta" DAM=1
+    '@Example: =DAM_STR("Cat", A1:A3) -> "Cta"; Where A1:A3 contains ["Bath", "Hello", "Cta"]; LEV_STR will actually return "Bath" in this case since it comes first in the range and since "Bath" and "Cta" will actually both have a LEV=2, but while "Bath" with have DAM=2, for "Cta" only one operation is required (a single Transposition instead of a Substitution and a Deletion) and thus for "Cta" DAM=1
 
     Dim lngBestDistance As Long
     Dim lngCurrentDistance As Long
@@ -3521,7 +5263,7 @@ Public Function DAM_STR_OPT( _
     plusOrMinusLengthBound) _
 As String
 
-    '@Description: This function is the same as DAM_STR except that it adds two more arguments which can be used to optimize the speed of searches when the number of strings to search is very large. Since the number of calculations will increase exponentially to find the best fit string, this function can exclude a lot of strings that are unlikely to have the lowest Damerauï¿½Levenshtein Distance. The additional two parameters are a paramter that first checks a certain number of characters at the left of the strings and if the strings don't have the same characters on the left, then that string is excluded. The second of the two parameters sets the maximum length difference between the two strings, and if the length of string2 is not within the bounds of string1 length +/- the length bound, then this string is excluded. Setting high values for these parameters will essentially conver this function into a slightly slower version of DAM_STR.
+    '@Description: This function is the same as DAM_STR except that it adds two more arguments which can be used to optimize the speed of searches when the number of strings to search is very large. Since the number of calculations will increase exponentially to find the best fit string, this function can exclude a lot of strings that are unlikely to have the lowest Damerauï¿½Levenshtein Distance. The additional two parameters are a parameter that first checks a certain number of characters at the left of the strings and if the strings don't have the same characters on the left, then that string is excluded. The second of the two parameters sets the maximum length difference between the two strings, and if the length of string2 is not within the bounds of string1 length +/- the length bound, then this string is excluded. Setting high values for these parameters will essentially convert this function into a slightly slower version of DAM_STR.
     '@Author: Anthony Mancini
     '@Version: 1.0.0
     '@License: MIT
@@ -3532,7 +5274,7 @@ As String
     '@Param: numberOfLeftCharactersBound is the number of left characters that will be checked first on both strings before calculating their Levenshtein Distance
     '@Param: plusOrMinusLengthBound is the number plus or minus the length of the first string that will be checked compared to the second string before calculating their Levenshtein Distance
     '@Returns: Returns the string that is closest from the rangeArray
-    '@Example: Where A1:A3 contains ["Car", "C Programming Langauge", "Dog"] =DAM_STR_OPT("Cat", A1:A3, 1, 2) -> "Car"; The calculation won't be performed on "Dog" since "Dog" doesn't start with the character "C", and "C Programming Langauge" won't be calculated either since its length is greating than LEN("Cat") +/- 2 (its length is not between 0-5 characters long).
+    '@Example: =DAM_STR_OPT("Cat", A1:A3, 1, 2) -> "Car"; Where A1:A3 contains ["Car", "C Programming Langauge", "Dog"]; The calculation won't be performed on "Dog" since "Dog" doesn't start with the character "C", and "C Programming Langauge" won't be calculated either since its length is greating than LEN("Cat") +/- 2 (its length is not between 0-5 characters long).
     
     Dim lngBestDistance As Long
     Dim lngCurrentDistance As Long
@@ -3585,19 +5327,19 @@ As String
     '@Version: 1.0.0
     '@License: MIT
     '@Todo: See if I can replace the first argument as a range with a string instead.
-    '@Note: This function is an alias for DAM_STR, and works in the exact same way.
-    '@Warning: This function will require exponential numbers of calculations for large amounts of strings. In cases where the number of strings are very large (more than 1000 strings), a better solution would be to use an external program other than Excel. Also this function will perform well in the case of comparing two lists with the same content but with spelling errors, but in cases where transpositions are unlikely, this LEV_STR should be used as this function will be slower.
+    '@Note: This function is an alias for DAM_STR, and for a more in-depth explaination of the underlying logic used in the function to calculate the partial lookup, see the DAM_STR function.
+    '@Warning: This function will require exponential numbers of calculations for large amounts of strings. In cases where the number of strings are very large (more than 1000 strings), a better solution would be to use an external program other than Excel. Also this function will perform well in the case of comparing two lists with the same content but with spelling errors, but in cases where transpositions are unlikely, thus LEV_STR should be used as this function will be slower.
     '@Param: range1 contains the string we want to find the closest string in the rangeArray to
     '@Param: rangeArray is a range of all strings that will be compared to the string in range1
     '@Returns: Returns the string that is closest from the rangeArray
-    '@Example: Where A1:A3 contains ["Bath", "Hello", "Cta"] =DAM_STR("Cat", A1:A3) -> "Cta"; LEV_STR will actually return "Bath" in this case since it comes first in the range and since "Bath" and "Cta" will actually both have a LEV=2, but while "Bath" with have DAM=2, for "Cta" only one operation is required (a single Transposition instead of a Substitution and a Deletion) and thus for "Cta" DAM=1
+    '@Example: =PARTIAL_LOOKUP("Cta", A1:A3) -> "Cat"; Where A1:A3 contains ["Bath", "Hello", "Cat"];
 
     PARTIAL_LOOKUP = DAM_STR(range1, rangeArray)
 
 End Function
 
 
-'@Module: This module contains a set of basic miscellanous utility functions
+'@Module: This module contains a set of basic miscellaneous utility functions
 
 
 Public Function DISPLAY_TEXT( _
@@ -3657,8 +5399,8 @@ As String
     '@Author: Anthony Mancini
     '@Version: 1.0.0
     '@License: MIT
-    '@Param: stringArray() is an array of strings and number in the following format: {"Hello", "World"}
     '@Param: indentLevel is an optional number that specifying the indentation level. Leaving this argument out will result in no indentation
+    '@Param: stringArray() is an array of strings and number in the following format: {"Hello", "World"}
     '@Returns: Returns a JSON valid string of all elements in the array
     '@Example: =JSONIFY(0, "Hello", "World", "1", "2", 3, 4.5) -> "["Hello","World",1,2,3,4.5]"
     '@Example: =JSONIFY(0, A1:A6) -> "["Hello","World",1,2,3,4.5]"
@@ -3881,7 +5623,7 @@ Public Function JAVASCRIPT( _
     Optional ByVal argument16 As Variant) _
 As Variant
 
-    '@Description: This function executes JavaScript code using Microsoft's JScript scripting language. It takes 3 arguments, the JavaScript code that will be executed, the name of the JavaScript function that will be executed, and up to 16 optional arguments to be used in the JavaScript function that is called. One thing to note is that ES5 syntax should be used in the JavaScript code, as ES6 features are unlikley to be supported.
+    '@Description: This function executes JavaScript code using Microsoft's JScript scripting language. It takes 3 arguments, the JavaScript code that will be executed, the name of the JavaScript function that will be executed, and up to 16 optional arguments to be used in the JavaScript function that is called. One thing to note is that ES5 syntax should be used in the JavaScript code, as ES6 features are unlikely to be supported.
     '@Author: Anthony Mancini
     '@Version: 1.0.0
     '@License: MIT
@@ -4071,7 +5813,7 @@ As String
     '@Todo: Add a Boolean parameter that adds hooks and some styling to the table
     '@Param: rangeTable is a range that will be formatted as an HTML table string.
     '@Returns: Returns an HTML table string with data from the range populated in it
-    '@Example: =HTML_TABLEIFY(A1:C5) -> <table>...</table>;
+    '@Example: =HTML_TABLEIFY(A1:C5) -> <table>...</table>
 
     Dim i As Integer
     Dim htmlTableString As String
@@ -4148,7 +5890,7 @@ As String
     '@License: MIT
     '@Param: string1 is the string that will have its characters HTML unescaped
     '@Returns: Returns an HTML unescaped string
-    '@Example: =HTML_ESCAPE("&lt;p&gt;Hello World&lt;/p&gt;") -> "<p>Hello World</p>"
+    '@Example: =HTML_UNESCAPE("&lt;p&gt;Hello World&lt;/p&gt;") -> "<p>Hello World</p>"
 
     string1 = Replace(string1, "&amp;", "&")
     string1 = Replace(string1, "&quot;", Chr(34))
@@ -4206,6 +5948,231 @@ As String
 
 End Function
 
+
+Public Function EVALUATE_FORMULA( _
+    ByVal formulaText As String, _
+    ParamArray rangeArray() As Variant) _
+As Variant
+
+    '@Description: This function takes a formula as a string with placeholders in it, and executes and returns the value of that formula with the values from the placeholder used as inputs. Placeholders are in the form of {1}, {2}, {3}, etc., with the first placeholder starting at 1
+    '@Author: Anthony Mancini
+    '@Version: 1.0.0
+    '@License: MIT
+    '@Param: formulaText is the formula with placeholders as text
+    '@Param: rangeArray() is any number of ranges to use as inputs and that will be replaced with the placeholders
+    '@Returns: Returns the executed value from the formula
+    '@Note: This function only support ranges in the rangeArray, as the values in the placeholders are replaced with the addresses of the ranges used as inputs
+    '@Warning: Any evaluation function in any programming language can result in security vulnerabilites if misused. Particularly, when the inputs for this function are user inputs from other sources, it is possible for malicious inputs and functions to be executed. As a result, use this function with care, and please research more examples of eval function security vulnerabilites and best practices.
+    '@Example: =EVALUATE_FORMULA("=SUM({1})+AVERAGE({2})", A1:A3, A4:A6) -> 80; Where A1:A3=[10, 20, 30] and A4:A6=[15, 20, 25]
+    '@Example: =EVALUATE_FORMULA("=SUM({1})/COUNT({1})", A1:A3, A4:A6) -> 20; Where A1:A3=[10, 20, 30]; Notice I've used the {1} placeholder twice here
+
+    Dim i As Integer
+    Dim individualRange As Variant
+    
+    For i = 1 To (UBound(rangeArray) - LBound(rangeArray) + 1)
+        For Each individualRange In rangeArray
+            formulaText = Replace(formulaText, "{" & i & "}", individualRange.Address)
+        Next
+    Next
+    
+    EVALUATE_FORMULA = Application.Evaluate(formulaText)
+
+End Function
+
+
+Public Function ISBADERROR( _
+    ParamArray rangeArray() As Variant) _
+As Boolean
+
+    '@Description: This function is similar to Excel's Built-in ISERROR() except that it only returns TRUE for #NULL!, #NAME?, #REF!, #DIV/0!, and #NUM! Errors
+    '@Author: Anthony Mancini
+    '@Version: 1.0.0
+    '@License: MIT
+    '@Param: rangeArray() is a range or multiple ranges that may contain errors
+    '@Returns: Returns TRUE if there is one of the listed bad errors in the range, or else FALSE
+    '@Warning: Excel generates a lot of errors when using common formulas, and some of these are errors the user intends to create, where as some errors are likely to be unintended errors. For example, users typically do not intend to generate a #DIV/0 error or a #REF! error on purpose. This function attempts to only consider the latter errors (errors that may likely be unintentional). As a result, this formula can be interpretted as attempting to signal for errors that are likely unintentional and maybe should be explicitly handled by the users. However, a FALSE value from this formula DOES NOT mean that there are no errors in the spreadsheet or the ranges that this formula is operating on are free from error.
+    '@Example: =ISBADERROR(#NAME?) -> TRUE; #NAME? is unlikely to be generated by the users, as it occurs when the user attempts to use a function that doesn't exist
+    '@Example: =ISBADERROR(#NUM!) -> TRUE; #NUM! is often generated in Math functions where invalid inputs are used
+    '@Example: =ISBADERROR(#DIV/0!) -> TRUE; #DIV/0! is not typically generated by users intentionally
+    '@Example: =ISBADERROR(#REF!) -> TRUE; #REF! is often generated when deleting rows that a function points to for an input, and is typically unlikely to be generated by users (except sometimes in the case of using the INDIRECT() function)
+    '@Example: =ISBADERROR(#NULL!) -> TRUE; #NULL! is often generated when using incorrect range references in formulas
+    '@Example: =ISBADERROR(#N/A) -> FALSE; #N/A may sometimes be intentionally generated by the users
+    '@Example: =ISBADERROR(#VALUE!) -> FALSE; #VALUE! may sometimes be intentionally generated by the users
+    '@Example: =ISBADERROR(A1:A3) -> TRUE; Where A1=#NAME?, A2=#N/A, A3=#VALUE!
+    '@Example: =ISBADERROR(A1, A2, A3) -> TRUE; Where A1=#NAME?, A2=#N/A, A3=#VALUE!
+
+    Dim individualRange As Variant
+    Dim individualCell As Range
+    
+    For Each individualRange In rangeArray
+        For Each individualCell In individualRange
+            If Not IsEmpty(individualCell) Then
+                ' #NULL! Error
+                If individualCell.Value = CVErr(2000) Then
+                    ISBADERROR = True
+                    Exit Function
+                End If
+            
+                ' #NAME? Error
+                If individualCell.Value = CVErr(2029) Then
+                    ISBADERROR = True
+                    Exit Function
+                End If
+                
+                ' #REF! Error
+                If individualCell.Value = CVErr(2023) Then
+                    ISBADERROR = True
+                    Exit Function
+                End If
+                
+                ' #DIV/0! Error
+                If individualCell.Value = CVErr(2007) Then
+                    ISBADERROR = True
+                    Exit Function
+                End If
+                
+                ' #NUM! Error
+                If individualCell.Value = CVErr(2036) Then
+                    ISBADERROR = True
+                    Exit Function
+                End If
+            End If
+        Next
+    Next
+    
+    ISBADERROR = False
+
+End Function
+
+
+Public Function REFERENCE_EXISTS( _
+    ByVal referenceName As String, _
+    Optional ByVal partialNameFlag As Boolean) _
+As Boolean
+
+    '@Description: This takes a string name of a VBA reference library, and checks if the current workbook currently includes the VBA library as a reference.
+    '@Author: Anthony Mancini
+    '@Version: 1.0.0
+    '@License: MIT
+    '@Param: referenceName is the name of a reference we want to check if it exists
+    '@Param: partialNameFlag if set to TRUE, will perform checks based on partial names instead of requiring the exact name of the reference
+    '@Returns: Returns TRUE if the reference exists, and FALSE if it doesn't
+    '@Note: This function is case-insensitive
+    '@Example: =REFERENCE_EXISTS("Excel") -> TRUE; The "Excel" Library is typically included as a reference
+    '@Example: =REFERENCE_EXISTS("VBA") -> TRUE; The "VBA" Library is typically included as a reference
+    '@Example: =REFERENCE_EXISTS("vba") -> TRUE; The "VBA" Library is typically included as a reference, and this function works on case-insensitive checks
+    '@Example: =REFERENCE_EXISTS("MSHTML") -> FALSE; The "MSHTML" Library is typically not included as a reference, but can be included by the user
+    '@Example: =REFERENCE_EXISTS("VB") -> FALSE; There is typically no library named "VB"
+    '@Example: =REFERENCE_EXISTS("VB", TRUE) -> TRUE; Since the partialNameFlag is set to TRUE and since a reference to the "VBA" library exists, this will match the "VBA" library
+
+    Application.Volatile
+
+    Dim individualReference As Variant
+    
+    For Each individualReference In ThisWorkbook.VBProject.References
+        If Not partialNameFlag Then
+            If UCase(individualReference.Name) = UCase(referenceName) Then
+                REFERENCE_EXISTS = True
+                Exit Function
+            End If
+        Else
+            If InStr(1, individualReference.Name, referenceName, vbTextCompare) >= 0 Then
+                REFERENCE_EXISTS = True
+                Exit Function
+            End If
+        End If
+    Next
+    
+    REFERENCE_EXISTS = False
+
+End Function
+
+
+Public Function ADDIN_EXISTS( _
+    ByVal addinName As String, _
+    Optional ByVal partialNameFlag As Boolean) _
+As Boolean
+
+    '@Description: This takes a string name of an Excel Addin, and checks if Excel currently includes the Excel Addin.
+    '@Author: Anthony Mancini
+    '@Version: 1.0.0
+    '@License: MIT
+    '@Param: addinName is the name of a Addin we want to check if it exists
+    '@Param: partialNameFlag if set to TRUE, will perform checks based on partial names instead of requiring the exact name of the Addin
+    '@Returns: Returns TRUE if the Addin exists, and FALSE if it doesn't
+    '@Note: This function is case-insensitive. Also, this function checks if an Addin exists, not if the Addin is currently installed. For example, many versions of Excel include the Solver Addin, but by default this Addin is not active in many cases. ADDIN_EXISTS() will return TRUE for the Solver Addin even if it isn't currently installed. For a function that check if an Addin is currently installed, used the ADDIN_INSTALLED() function.
+    '@Example: =ADDIN_EXISTS("SOLVER.XLAM") -> TRUE; Most versions of Excel will have the Solver Addin
+    '@Example: =ADDIN_EXISTS("solver.xlam") -> TRUE; This function is case-insensitive
+    '@Example: =ADDIN_EXISTS("NonExistantAddin.xlam") -> FALSE; As this Addin doesn't currently exist
+    '@Example: =ADDIN_EXISTS("SOLVER") -> FALSE; To use partial matches, use the partialNameFlag
+    '@Example: =ADDIN_EXISTS("SOLVER", TRUE) -> TRUE; As the partialNameFlag is set and so "SOLVER" will match "SOLVER.XLAM"
+
+    Application.Volatile
+
+    Dim individualAddin As AddIn
+    
+    For Each individualAddin In Application.AddIns
+        If Not partialNameFlag Then
+            If UCase(individualAddin.Name) = UCase(addinName) Then
+                ADDIN_EXISTS = True
+                Exit Function
+            End If
+        Else
+            If InStr(1, individualAddin.Name, addinName, vbTextCompare) >= 0 Then
+                ADDIN_EXISTS = True
+                Exit Function
+            End If
+        End If
+    Next
+    
+    ADDIN_EXISTS = False
+
+End Function
+
+
+Public Function ADDIN_INSTALLED( _
+    ByVal addinName As String, _
+    Optional ByVal partialNameFlag As Boolean) _
+As Boolean
+
+    '@Description: This takes a string name of an Excel Addin, and checks if the Addin is currently installed and active.
+    '@Author: Anthony Mancini
+    '@Version: 1.0.0
+    '@License: MIT
+    '@Param: addinName is the name of a Addin we want to check if it is installed
+    '@Param: partialNameFlag if set to TRUE, will perform checks based on partial names instead of requiring the exact name of the Addin
+    '@Returns: Returns TRUE if the Addin is installed, and FALSE if it doesn't
+    '@Note: This function is case-insensitive
+    '@Example: =ADDIN_INSTALLED("SOLVER.XLAM") -> TRUE; Most versions of Excel will have the Solver Addin, and I currently have it installed
+    '@Example: =ADDIN_INSTALLED("solver.xlam") -> TRUE; This function is case-insensitive
+    '@Example: =ADDIN_INSTALLED("EUROTOOL.XLAM") -> FALSE; Many versions of Excel will have the Eurotools Addin, and it currently exists, but I currently don't have it installed, so this function returned FALSE
+    '@Example: =ADDIN_INSTALLED("SOLVER", TRUE) -> TRUE; As the partialNameFlag is set and so "SOLVER" will match "SOLVER.XLAM"
+
+    Application.Volatile
+
+    Dim individualAddin As AddIn
+    
+    For Each individualAddin In Application.AddIns
+        If Not partialNameFlag Then
+            If UCase(individualAddin.Name) = UCase(addinName) Then
+                If individualAddin.Installed Then
+                    ADDIN_INSTALLED = True
+                    Exit Function
+                End If
+            End If
+        Else
+            If InStr(1, individualAddin.Name, addinName, vbTextCompare) >= 0 Then
+                If individualAddin.Installed Then
+                    ADDIN_INSTALLED = True
+                    Exit Function
+                End If
+            End If
+        End If
+    Next
+    
+    ADDIN_INSTALLED = False
+
+End Function
 
 '@Module: This module contains a set of functions for validating some commonly used string, such as validators for email addresses and phone numbers.
 
@@ -4392,6 +6359,38 @@ As Boolean
 End Function
 
 
+Public Function IS_MAC_ADDRESS( _
+    ByVal string1 As String) _
+As Boolean
+
+    '@Description: This function checks if a string is a valid 48-bit Mac Address.
+    '@Author: Anthony Mancini
+    '@Version: 1.0.0
+    '@License: MIT
+    '@Param: string1 is the string we are checking if its a valid 48-bit Mac Address
+    '@Returns: Returns TRUE if the string is a valid 48-bit Mac Address, and FALSE if its invalid
+    '@Example: =IS_MAC_ADDRESS("00:25:96:12:34:56") -> TRUE
+    '@Example: =IS_MAC_ADDRESS("FF:FF:FF:FF:FF:FF") -> TRUE
+    '@Example: =IS_MAC_ADDRESS("00-25-96-12-34-56") -> TRUE
+    '@Example: =IS_MAC_ADDRESS("123.789.abc.DEF") -> TRUE
+    '@Example: =IS_MAC_ADDRESS("Not A Mac Address") -> FALSE
+    '@Example: =IS_MAC_ADDRESS("FF:FF:FF:FF:FF:FH") -> FALSE; the H at the end is not a valid Hex number
+
+    Dim Regex As Object
+    Set Regex = CreateObject("VBScript.RegExp")
+        
+    With Regex
+        .Global = True
+        .IgnoreCase = True
+        .MultiLine = True
+        .Pattern = "^(([a-fA-F0-9]{2}([:]|[-])){5}[a-fA-F0-9]{2}|([a-fA-F0-9]{3}[.]){3}[a-fA-F0-9]{3})$"
+    End With
+
+    IS_MAC_ADDRESS = Regex.Test(string1)
+
+End Function
+
+
 Public Function CREDIT_CARD_NAME( _
     ByVal string1 As String) _
 As String
@@ -4473,7 +6472,7 @@ As String
     '@Example: =FORMAT_FRACTION(".35") -> "1/3"
     '@Example: =FORMAT_FRACTION(".37") -> "3/8"
     '@Example: =FORMAT_FRACTION(".7") -> "2/3"
-    '@Example: =FORMAT_FRACTION("2.5") -> "2 1/5"
+    '@Example: =FORMAT_FRACTION("2.5") -> "2 1/2"
 
     FORMAT_FRACTION = Trim(WorksheetFunction.Text(decimal1, "# ?/?"))
 
@@ -4524,6 +6523,62 @@ As String
     Else
         FORMAT_CREDIT_CARD = "#NotAValidCreditCardNumber!"
     End If
+
+End Function
+
+
+Public Function FORMAT_FORMULA( _
+    ByVal range1 As Range) _
+As String
+
+    '@Description: This function formats a formula in a more readable way by breaking up the formula into multiple lines, making it easier to debug larger formulas.
+    '@Author: Anthony Mancini
+    '@Version: 1.0.0
+    '@License: MIT
+    '@Param: range1 is the range with the formula we want to format
+    '@Returns: Returns a formula formatted in a more readable format
+    '@Example: =FORMAT_FORMULA(A1) -> A multiline formula with indentation. See example below:
+
+    Dim i As Integer
+    Dim k As Integer
+    Dim indentLevel As Byte
+    Dim formulaString As String
+    Dim buildFormulaString As String
+    Dim formulaStringLength As Integer
+    Dim currentIndentAmount As Byte
+    Dim currentCharacter As String
+    
+    formulaString = range1.Formula
+    formulaStringLength = Len(formulaString)
+    
+    For i = 1 To formulaStringLength
+        currentCharacter = Mid(formulaString, i, 1)
+        If currentCharacter = "(" Then
+            buildFormulaString = buildFormulaString & "(" & Chr(10)
+            indentLevel = indentLevel + 4
+            currentIndentAmount = currentIndentAmount + 1
+            For k = 1 To indentLevel
+                buildFormulaString = buildFormulaString & " "
+            Next
+        ElseIf currentCharacter = ")" Then
+            buildFormulaString = buildFormulaString & Chr(10)
+            indentLevel = indentLevel - 4
+            currentIndentAmount = currentIndentAmount - 1
+            For k = 1 To indentLevel
+                buildFormulaString = buildFormulaString & " "
+            Next
+            buildFormulaString = buildFormulaString & ")"
+        ElseIf currentCharacter = "," Then
+            buildFormulaString = buildFormulaString & "," & Chr(10)
+            For k = 1 To indentLevel
+                buildFormulaString = buildFormulaString & " "
+            Next
+        Else
+            buildFormulaString = buildFormulaString & currentCharacter
+        End If
+    Next
+    
+    FORMAT_FORMULA = buildFormulaString
 
 End Function
 

@@ -1,5 +1,5 @@
 Attribute VB_Name = "xpUtilities"
-'@Module: This module contains a set of basic miscellanous utility functions
+'@Module: This module contains a set of basic miscellaneous utility functions
 
 Option Explicit
 
@@ -60,8 +60,8 @@ As String
     '@Author: Anthony Mancini
     '@Version: 1.0.0
     '@License: MIT
-    '@Param: stringArray() is an array of strings and number in the following format: {"Hello", "World"}
     '@Param: indentLevel is an optional number that specifying the indentation level. Leaving this argument out will result in no indentation
+    '@Param: stringArray() is an array of strings and number in the following format: {"Hello", "World"}
     '@Returns: Returns a JSON valid string of all elements in the array
     '@Example: =JSONIFY(0, "Hello", "World", "1", "2", 3, 4.5) -> "["Hello","World",1,2,3,4.5]"
     '@Example: =JSONIFY(0, A1:A6) -> "["Hello","World",1,2,3,4.5]"
@@ -284,7 +284,7 @@ Public Function JAVASCRIPT( _
     Optional ByVal argument16 As Variant) _
 As Variant
 
-    '@Description: This function executes JavaScript code using Microsoft's JScript scripting language. It takes 3 arguments, the JavaScript code that will be executed, the name of the JavaScript function that will be executed, and up to 16 optional arguments to be used in the JavaScript function that is called. One thing to note is that ES5 syntax should be used in the JavaScript code, as ES6 features are unlikley to be supported.
+    '@Description: This function executes JavaScript code using Microsoft's JScript scripting language. It takes 3 arguments, the JavaScript code that will be executed, the name of the JavaScript function that will be executed, and up to 16 optional arguments to be used in the JavaScript function that is called. One thing to note is that ES5 syntax should be used in the JavaScript code, as ES6 features are unlikely to be supported.
     '@Author: Anthony Mancini
     '@Version: 1.0.0
     '@License: MIT
@@ -474,7 +474,7 @@ As String
     '@Todo: Add a Boolean parameter that adds hooks and some styling to the table
     '@Param: rangeTable is a range that will be formatted as an HTML table string.
     '@Returns: Returns an HTML table string with data from the range populated in it
-    '@Example: =HTML_TABLEIFY(A1:C5) -> <table>...</table>;
+    '@Example: =HTML_TABLEIFY(A1:C5) -> <table>...</table>
 
     Dim i As Integer
     Dim htmlTableString As String
@@ -551,7 +551,7 @@ As String
     '@License: MIT
     '@Param: string1 is the string that will have its characters HTML unescaped
     '@Returns: Returns an HTML unescaped string
-    '@Example: =HTML_ESCAPE("&lt;p&gt;Hello World&lt;/p&gt;") -> "<p>Hello World</p>"
+    '@Example: =HTML_UNESCAPE("&lt;p&gt;Hello World&lt;/p&gt;") -> "<p>Hello World</p>"
 
     string1 = Replace(string1, "&amp;", "&")
     string1 = Replace(string1, "&quot;", Chr(34))
@@ -609,3 +609,228 @@ As String
 
 End Function
 
+
+Public Function EVALUATE_FORMULA( _
+    ByVal formulaText As String, _
+    ParamArray rangeArray() As Variant) _
+As Variant
+
+    '@Description: This function takes a formula as a string with placeholders in it, and executes and returns the value of that formula with the values from the placeholder used as inputs. Placeholders are in the form of {1}, {2}, {3}, etc., with the first placeholder starting at 1
+    '@Author: Anthony Mancini
+    '@Version: 1.0.0
+    '@License: MIT
+    '@Param: formulaText is the formula with placeholders as text
+    '@Param: rangeArray() is any number of ranges to use as inputs and that will be replaced with the placeholders
+    '@Returns: Returns the executed value from the formula
+    '@Note: This function only support ranges in the rangeArray, as the values in the placeholders are replaced with the addresses of the ranges used as inputs
+    '@Warning: Any evaluation function in any programming language can result in security vulnerabilites if misused. Particularly, when the inputs for this function are user inputs from other sources, it is possible for malicious inputs and functions to be executed. As a result, use this function with care, and please research more examples of eval function security vulnerabilites and best practices.
+    '@Example: =EVALUATE_FORMULA("=SUM({1})+AVERAGE({2})", A1:A3, A4:A6) -> 80; Where A1:A3=[10, 20, 30] and A4:A6=[15, 20, 25]
+    '@Example: =EVALUATE_FORMULA("=SUM({1})/COUNT({1})", A1:A3, A4:A6) -> 20; Where A1:A3=[10, 20, 30]; Notice I've used the {1} placeholder twice here
+
+    Dim i As Integer
+    Dim individualRange As Variant
+    
+    For i = 1 To (UBound(rangeArray) - LBound(rangeArray) + 1)
+        For Each individualRange In rangeArray
+            formulaText = Replace(formulaText, "{" & i & "}", individualRange.Address)
+        Next
+    Next
+    
+    EVALUATE_FORMULA = Application.Evaluate(formulaText)
+
+End Function
+
+
+Public Function ISBADERROR( _
+    ParamArray rangeArray() As Variant) _
+As Boolean
+
+    '@Description: This function is similar to Excel's Built-in ISERROR() except that it only returns TRUE for #NULL!, #NAME?, #REF!, #DIV/0!, and #NUM! Errors
+    '@Author: Anthony Mancini
+    '@Version: 1.0.0
+    '@License: MIT
+    '@Param: rangeArray() is a range or multiple ranges that may contain errors
+    '@Returns: Returns TRUE if there is one of the listed bad errors in the range, or else FALSE
+    '@Warning: Excel generates a lot of errors when using common formulas, and some of these are errors the user intends to create, where as some errors are likely to be unintended errors. For example, users typically do not intend to generate a #DIV/0 error or a #REF! error on purpose. This function attempts to only consider the latter errors (errors that may likely be unintentional). As a result, this formula can be interpretted as attempting to signal for errors that are likely unintentional and maybe should be explicitly handled by the users. However, a FALSE value from this formula DOES NOT mean that there are no errors in the spreadsheet or the ranges that this formula is operating on are free from error.
+    '@Example: =ISBADERROR(#NAME?) -> TRUE; #NAME? is unlikely to be generated by the users, as it occurs when the user attempts to use a function that doesn't exist
+    '@Example: =ISBADERROR(#NUM!) -> TRUE; #NUM! is often generated in Math functions where invalid inputs are used
+    '@Example: =ISBADERROR(#DIV/0!) -> TRUE; #DIV/0! is not typically generated by users intentionally
+    '@Example: =ISBADERROR(#REF!) -> TRUE; #REF! is often generated when deleting rows that a function points to for an input, and is typically unlikely to be generated by users (except sometimes in the case of using the INDIRECT() function)
+    '@Example: =ISBADERROR(#NULL!) -> TRUE; #NULL! is often generated when using incorrect range references in formulas
+    '@Example: =ISBADERROR(#N/A) -> FALSE; #N/A may sometimes be intentionally generated by the users
+    '@Example: =ISBADERROR(#VALUE!) -> FALSE; #VALUE! may sometimes be intentionally generated by the users
+    '@Example: =ISBADERROR(A1:A3) -> TRUE; Where A1=#NAME?, A2=#N/A, A3=#VALUE!
+    '@Example: =ISBADERROR(A1, A2, A3) -> TRUE; Where A1=#NAME?, A2=#N/A, A3=#VALUE!
+
+    Dim individualRange As Variant
+    Dim individualCell As Range
+    
+    For Each individualRange In rangeArray
+        For Each individualCell In individualRange
+            If Not IsEmpty(individualCell) Then
+                ' #NULL! Error
+                If individualCell.Value = CVErr(2000) Then
+                    ISBADERROR = True
+                    Exit Function
+                End If
+            
+                ' #NAME? Error
+                If individualCell.Value = CVErr(2029) Then
+                    ISBADERROR = True
+                    Exit Function
+                End If
+                
+                ' #REF! Error
+                If individualCell.Value = CVErr(2023) Then
+                    ISBADERROR = True
+                    Exit Function
+                End If
+                
+                ' #DIV/0! Error
+                If individualCell.Value = CVErr(2007) Then
+                    ISBADERROR = True
+                    Exit Function
+                End If
+                
+                ' #NUM! Error
+                If individualCell.Value = CVErr(2036) Then
+                    ISBADERROR = True
+                    Exit Function
+                End If
+            End If
+        Next
+    Next
+    
+    ISBADERROR = False
+
+End Function
+
+
+Public Function REFERENCE_EXISTS( _
+    ByVal referenceName As String, _
+    Optional ByVal partialNameFlag As Boolean) _
+As Boolean
+
+    '@Description: This takes a string name of a VBA reference library, and checks if the current workbook currently includes the VBA library as a reference.
+    '@Author: Anthony Mancini
+    '@Version: 1.0.0
+    '@License: MIT
+    '@Param: referenceName is the name of a reference we want to check if it exists
+    '@Param: partialNameFlag if set to TRUE, will perform checks based on partial names instead of requiring the exact name of the reference
+    '@Returns: Returns TRUE if the reference exists, and FALSE if it doesn't
+    '@Note: This function is case-insensitive
+    '@Example: =REFERENCE_EXISTS("Excel") -> TRUE; The "Excel" Library is typically included as a reference
+    '@Example: =REFERENCE_EXISTS("VBA") -> TRUE; The "VBA" Library is typically included as a reference
+    '@Example: =REFERENCE_EXISTS("vba") -> TRUE; The "VBA" Library is typically included as a reference, and this function works on case-insensitive checks
+    '@Example: =REFERENCE_EXISTS("MSHTML") -> FALSE; The "MSHTML" Library is typically not included as a reference, but can be included by the user
+    '@Example: =REFERENCE_EXISTS("VB") -> FALSE; There is typically no library named "VB"
+    '@Example: =REFERENCE_EXISTS("VB", TRUE) -> TRUE; Since the partialNameFlag is set to TRUE and since a reference to the "VBA" library exists, this will match the "VBA" library
+
+    Application.Volatile
+
+    Dim individualReference As Variant
+    
+    For Each individualReference In ThisWorkbook.VBProject.References
+        If Not partialNameFlag Then
+            If UCase(individualReference.Name) = UCase(referenceName) Then
+                REFERENCE_EXISTS = True
+                Exit Function
+            End If
+        Else
+            If InStr(1, individualReference.Name, referenceName, vbTextCompare) >= 0 Then
+                REFERENCE_EXISTS = True
+                Exit Function
+            End If
+        End If
+    Next
+    
+    REFERENCE_EXISTS = False
+
+End Function
+
+
+Public Function ADDIN_EXISTS( _
+    ByVal addinName As String, _
+    Optional ByVal partialNameFlag As Boolean) _
+As Boolean
+
+    '@Description: This takes a string name of an Excel Addin, and checks if Excel currently includes the Excel Addin.
+    '@Author: Anthony Mancini
+    '@Version: 1.0.0
+    '@License: MIT
+    '@Param: addinName is the name of a Addin we want to check if it exists
+    '@Param: partialNameFlag if set to TRUE, will perform checks based on partial names instead of requiring the exact name of the Addin
+    '@Returns: Returns TRUE if the Addin exists, and FALSE if it doesn't
+    '@Note: This function is case-insensitive. Also, this function checks if an Addin exists, not if the Addin is currently installed. For example, many versions of Excel include the Solver Addin, but by default this Addin is not active in many cases. ADDIN_EXISTS() will return TRUE for the Solver Addin even if it isn't currently installed. For a function that check if an Addin is currently installed, used the ADDIN_INSTALLED() function.
+    '@Example: =ADDIN_EXISTS("SOLVER.XLAM") -> TRUE; Most versions of Excel will have the Solver Addin
+    '@Example: =ADDIN_EXISTS("solver.xlam") -> TRUE; This function is case-insensitive
+    '@Example: =ADDIN_EXISTS("NonExistantAddin.xlam") -> FALSE; As this Addin doesn't currently exist
+    '@Example: =ADDIN_EXISTS("SOLVER") -> FALSE; To use partial matches, use the partialNameFlag
+    '@Example: =ADDIN_EXISTS("SOLVER", TRUE) -> TRUE; As the partialNameFlag is set and so "SOLVER" will match "SOLVER.XLAM"
+
+    Application.Volatile
+
+    Dim individualAddin As AddIn
+    
+    For Each individualAddin In Application.AddIns
+        If Not partialNameFlag Then
+            If UCase(individualAddin.Name) = UCase(addinName) Then
+                ADDIN_EXISTS = True
+                Exit Function
+            End If
+        Else
+            If InStr(1, individualAddin.Name, addinName, vbTextCompare) >= 0 Then
+                ADDIN_EXISTS = True
+                Exit Function
+            End If
+        End If
+    Next
+    
+    ADDIN_EXISTS = False
+
+End Function
+
+
+Public Function ADDIN_INSTALLED( _
+    ByVal addinName As String, _
+    Optional ByVal partialNameFlag As Boolean) _
+As Boolean
+
+    '@Description: This takes a string name of an Excel Addin, and checks if the Addin is currently installed and active.
+    '@Author: Anthony Mancini
+    '@Version: 1.0.0
+    '@License: MIT
+    '@Param: addinName is the name of a Addin we want to check if it is installed
+    '@Param: partialNameFlag if set to TRUE, will perform checks based on partial names instead of requiring the exact name of the Addin
+    '@Returns: Returns TRUE if the Addin is installed, and FALSE if it doesn't
+    '@Note: This function is case-insensitive
+    '@Example: =ADDIN_INSTALLED("SOLVER.XLAM") -> TRUE; Most versions of Excel will have the Solver Addin, and I currently have it installed
+    '@Example: =ADDIN_INSTALLED("solver.xlam") -> TRUE; This function is case-insensitive
+    '@Example: =ADDIN_INSTALLED("EUROTOOL.XLAM") -> FALSE; Many versions of Excel will have the Eurotools Addin, and it currently exists, but I currently don't have it installed, so this function returned FALSE
+    '@Example: =ADDIN_INSTALLED("SOLVER", TRUE) -> TRUE; As the partialNameFlag is set and so "SOLVER" will match "SOLVER.XLAM"
+
+    Application.Volatile
+
+    Dim individualAddin As AddIn
+    
+    For Each individualAddin In Application.AddIns
+        If Not partialNameFlag Then
+            If UCase(individualAddin.Name) = UCase(addinName) Then
+                If individualAddin.Installed Then
+                    ADDIN_INSTALLED = True
+                    Exit Function
+                End If
+            End If
+        Else
+            If InStr(1, individualAddin.Name, addinName, vbTextCompare) >= 0 Then
+                If individualAddin.Installed Then
+                    ADDIN_INSTALLED = True
+                    Exit Function
+                End If
+            End If
+        End If
+    Next
+    
+    ADDIN_INSTALLED = False
+
+End Function

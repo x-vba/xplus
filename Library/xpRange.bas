@@ -1,5 +1,5 @@
 Attribute VB_Name = "xpRange"
-'@Module: This module contains a set of functions for manipulating and working with ranges of cells
+'@Module: This module contains a set of functions for manipulating and working with ranges of cells.
 
 Option Explicit
 
@@ -13,11 +13,11 @@ As Boolean
     '@Author: Anthony Mancini
     '@Version: 1.0.0
     '@License: MIT
-    '@Param: range1 is the range we want to check if the value is the first unique value in the larger range
-    '@Param: rangeArray is the group of cells we are checking to see if range1 is the first unique occurance in the range
+    '@Param: range1 is the range we want to check if the value is the first unique value in the rangeArray
+    '@Param: rangeArray is the group of cells we are checking to see if range1 is the first unique occurrence in the rangeArray
     '@Returns: Returns TRUE if the cell selected is the first unique value in the range array, and FALSE if it isn't
-    '@Example: =FIRST_UNIQUE(A1,$A$1:$A$10) -> TRUE, where A1 is the first unique occurance of the word "Hello" in the range array
-    '@Example: =FIRST_UNIQUE(A5,$A$1:$A$10) -> FALSE, where A5 is the second unique occurance of the word "Hello" in the range array
+    '@Example: =FIRST_UNIQUE(A1, $A$1:$A$10) -> TRUE, where A1 is the first unique occurrence of the word "Hello" in the range array
+    '@Example: =FIRST_UNIQUE(A5, $A$1:$A$10) -> FALSE, where A5 is the second unique occurrence of the word "Hello" in the range array
 
     Dim individualRange As Range
     
@@ -33,6 +33,46 @@ As Boolean
         End If
     Next
 
+End Function
+
+
+Public Function COUNT_UNIQUE( _
+    ParamArray rangeArray() As Variant) _
+As Integer
+    
+    '@Description: This function counts the number of unique occurances of values within a range or multiple ranges
+    '@Author: Anthony Mancini
+    '@Version: 1.0.0
+    '@License: MIT
+    '@Param: rangeArray is the group of cells we are counting the unique values of
+    '@Returns: Returns the number of unique values
+    '@Example: =COUNT_UNIQUE(A1:A5) -> 3; Where A1-A5 contains ["A", "A", "B", "A", "C"]
+    
+    Dim individualValue As Variant
+    Dim individualRange As Range
+    Dim uniqueDictionary As Object
+    Dim uniqueCount As Integer
+    
+    Set uniqueDictionary = CreateObject("Scripting.Dictionary")
+    
+    For Each individualValue In rangeArray
+        If TypeName(individualValue) = "Range" Then
+            For Each individualRange In individualValue
+                If Not uniqueDictionary.Exists(individualRange.Value) Then
+                    uniqueDictionary.Add individualRange.Value, 0
+                    uniqueCount = uniqueCount + 1
+                End If
+            Next
+        Else
+            If Not uniqueDictionary.Exists(individualValue) Then
+                uniqueDictionary.Add individualValue, 0
+                uniqueCount = uniqueCount + 1
+            End If
+        End If
+    Next
+    
+    COUNT_UNIQUE = uniqueCount
+    
 End Function
 
 
@@ -98,7 +138,7 @@ Function SORT_RANGE( _
     Optional ByVal descendingFlag As Boolean) _
 As Variant
 
-    '@Description: This function takes a single cell and an large range of cells and sorts the cells in ascending or descending order.
+    '@Description: This function takes a single cell and a large range of cells and sorts the cells in ascending or descending order.
     '@Author: Anthony Mancini
     '@Version: 1.0.0
     '@License: MIT
@@ -106,8 +146,8 @@ As Variant
     '@Param: rangeArray is the group of cells we are sorting
     '@Param: descendingFlag is a Boolean value that if set to TRUE will set the sort to Descending
     '@Returns: Returns the value of the cell sorted
-    '@Example: =SORT_RANGE(A1,$A$1:$A$3) -> 1, where A1="3", A2="1", A3="4", A4="2"
-    '@Example: =SORT_RANGE(A1,$A$1:$A$3, TRUE) -> 4, where A1="3", A2="1", A3="4", A4="2"
+    '@Example: =SORT_RANGE(A1, $A$1:$A$4) -> 1, where A1="3", A2="1", A3="4", A4="2"
+    '@Example: =SORT_RANGE(A1, $A$1:$A$4, TRUE) -> 4, where A1="3", A2="1", A3="4", A4="2"
 
     ' Sorting the values from rangeArray
     Dim variantArray() As Variant
@@ -146,16 +186,16 @@ Public Function REVERSE_RANGE( _
     ByVal rangeArray As Range) _
 As Variant
 
-    '@Description: This function takes a single cell and an large range of cells and reverses all values in the range.
+    '@Description: This function takes a single cell and a large range of cells and reverses all values in the range.
     '@Author: Anthony Mancini
     '@Version: 1.0.0
     '@License: MIT
-    '@Param: range1 is the range we want to be reversed in order of the larger range
+    '@Param: range1 is the range we want to be reversed in order of the rangeArray
     '@Param: rangeArray is the group of cells we are reversing the order of
     '@Returns: Returns the value of the cell in the reversed position
-    '@Example: =REVERSE_RANGE(A1,$A$1:$A$3) -> "C", where A1="A", A2="B", A3="C"
-    '@Example: =REVERSE_RANGE(A2,$A$1:$A$3) -> "B", where A1="A", A2="B", A3="C"
-    '@Example: =REVERSE_RANGE(A3,$A$1:$A$3) -> "A", where A1="A", A2="B", A3="C"
+    '@Example: =REVERSE_RANGE(A1, $A$1:$A$3) -> "C", where A1="A", A2="B", A3="C"
+    '@Example: =REVERSE_RANGE(A2, $A$1:$A$3) -> "B", where A1="A", A2="B", A3="C"
+    '@Example: =REVERSE_RANGE(A3, $A$1:$A$3) -> "A", where A1="A", A2="B", A3="C"
 
     Dim i As Integer
     
@@ -174,15 +214,15 @@ Public Function COLUMNIFY( _
     ByVal rowRangeArray As Range) _
 As Variant
 
-    '@Description: This function takes 2 ranges, a column range which will be filled in with data in the row range, allowing for easily convering a row of data into a column of data
+    '@Description: This function takes 2 ranges, a column range which will be filled in with data in the row range, allowing for easily converting a row of data into a column of data
     '@Author: Anthony Mancini
     '@Version: 1.0.0
     '@License: MIT
     '@Param: columnRangeArray is a range that will be populated with data from a rowRangeArray
     '@Param: rowRangeArray is a range that will be used to populate the columnRangeArray
     '@Returns: Returns the value at the same location in the rowRangeArray
-    '@Example: =COLUMNIFY(A1:A2,B1:C1) -> "B"; Where this function resides in cell A1 and where B1="B" and C1="C"
-    '@Example: =COLUMNIFY(A1:A2,B1:C1) -> "C"; Where this function resides in cell A2 and where B1="B" and C1="C"
+    '@Example: =COLUMNIFY(A1:A2, B1:C1) -> "B"; Where this function resides in cell A1 and where B1="B" and C1="C"
+    '@Example: =COLUMNIFY(A1:A2, B1:C1) -> "C"; Where this function resides in cell A2 and where B1="B" and C1="C"
 
     Dim i As Integer
     Dim individualRange As Range
@@ -206,15 +246,15 @@ Public Function ROWIFY( _
     ByVal columnRangeArray As Range) _
 As Variant
 
-    '@Description: This function takes 2 ranges, a row range which will be filled in with data in the column range, allowing for easily convering a column of data into a row of data
+    '@Description: This function takes 2 ranges, a row range which will be filled in with data in the column range, allowing for easily converting a column of data into a row of data
     '@Author: Anthony Mancini
     '@Version: 1.0.0
     '@License: MIT
     '@Param: rowRangeArray is a range that will be populated with data from a columnRangeArray
     '@Param: columnRangeArray is a range that will be used to populate the rowRangeArray
     '@Returns: Returns the value at the same location in the columnRangeArray
-    '@Example: =ROWIFY(B1:C1,A1:A2) -> "A1"; Where this function resides in cell B1 and where A1="A1" and A2="A2"
-    '@Example: =ROWIFY(B1:C1,A1:A2) -> "A2"; Where this function resides in cell C1 and where A1="A1" and A2="A2"
+    '@Example: =ROWIFY(B1:C1, A1:A2) -> "A1"; Where this function resides in cell B1 and where A1="A1" and A2="A2"
+    '@Example: =ROWIFY(B1:C1, A1:A2) -> "A2"; Where this function resides in cell C1 and where A1="A1" and A2="A2"
 
     Dim i As Integer
     Dim individualRange As Range
@@ -423,8 +463,8 @@ As Variant
     '@Param: rangeArray is the range that will be summed
     '@Param: numberSummed is the number of the top values that will be summed
     '@Returns: Returns the sum of the top numbers specified
-    '@Example: =SUMHIGH(A1:A4, 2) -> 7; Where A1=1, A2=2, A3=3, A4=4
-    '@Example: =SUMHIGH(A1:A4, 3) -> 9; Where A1=1, A2=2, A3=3, A4=4
+    '@Example: =SUMHIGH(A1:A4, 2) -> 7; Where A1=1, A2=2, A3=3, A4=4; 4 and 3 are summed to 7
+    '@Example: =SUMHIGH(A1:A4, 3) -> 9; Where A1=1, A2=2, A3=3, A4=4; 4, 3, and 2 are summed to 9
 
     Dim i As Integer
     Dim sumValue As Double
@@ -451,8 +491,8 @@ As Variant
     '@Param: rangeArray is the range that will be summed
     '@Param: numberSummed is the number of the bottom values that will be summed
     '@Returns: Returns the sum of the bottom numbers specified
-    '@Example: =SUMLOW(A1:A4, 2) -> 3; Where A1=1, A2=2, A3=3, A4=4
-    '@Example: =SUMLOW(A1:A4, 3) -> 6; Where A1=1, A2=2, A3=3, A4=4
+    '@Example: =SUMLOW(A1:A4, 2) -> 3; Where A1=1, A2=2, A3=3, A4=4; 1 and 2 are summed to 3
+    '@Example: =SUMLOW(A1:A4, 3) -> 6; Where A1=1, A2=2, A3=3, A4=4; 1, 2, and 3 are summed to 6
 
     Dim i As Integer
     Dim sumValue As Double
@@ -479,8 +519,8 @@ As Variant
     '@Param: rangeArray is the range that will be averaged
     '@Param: numberAveraged is the number of the top values that will be averaged
     '@Returns: Returns the average of the top numbers specified
-    '@Example: =AVERAGEHIGH(A1:A4, 2) -> 3.5; Where A1=1, A2=2, A3=3, A4=4
-    '@Example: =AVERAGEHIGH(A1:A4, 3) -> 3; Where A1=1, A2=2, A3=3, A4=4
+    '@Example: =AVERAGEHIGH(A1:A4, 2) -> 3.5; Where A1=1, A2=2, A3=3, A4=4; 4 and 3 are averaged to 3.5
+    '@Example: =AVERAGEHIGH(A1:A4, 3) -> 3; Where A1=1, A2=2, A3=3, A4=4; 4, 3, and 2 are averaged to 3
 
     Dim i As Integer
     Dim sumValue As Double
@@ -507,8 +547,8 @@ As Variant
     '@Param: rangeArray is the range that will be averaged
     '@Param: numberAveraged is the number of the bottom values that will be averaged
     '@Returns: Returns the average of the bottom numbers specified
-    '@Example: =AVERAGEHIGH(A1:A4, 2) -> 3.5; Where A1=1, A2=2, A3=3, A4=4
-    '@Example: =AVERAGEHIGH(A1:A4, 3) -> 3; Where A1=1, A2=2, A3=3, A4=4
+    '@Example: =AVERAGELOW(A1:A4, 2) -> 1.5; Where A1=1, A2=2, A3=3, A4=4; 1 and 2 are averaged as 1.5
+    '@Example: =AVERAGELOW(A1:A4, 3) -> 2; Where A1=1, A2=2, A3=3, A4=4; 1, 2, and 3 are averaged to 2
 
     Dim i As Integer
     Dim sumValue As Double
@@ -562,3 +602,120 @@ As Boolean
     INRANGE = False
 
 End Function
+
+
+Public Function COUNT_UNIQUE_COLORS( _
+    ParamArray rangeArray() As Variant) _
+As Integer
+
+    '@Description: This function counts the number of unique background colors of the cells in a range or multiple ranges
+    '@Author: Anthony Mancini
+    '@Version: 1.0.0
+    '@License: MIT
+    '@Param: rangeArray is a range or multiple ranges whose colors will be counted
+    '@Returns: Returns the number of unique background colors of all the cells
+    '@Example: =COUNT_UNIQUE_COLORS(A1:A3) -> 3; Where all the cells have a unique background color
+    '@Example: =COUNT_UNIQUE_COLORS(A1:A3) -> 2; Where A1 and A2 have the same background color
+
+    Dim colorCount As Integer
+    Dim colorDictionary As Object
+    Dim individualRange As Variant
+    Dim individualCell As Range
+    
+    Set colorDictionary = CreateObject("Scripting.Dictionary")
+    
+    For Each individualRange In rangeArray
+        For Each individualCell In individualRange
+            If Not colorDictionary.Exists(individualCell.Interior.Color) Then
+                colorDictionary.Add individualCell.Interior.Color, "0"
+                colorCount = colorCount + 1
+            End If
+        Next
+    Next
+    
+    COUNT_UNIQUE_COLORS = colorCount
+
+End Function
+
+
+Public Function ALTERNATE_COLUMNS( _
+    ByVal rangeGrid As Range, _
+    ByVal outputRange As Range) _
+As Variant
+
+    '@Description: This function takes a grid of cells, and converts the grid into a single columns where the values of the grid alternate between the columns in the grid.
+    '@Author: Anthony Mancini
+    '@Version: 1.0.0
+    '@License: MIT
+    '@Param: rangeGrid is a grid of cells
+    '@Param: outputRange is the column that will be populated with the data from the grid
+    '@Returns: Returns one of the values from the grid in alternating column order
+    '@Example: =ALTERNATE_COLUMNS($A$1:$B$2, $C$1:$C$4) -> "A1 Value"; Where this function is the 1st cell in the column
+    '@Example: =ALTERNATE_COLUMNS($A$1:$B$2, $C$1:$C$4) -> "B1 Value"; Where this function is the 2nd cell in the column
+    '@Example: =ALTERNATE_COLUMNS($A$1:$B$2, $C$1:$C$4) -> "A2 Value"; Where this function is the 3rd cell in the column
+    '@Example: =ALTERNATE_COLUMNS($A$1:$B$2, $C$1:$C$4) -> "B2 Value"; Where this function is the 4th cell in the column
+
+    Dim cellPosition As Integer
+    Dim individualRange As Range
+    Dim addressFoundFlag As Boolean
+    
+    For Each individualRange In outputRange
+        cellPosition = cellPosition + 1
+        If individualRange.Address = Application.Caller.Address Then
+            addressFoundFlag = True
+            Exit For
+        End If
+    Next
+    
+    If addressFoundFlag Then
+        ALTERNATE_COLUMNS = rangeGrid(cellPosition).Value
+    Else
+        ALTERNATE_COLUMNS = ""
+    End If
+
+End Function
+
+
+Public Function ALTERNATE_ROWS( _
+    ByVal rangeGrid As Range, _
+    ByVal outputRange As Range) _
+As Variant
+
+    '@Description: This function takes a grid of cells, and converts the grid into a single columns where the values of the grid alternate between the rows in the grid.
+    '@Author: Anthony Mancini
+    '@Version: 1.0.0
+    '@License: MIT
+    '@Param: rangeGrid is a grid of cells
+    '@Param: outputRange is the column that will be populated with the data from the grid
+    '@Returns: Returns one of the values from the grid in alternating row order
+    '@Example: =ALTERNATE_ROWS($A$1:$B$2, $C$1:$C$4) -> "A1 Value"; Where this function is the 1st cell in the column
+    '@Example: =ALTERNATE_ROWS($A$1:$B$2, $C$1:$C$4) -> "A2 Value"; Where this function is the 2nd cell in the column
+    '@Example: =ALTERNATE_ROWS($A$1:$B$2, $C$1:$C$4) -> "B1 Value"; Where this function is the 3rd cell in the column
+    '@Example: =ALTERNATE_ROWS($A$1:$B$2, $C$1:$C$4) -> "B2 Value"; Where this function is the 4th cell in the column
+
+    Dim cellPosition As Integer
+    Dim individualRange As Range
+    Dim addressFoundFlag As Boolean
+    
+    For Each individualRange In outputRange
+        If individualRange.Address = Application.Caller.Address Then
+            addressFoundFlag = True
+            Exit For
+        End If
+        cellPosition = cellPosition + 1
+    Next
+    
+    Dim rowNumber As Integer
+    Dim cellNumber As Integer
+    
+    rowNumber = cellPosition Mod rangeGrid.Rows().Count
+    cellNumber = WorksheetFunction.Floor_Math(cellPosition / rangeGrid.Rows().Count) + 1
+    
+    If addressFoundFlag Then
+        ALTERNATE_ROWS = rangeGrid(rowNumber * rangeGrid.Rows().Count + cellNumber).Value
+    Else
+        ALTERNATE_ROWS = ""
+    End If
+
+End Function
+

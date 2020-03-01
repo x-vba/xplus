@@ -267,10 +267,54 @@ Else
 DAYS_OF_MONTH = "#NotAValidMonthNumberOrName"
 End If
 End Function
+Public Function WEEK_OF_MONTH(Optional ByVal date1 As Date) As Byte
+Dim weekNumber As Byte
+Dim currentDay As Byte
+Dim currentWeekday As Byte
+weekNumber = 1
+If Year(date1) = 1899 Then
+currentDay = Day(Now())
+currentWeekday = Weekday(Now())
+Else
+currentDay = Day(date1)
+currentWeekday = Weekday(date1)
+End If
+While currentDay <> 0
+If currentWeekday = 0 Then
+weekNumber = weekNumber + 1
+currentWeekday = 7
+End If
+currentDay = currentDay - 1
+currentWeekday = currentWeekday - 1
+Wend
+WEEK_OF_MONTH = weekNumber
+End Function
 Public Function ENVIRONMENT(ByVal environmentVariableNameString$) As String
-Dim WshShell As Object
-Set WshShell = CreateObject("Wscript.Shell")
-ENVIRONMENT = WshShell.ExpandEnvironmentStrings("%" & environmentVariableNameString & "%")
+ENVIRONMENT = Environ(environmentVariableNameString)
+End Function
+Public Function OS() As String
+#If Mac Then
+OS = "Mac"
+#Else
+OS = "Windows"
+#End If
+End Function
+Public Function USER_NAME() As String
+#If Mac Then
+USER_NAME = Environ("USER")
+#Else
+USER_NAME = Environ("USERNAME")
+#End If
+End Function
+Public Function USER_DOMAIN() As String
+#If Mac Then
+USER_DOMAIN = Environ("HOST")
+#Else
+USER_DOMAIN = Environ("USERDOMAIN")
+#End If
+End Function
+Public Function COMPUTER_NAME() As String
+COMPUTER_NAME = Environ("COMPUTERNAME")
 End Function
 Private Function GetActiveWorkbookPath()
 Dim filePath$
@@ -466,26 +510,497 @@ Next
 combinedPath = Left(combinedPath, Len(combinedPath) - 1)
 PATH_JOIN = combinedPath
 End Function
+Public Function COUNT_FILES(Optional ByVal filePath$) As Integer
+Dim FSO As Object
+Set FSO = CreateObject("Scripting.FileSystemObject")
+If filePath = "" Then
+COUNT_FILES = FSO.GetFolder(FSO.GetParentFolderName(GetActiveWorkbookPath())).Files.Count
+Else
+If FSO.FileExists(ThisWorkbook.Path & "\" & filePath) Then
+COUNT_FILES = FSO.GetFolder(ThisWorkbook.Path & "\" & filePath).Files.Count
+Else
+COUNT_FILES = FSO.GetFolder(filePath).Files.Count
+End If
+End If
+End Function
+Public Function COUNT_FOLDERS(Optional ByVal filePath$) As Integer
+Dim FSO As Object
+Set FSO = CreateObject("Scripting.FileSystemObject")
+If filePath = "" Then
+COUNT_FOLDERS = FSO.GetFolder(FSO.GetParentFolderName(GetActiveWorkbookPath())).SubFolders.Count
+Else
+If FSO.FileExists(ThisWorkbook.Path & "\" & filePath) Then
+COUNT_FOLDERS = FSO.GetFolder(ThisWorkbook.Path & "\" & filePath).SubFolders.Count
+Else
+COUNT_FOLDERS = FSO.GetFolder(filePath).SubFolders.Count
+End If
+End If
+End Function
+Public Function COUNT_FILES_AND_FOLDERS(Optional ByVal filePath$) As Integer
+Dim FSO As Object
+Set FSO = CreateObject("Scripting.FileSystemObject")
+If filePath = "" Then
+COUNT_FILES_AND_FOLDERS = FSO.GetFolder(FSO.GetParentFolderName(GetActiveWorkbookPath())).Files.Count + FSO.GetFolder(FSO.GetParentFolderName(GetActiveWorkbookPath())).SubFolders.Count
+Else
+If FSO.FileExists(ThisWorkbook.Path & "\" & filePath) Then
+COUNT_FILES_AND_FOLDERS = FSO.GetFolder(ThisWorkbook.Path & "\" & filePath).Files.Count + FSO.GetFolder(ThisWorkbook.Path & "\" & filePath).SubFolders.Count
+Else
+COUNT_FILES_AND_FOLDERS = FSO.GetFolder(filePath).Files.Count + FSO.GetFolder(filePath).SubFolders.Count
+End If
+End If
+End Function
+Public Function GET_FILE_NAME(Optional ByVal filePath$, Optional ByVal fileNumber% = -1) As String
+Dim FSO As Object
+Set FSO = CreateObject("Scripting.FileSystemObject")
+Dim fileCounter%
+Dim individualFile As Object
+Dim fileCollection As Object
+If filePath = "" Then
+Set fileCollection = FSO.GetFolder(FSO.GetParentFolderName(GetActiveWorkbookPath())).Files
+Else
+If FSO.FileExists(ThisWorkbook.Path & "\" & filePath) Then
+Set fileCollection = FSO.GetFolder(ThisWorkbook.Path & "\" & filePath).Files
+Else
+Set fileCollection = FSO.GetFolder(filePath).Files
+End If
+End If
+For Each individualFile In fileCollection
+fileCounter = fileCounter + 1
+If fileNumber = -1 Then
+GET_FILE_NAME = individualFile.Name
+Exit Function
+ElseIf fileCounter = fileNumber Then
+GET_FILE_NAME = individualFile.Name
+Exit Function
+End If
+Next
+End Function
 Public Function INTERPOLATE_NUMBER(ByVal startingNumber#, ByVal endingNumber#, ByVal interpolationPercentage#) As Double
 INTERPOLATE_NUMBER = startingNumber + ((endingNumber - startingNumber) * interpolationPercentage)
 End Function
 Public Function INTERPOLATE_PERCENT(ByVal startingNumber#, ByVal endingNumber#, ByVal interpolationNumber#) As Double
 INTERPOLATE_PERCENT = (interpolationNumber - startingNumber) / (endingNumber - startingNumber)
 End Function
-Public Function USER_NAME() As String
-Dim WshNetwork As Object
-Set WshNetwork = CreateObject("WScript.Network")
-USER_NAME = WshNetwork.UserName
+Public Function VERSION() As String
+VERSION = "1.2.0"
 End Function
-Public Function USER_DOMAIN() As String
-Dim WshNetwork As Object
-Set WshNetwork = CreateObject("WScript.Network")
-USER_DOMAIN = WshNetwork.UserDomain
+Public Function CREDITS() As String
+CREDITS = "Copyright (c) 2020 Anthony Mancini. XPlus is Licensed under an MIT License."
 End Function
-Public Function COMPUTER_NAME() As String
-Dim WshNetwork As Object
-Set WshNetwork = CreateObject("WScript.Network")
-COMPUTER_NAME = WshNetwork.ComputerName
+Public Function DOCUMENTATION() As String
+DOCUMENTATION = "https://x-vba.com"
+End Function
+Public Function HTTP(ByVal url$, Optional ByVal httpMethod$ = "GET", Optional ByRef headers, Optional ByVal postData = "", Optional ByVal asyncFlag As Boolean, Optional ByVal statusErrorHandlerFlag As Boolean, Optional ByRef parseArguments) As String
+Dim WinHttpRequest As Object
+Set WinHttpRequest = CreateObject("WinHttp.WinHttpRequest.5.1")
+WinHttpRequest.Open httpMethod, url, asyncFlag
+If IsArray(headers) Then
+Dim i%
+If TypeName(Application.Caller) = "Range" Then
+For i = 0 To UBound(headers) - LBound(headers) Step 2
+WinHttpRequest.SetRequestHeader headers(i + 1), headers(i + 2)
+Next
+Else
+For i = 0 To UBound(headers) - LBound(headers) Step 2
+WinHttpRequest.SetRequestHeader headers(i), headers(i + 1)
+Next
+End If
+ElseIf TypeName(headers) = "Dictionary" Then
+Dim dictKey
+For Each dictKey In headers.Keys()
+WinHttpRequest.SetRequestHeader dictKey, headers(dictKey)
+Next
+Else
+WinHttpRequest.SetRequestHeader "User-Agent", "XPlus"
+End If
+If postData = "" Then
+WinHttpRequest.Send
+Else
+WinHttpRequest.Send postData
+End If
+If statusErrorHandlerFlag Then
+If WinHttpRequest.Status = 200 Then
+HTTP = WinHttpRequest.ResponseText
+Else
+HTTP = "#RequestFailedStatusCode" & WinHttpRequest.Status & "!"
+End If
+Else
+HTTP = WinHttpRequest.ResponseText
+End If
+If IsArray(parseArguments) Then
+Dim reorderedParseArguments()
+i = UBound(parseArguments) - LBound(parseArguments)
+ReDim reorderedParseArguments(i)
+If TypeName(Application.Caller) = "Range" Then
+For i = 0 To UBound(parseArguments) - LBound(parseArguments)
+reorderedParseArguments(i) = parseArguments(i + 1)
+Next
+HTTP = PARSE_HTML_STRING(HTTP, reorderedParseArguments)
+Else
+For i = 0 To UBound(parseArguments) - LBound(parseArguments)
+reorderedParseArguments(i) = parseArguments(i)
+Next
+HTTP = PARSE_HTML_STRING(HTTP, reorderedParseArguments)
+End If
+End If
+End Function
+Public Function SIMPLE_HTTP(ByVal url$, ParamArray parseArguments()) As String
+If UBound(parseArguments) > 0 Then
+Dim i%
+Dim reorderedParseArguments()
+i = UBound(parseArguments) - LBound(parseArguments)
+ReDim reorderedParseArguments(i)
+For i = 0 To UBound(parseArguments) - LBound(parseArguments)
+reorderedParseArguments(i) = parseArguments(i)
+Next
+SIMPLE_HTTP = PARSE_HTML_STRING(HTTP(url), reorderedParseArguments)
+Else
+SIMPLE_HTTP = HTTP(url)
+End If
+End Function
+Public Function PARSE_HTML_STRING(ByVal htmlString$, ByRef parseArguments())
+Dim partialHtml$
+Dim html As Object
+Set html = CreateObject("HtmlFile")
+html.body.innerHTML = htmlString
+Dim i%
+For i = LBound(parseArguments) To UBound(parseArguments)
+If LCase(parseArguments(i)) = "id" Then
+If partialHtml <> "" Then
+html.body.innerHTML = partialHtml
+End If
+partialHtml = html.getElementById(parseArguments(i + 1)).innerHTML
+html.body.innerHTML = partialHtml
+i = i + 1
+ElseIf LCase(parseArguments(i)) = "tag" Then
+If partialHtml <> "" Then
+html.body.innerHTML = partialHtml
+End If
+partialHtml = html.getElementsByTagName(parseArguments(i + 1))(i + 2).innerHTML
+html.body.innerHTML = partialHtml
+i = i + 2
+ElseIf LCase(parseArguments(i)) = "left" Then
+If IsNumeric(parseArguments(i + 1)) And TypeName(parseArguments(i + 1)) <> "String" Then
+partialHtml = Left(partialHtml, parseArguments(i + 1))
+Else
+partialHtml = Left(partialHtml, InStr(1, partialHtml, CStr(parseArguments(i + 1)), vbTextCompare) - 1)
+End If
+i = i + 1
+ElseIf LCase(parseArguments(i)) = "right" Then
+If IsNumeric(parseArguments(i + 1)) And TypeName(parseArguments(i + 1)) <> "String" Then
+partialHtml = Right(partialHtml, parseArguments(i + 1))
+Else
+partialHtml = Right(partialHtml, Len(partialHtml) - Len(parseArguments(i + 1)) + 1 - InStrRev(partialHtml, CStr(parseArguments(i + 1)), Compare:=vbTextCompare))
+End If
+i = i + 1
+ElseIf LCase(parseArguments(i)) = "mid" Then
+If IsNumeric(parseArguments(i + 1)) And TypeName(parseArguments(i + 1)) <> "String" Then
+partialHtml = Mid(partialHtml, parseArguments(i + 1))
+Else
+partialHtml = Mid(partialHtml, Len(parseArguments(i + 1)) + InStr(1, partialHtml, CStr(parseArguments(i + 1)), vbTextCompare))
+End If
+i = i + 1
+End If
+Next
+PARSE_HTML_STRING = partialHtml
+End Function
+Public Function CONCAT_TEXT(ParamArray rangeOrStringArray()) As String
+Dim individualElement
+Dim individualRange As Range
+For Each individualElement In rangeOrStringArray
+If TypeName(individualElement) = "Range" Then
+For Each individualRange In individualElement
+CONCAT_TEXT = CONCAT_TEXT + individualRange.Value
+Next
+Else
+CONCAT_TEXT = CONCAT_TEXT + individualElement
+End If
+Next
+End Function
+Public Function MAX_IF(ByVal maxRange As Range, ByVal criteriaRange As Range, ByVal criteriaValue)
+MAX_IF = MAX_IFS(maxRange, criteriaRange, criteriaValue)
+End Function
+Public Function MAX_IFS(ByVal maxRange As Range, ParamArray criteraRangeAndCriteria())
+Dim i%
+Dim k%
+Dim maxValue
+Dim temporaryValueHolder
+Dim individualRange As Range
+Dim criteraRangeLength%
+Dim currentCriteria
+Dim maxArray()
+criteraRangeLength = UBound(criteraRangeAndCriteria) - LBound(criteraRangeAndCriteria)
+ReDim maxArray(maxRange.Count, 1)
+For i = 1 To maxRange.Count
+maxArray(i, 0) = maxRange(i).Value
+maxArray(i, 1) = True
+Next
+For i = 0 To criteraRangeLength Step 2
+currentCriteria = criteraRangeAndCriteria(i + 1)
+If TypeName(currentCriteria) = "Range" Then
+If currentCriteria.Count = 1 Then
+currentCriteria = currentCriteria.Value
+End If
+End If
+If TypeName(currentCriteria) = "String" Then
+If Left(currentCriteria, 2) = "<>" Then
+temporaryValueHolder = CDbl(Mid(currentCriteria, 3))
+For k = 1 To criteraRangeAndCriteria(i).Count
+If criteraRangeAndCriteria(i)(k).Value <> temporaryValueHolder Then
+If maxArray(k, 1) <> False Then
+maxArray(k, 1) = True
+End If
+Else
+maxArray(k, 1) = False
+End If
+Next
+ElseIf Left(currentCriteria, 2) = ">=" Then
+temporaryValueHolder = CDbl(Mid(currentCriteria, 3))
+For k = 1 To criteraRangeAndCriteria(i).Count
+If criteraRangeAndCriteria(i)(k).Value >= temporaryValueHolder Then
+If maxArray(k, 1) <> False Then
+maxArray(k, 1) = True
+End If
+Else
+maxArray(k, 1) = False
+End If
+Next
+ElseIf Left(currentCriteria, 2) = "<=" Then
+temporaryValueHolder = CDbl(Mid(currentCriteria, 3))
+For k = 1 To criteraRangeAndCriteria(i).Count
+If criteraRangeAndCriteria(i)(k).Value <= temporaryValueHolder Then
+If maxArray(k, 1) <> False Then
+maxArray(k, 1) = True
+End If
+Else
+maxArray(k, 1) = False
+End If
+Next
+ElseIf Left(currentCriteria, 1) = ">" Then
+temporaryValueHolder = CDbl(Mid(currentCriteria, 2))
+For k = 1 To criteraRangeAndCriteria(i).Count
+If criteraRangeAndCriteria(i)(k).Value > temporaryValueHolder Then
+If maxArray(k, 1) <> False Then
+maxArray(k, 1) = True
+End If
+Else
+maxArray(k, 1) = False
+End If
+Next
+ElseIf Left(currentCriteria, 1) = "<" Then
+temporaryValueHolder = CDbl(Mid(currentCriteria, 2))
+For k = 1 To criteraRangeAndCriteria(i).Count
+If criteraRangeAndCriteria(i)(k).Value < temporaryValueHolder Then
+If maxArray(k, 1) <> False Then
+maxArray(k, 1) = True
+End If
+Else
+maxArray(k, 1) = False
+End If
+Next
+Else
+temporaryValueHolder = currentCriteria
+For k = 1 To criteraRangeAndCriteria(i).Count
+If CStr(criteraRangeAndCriteria(i)(k).Value) = temporaryValueHolder Then
+If maxArray(k, 1) <> False Then
+maxArray(k, 1) = True
+End If
+Else
+maxArray(k, 1) = False
+End If
+Next
+End If
+ElseIf IsNumeric(currentCriteria) Then
+temporaryValueHolder = currentCriteria
+For k = 1 To criteraRangeAndCriteria(i).Count
+If criteraRangeAndCriteria(i)(k).Value = temporaryValueHolder Then
+If maxArray(k, 1) <> False Then
+maxArray(k, 1) = True
+End If
+Else
+maxArray(k, 1) = False
+End If
+Next
+ElseIf TypeName(currentCriteria) = "Range" Then
+For Each individualRange In currentCriteria
+temporaryValueHolder = individualRange.Value
+For k = 1 To criteraRangeAndCriteria(i).Count
+If criteraRangeAndCriteria(i)(k).Value = temporaryValueHolder Then
+If maxArray(k, 1) <> False Then
+maxArray(k, 1) = True
+End If
+Else
+maxArray(k, 1) = False
+End If
+Next
+Next
+End If
+Next
+For i = 1 To maxRange.Count
+If maxArray(i, 1) Then
+If IsEmpty(maxValue) Then
+maxValue = maxArray(i, 0)
+ElseIf maxValue < maxArray(i, 0) Then
+maxValue = maxArray(i, 0)
+End If
+End If
+Next
+If IsEmpty(maxValue) Then
+MAX_IFS = "#NoCriteriaSatisfied!"
+Else
+MAX_IFS = maxValue
+End If
+End Function
+Public Function MIN_IF(ByVal minRange As Range, ByVal criteriaRange As Range, ByVal criteriaValue)
+MIN_IF = MIN_IFS(minRange, criteriaRange, criteriaValue)
+End Function
+Public Function MIN_IFS(ByVal minRange As Range, ParamArray criteraRangeAndCriteria())
+Dim i%
+Dim k%
+Dim minValue
+Dim temporaryValueHolder
+Dim individualRange As Range
+Dim criteraRangeLength%
+Dim currentCriteria
+Dim minArray()
+criteraRangeLength = UBound(criteraRangeAndCriteria) - LBound(criteraRangeAndCriteria)
+ReDim minArray(minRange.Count, 1)
+For i = 1 To minRange.Count
+minArray(i, 0) = minRange(i).Value
+minArray(i, 1) = True
+Next
+For i = 0 To criteraRangeLength Step 2
+currentCriteria = criteraRangeAndCriteria(i + 1)
+If TypeName(currentCriteria) = "Range" Then
+If currentCriteria.Count = 1 Then
+currentCriteria = currentCriteria.Value
+End If
+End If
+If TypeName(currentCriteria) = "String" Then
+If Left(currentCriteria, 2) = "<>" Then
+temporaryValueHolder = CDbl(Mid(currentCriteria, 3))
+For k = 1 To criteraRangeAndCriteria(i).Count
+If criteraRangeAndCriteria(i)(k).Value <> temporaryValueHolder Then
+If minArray(k, 1) <> False Then
+minArray(k, 1) = True
+End If
+Else
+minArray(k, 1) = False
+End If
+Next
+ElseIf Left(currentCriteria, 2) = ">=" Then
+temporaryValueHolder = CDbl(Mid(currentCriteria, 3))
+For k = 1 To criteraRangeAndCriteria(i).Count
+If criteraRangeAndCriteria(i)(k).Value >= temporaryValueHolder Then
+If minArray(k, 1) <> False Then
+minArray(k, 1) = True
+End If
+Else
+minArray(k, 1) = False
+End If
+Next
+ElseIf Left(currentCriteria, 2) = "<=" Then
+temporaryValueHolder = CDbl(Mid(currentCriteria, 3))
+For k = 1 To criteraRangeAndCriteria(i).Count
+If criteraRangeAndCriteria(i)(k).Value <= temporaryValueHolder Then
+If minArray(k, 1) <> False Then
+minArray(k, 1) = True
+End If
+Else
+minArray(k, 1) = False
+End If
+Next
+ElseIf Left(currentCriteria, 1) = ">" Then
+temporaryValueHolder = CDbl(Mid(currentCriteria, 2))
+For k = 1 To criteraRangeAndCriteria(i).Count
+If criteraRangeAndCriteria(i)(k).Value > temporaryValueHolder Then
+If minArray(k, 1) <> False Then
+minArray(k, 1) = True
+End If
+Else
+minArray(k, 1) = False
+End If
+Next
+ElseIf Left(currentCriteria, 1) = "<" Then
+temporaryValueHolder = CDbl(Mid(currentCriteria, 2))
+For k = 1 To criteraRangeAndCriteria(i).Count
+If criteraRangeAndCriteria(i)(k).Value < temporaryValueHolder Then
+If minArray(k, 1) <> False Then
+minArray(k, 1) = True
+End If
+Else
+minArray(k, 1) = False
+End If
+Next
+Else
+temporaryValueHolder = currentCriteria
+For k = 1 To criteraRangeAndCriteria(i).Count
+If CStr(criteraRangeAndCriteria(i)(k).Value) = temporaryValueHolder Then
+If minArray(k, 1) <> False Then
+minArray(k, 1) = True
+End If
+Else
+minArray(k, 1) = False
+End If
+Next
+End If
+ElseIf IsNumeric(currentCriteria) Then
+temporaryValueHolder = currentCriteria
+For k = 1 To criteraRangeAndCriteria(i).Count
+If criteraRangeAndCriteria(i)(k).Value = temporaryValueHolder Then
+If minArray(k, 1) <> False Then
+minArray(k, 1) = True
+End If
+Else
+minArray(k, 1) = False
+End If
+Next
+ElseIf TypeName(currentCriteria) = "Range" Then
+For Each individualRange In currentCriteria
+temporaryValueHolder = individualRange.Value
+For k = 1 To criteraRangeAndCriteria(i).Count
+If criteraRangeAndCriteria(i)(k).Value = temporaryValueHolder Then
+If minArray(k, 1) <> False Then
+minArray(k, 1) = True
+End If
+Else
+minArray(k, 1) = False
+End If
+Next
+Next
+End If
+Next
+For i = 1 To minRange.Count
+If minArray(i, 1) Then
+If IsEmpty(minValue) Then
+minValue = minArray(i, 0)
+ElseIf minValue > minArray(i, 0) Then
+minValue = minArray(i, 0)
+End If
+End If
+Next
+If IsEmpty(minValue) Then
+MIN_IFS = "#NoCriteriaSatisfied!"
+Else
+MIN_IFS = minValue
+End If
+End Function
+Public Function TEXT_JOIN(ByVal rangeArray As Range, Optional ByVal delimiterCharacter$, Optional ByVal ignoreEmptyCellsFlag As Boolean) As String
+Dim individualRange As Range
+Dim combinedString$
+For Each individualRange In rangeArray
+If ignoreEmptyCellsFlag Then
+If Not IsEmpty(individualRange.Value) Then
+combinedString = combinedString & individualRange.Value & delimiterCharacter
+End If
+Else
+combinedString = combinedString & individualRange.Value & delimiterCharacter
+End If
+Next
+If delimiterCharacter <> "" Then
+combinedString = Left(combinedString, InStrRev(combinedString, delimiterCharacter) - 1)
+End If
+TEXT_JOIN = combinedString
 End Function
 Public Function RANGE_COMMENT(ByVal range1 As Range, Optional ByVal excludeUsername As Boolean) As String
 Application.Volatile
@@ -518,6 +1033,10 @@ End Function
 Public Function RANGE_HEIGHT(ByVal range1 As Range) As Double
 Application.Volatile
 RANGE_HEIGHT = range1.Height
+End Function
+Public Function RANGE_COLOR(ByVal range1 As Range) As Long
+Application.Volatile
+RANGE_COLOR = range1.Interior.Color
 End Function
 Public Function SHEET_NAME(Optional ByVal sheetNameOrNumber) As String
 Application.Volatile
@@ -699,6 +1218,17 @@ randomValue = dataGrid(1, 1)
 End If
 RANDOM_SAMPLE_PERCENT = randomValue
 End Function
+Public Function RANDBOOL() As Boolean
+RANDBOOL = CBool(WorksheetFunction.RandBetween(0, 1))
+End Function
+Public Function RANDBETWEENS(ParamArray startOrEndNumberArray())
+Dim pickNumber As Byte
+If (UBound(startOrEndNumberArray) - LBound(startOrEndNumberArray) + 1) Mod 2 = 1 Then
+RANDBETWEENS = "#NotAnEvenNumberOfParameters!"
+End If
+pickNumber = WorksheetFunction.Ceiling_Math(WorksheetFunction.RandBetween(1, (UBound(startOrEndNumberArray) - LBound(startOrEndNumberArray) + 1)) / 2) * 2
+RANDBETWEENS = WorksheetFunction.RandBetween(startOrEndNumberArray(pickNumber - 2), startOrEndNumberArray(pickNumber - 1))
+End Function
 Public Function FIRST_UNIQUE(ByVal range1 As Range, ByVal rangeArray As Range) As Boolean
 Dim individualRange As Range
 For Each individualRange In rangeArray
@@ -712,6 +1242,29 @@ Exit For
 End If
 End If
 Next
+End Function
+Public Function COUNT_UNIQUE(ParamArray rangeArray()) As Integer
+Dim individualValue
+Dim individualRange As Range
+Dim uniqueDictionary As Object
+Dim uniqueCount%
+Set uniqueDictionary = CreateObject("Scripting.Dictionary")
+For Each individualValue In rangeArray
+If TypeName(individualValue) = "Range" Then
+For Each individualRange In individualValue
+If Not uniqueDictionary.exists(individualRange.Value) Then
+uniqueDictionary.Add individualRange.Value, 0
+uniqueCount = uniqueCount + 1
+End If
+Next
+Else
+If Not uniqueDictionary.exists(individualValue) Then
+uniqueDictionary.Add individualValue, 0
+uniqueCount = uniqueCount + 1
+End If
+End If
+Next
+COUNT_UNIQUE = uniqueCount
 End Function
 Private Function BubbleSort(ByRef sortableArray, Optional ByVal descendingFlag As Boolean)
 Dim i%
@@ -942,11 +1495,64 @@ Next
 End If
 INRANGE = False
 End Function
+Public Function COUNT_UNIQUE_COLORS(ParamArray rangeArray()) As Integer
+Dim colorCount%
+Dim colorDictionary As Object
+Dim individualRange
+Dim individualCell As Range
+Set colorDictionary = CreateObject("Scripting.Dictionary")
+For Each individualRange In rangeArray
+For Each individualCell In individualRange
+If Not colorDictionary.exists(individualCell.Interior.Color) Then
+colorDictionary.Add individualCell.Interior.Color, "0"
+colorCount = colorCount + 1
+End If
+Next
+Next
+COUNT_UNIQUE_COLORS = colorCount
+End Function
+Public Function ALTERNATE_COLUMNS(ByVal rangeGrid As Range, ByVal outputRange As Range)
+Dim cellPosition%
+Dim individualRange As Range
+Dim addressFoundFlag As Boolean
+For Each individualRange In outputRange
+cellPosition = cellPosition + 1
+If individualRange.Address = Application.Caller.Address Then
+addressFoundFlag = True
+Exit For
+End If
+Next
+If addressFoundFlag Then
+ALTERNATE_COLUMNS = rangeGrid(cellPosition).Value
+Else
+ALTERNATE_COLUMNS = ""
+End If
+End Function
+Public Function ALTERNATE_ROWS(ByVal rangeGrid As Range, ByVal outputRange As Range)
+Dim cellPosition%
+Dim individualRange As Range
+Dim addressFoundFlag As Boolean
+For Each individualRange In outputRange
+If individualRange.Address = Application.Caller.Address Then
+addressFoundFlag = True
+Exit For
+End If
+cellPosition = cellPosition + 1
+Next
+Dim rowNumber%
+Dim cellNumber%
+rowNumber = cellPosition Mod rangeGrid.Rows().Count
+cellNumber = WorksheetFunction.Floor_Math(cellPosition / rangeGrid.Rows().Count) + 1
+If addressFoundFlag Then
+ALTERNATE_ROWS = rangeGrid(rowNumber * rangeGrid.Rows().Count + cellNumber).Value
+Else
+ALTERNATE_ROWS = ""
+End If
+End Function
 Public Function REGEX_SEARCH(ByVal string1$, ByVal stringPattern$, Optional ByVal globalFlag As Boolean, Optional ByVal ignoreCaseFlag As Boolean, Optional ByVal multilineFlag As Boolean) As String
 Dim Regex As Object
 Set Regex = CreateObject("VBScript.RegExp")
 Dim searchResults As Object
-Dim regexResult As Object
 With Regex
 .Global = globalFlag
 .IgnoreCase = ignoreCaseFlag
@@ -959,8 +1565,6 @@ End Function
 Public Function REGEX_TEST(ByVal string1$, ByVal stringPattern$, Optional ByVal globalFlag As Boolean, Optional ByVal ignoreCaseFlag As Boolean, Optional ByVal multilineFlag As Boolean) As Boolean
 Dim Regex As Object
 Set Regex = CreateObject("VBScript.RegExp")
-Dim searchResults As Object
-Dim regexResult As Object
 With Regex
 .Global = globalFlag
 .IgnoreCase = ignoreCaseFlag
@@ -972,8 +1576,6 @@ End Function
 Public Function REGEX_REPLACE(ByVal string1$, ByVal stringPattern$, ByVal replacementString$, Optional ByVal globalFlag As Boolean, Optional ByVal ignoreCaseFlag As Boolean, Optional ByVal multilineFlag As Boolean) As String
 Dim Regex As Object
 Set Regex = CreateObject("VBScript.RegExp")
-Dim searchResults As Object
-Dim regexResult As Object
 With Regex
 .Global = globalFlag
 .IgnoreCase = ignoreCaseFlag
@@ -1000,16 +1602,27 @@ End Function
 Public Function SUBSTR(ByVal string1$, ByVal startCharacterNumber%, ByVal endCharacterNumber%) As String
 SUBSTR = Mid(string1, startCharacterNumber, endCharacterNumber - startCharacterNumber)
 End Function
-Public Function SUBSTR_SEARCH(ByVal string1$, ByVal leftSearchString$, ByVal rightSearchString$, Optional ByVal noninclusiveFlag As Boolean) As String
+Public Function SUBSTR_FIND(ByVal string1$, ByVal leftSearchString$, ByVal rightSearchString$, Optional ByVal noninclusiveFlag As Boolean) As String
 Dim leftCharacterNumber%
 Dim rightCharacterNumber%
 leftCharacterNumber = InStr(1, string1, leftSearchString)
 rightCharacterNumber = InStrRev(string1, rightSearchString)
 If noninclusiveFlag = True Then
-leftCharacterNumber = leftCharacterNumber + 1
-rightCharacterNumber = rightCharacterNumber - 1
+leftCharacterNumber = leftCharacterNumber + Len(leftSearchString)
+rightCharacterNumber = rightCharacterNumber - Len(rightSearchString)
 End If
-SUBSTR_SEARCH = Mid(string1, leftCharacterNumber, rightCharacterNumber - leftCharacterNumber + 1)
+SUBSTR_FIND = Mid(string1, leftCharacterNumber, rightCharacterNumber - leftCharacterNumber + Len(rightSearchString))
+End Function
+Public Function SUBSTR_SEARCH(ByVal string1$, ByVal leftSearchString$, ByVal rightSearchString$, Optional ByVal noninclusiveFlag As Boolean) As String
+Dim leftCharacterNumber%
+Dim rightCharacterNumber%
+leftCharacterNumber = InStr(1, string1, leftSearchString, vbTextCompare)
+rightCharacterNumber = InStrRev(string1, rightSearchString, Compare:=vbTextCompare)
+If noninclusiveFlag = True Then
+leftCharacterNumber = leftCharacterNumber + Len(leftSearchString)
+rightCharacterNumber = rightCharacterNumber - Len(rightSearchString)
+End If
+SUBSTR_SEARCH = Mid(string1, leftCharacterNumber, rightCharacterNumber - leftCharacterNumber + Len(rightSearchString))
 End Function
 Public Function REPEAT(ByVal string1$, ByVal numberOfRepeats%) As String
 Dim i%
@@ -1037,10 +1650,7 @@ End If
 Next
 FORMATTER = formatString
 End Function
-Public Function ZFILL(ByVal string1$, ByVal fillLength As Byte, Optional ByVal fillCharacter$, Optional ByVal rightToLeftFlag As Boolean) As String
-If fillCharacter = "" Then
-fillCharacter = "0"
-End If
+Public Function ZFILL(ByVal string1$, ByVal fillLength As Byte, Optional ByVal fillCharacter$ = "0", Optional ByVal rightToLeftFlag As Boolean) As String
 While Len(string1) < fillLength
 If rightToLeftFlag = False Then
 string1 = fillCharacter + string1
@@ -1050,37 +1660,12 @@ End If
 Wend
 ZFILL = string1
 End Function
-Public Function TEXT_JOIN(ByVal rangeArray As Range, Optional ByVal delimiterCharacter$, Optional ByVal ignoreEmptyCellsFlag As Boolean) As String
-Dim individualRange As Range
-Dim combinedString$
-For Each individualRange In rangeArray
-If ignoreEmptyCellsFlag Then
-If Not IsEmpty(individualRange.Value) Then
-combinedString = combinedString & individualRange.Value & delimiterCharacter
-End If
-Else
-combinedString = combinedString & individualRange.Value & delimiterCharacter
-End If
-Next
-If delimiterCharacter <> "" Then
-combinedString = Left(combinedString, InStrRev(combinedString, delimiterCharacter) - 1)
-End If
-TEXT_JOIN = combinedString
-End Function
-Public Function SPLIT_TEXT(ByVal string1$, ByVal substringNumber%, Optional ByVal delimiterString$) As String
-If delimiterString = "" Then
-SPLIT_TEXT = SPLIT(string1, " ")(substringNumber - 1)
-Else
+Public Function SPLIT_TEXT(ByVal string1$, ByVal substringNumber%, Optional ByVal delimiterString$ = " ") As String
 SPLIT_TEXT = SPLIT(string1, delimiterString)(substringNumber - 1)
-End If
 End Function
-Public Function COUNT_WORDS(ByVal string1$, Optional ByVal delimiterString$) As Integer
+Public Function COUNT_WORDS(ByVal string1$, Optional ByVal delimiterString$ = " ") As Integer
 Dim stringArray() As String
-If delimiterString = "" Then
-stringArray = SPLIT(string1, " ")
-Else
 stringArray = SPLIT(string1, delimiterString)
-End If
 COUNT_WORDS = UBound(stringArray) - LBound(stringArray) + 1
 End Function
 Public Function CAMEL_CASE(ByVal string1$) As String
@@ -1162,6 +1747,219 @@ End If
 Next
 COMPANY_CASE = string1
 End Function
+Public Function REVERSE_TEXT(ByVal string1$) As String
+Dim i%
+Dim reversedString$
+For i = 1 To Len(string1)
+reversedString = reversedString & Mid(string1, Len(string1) - i + 1, 1)
+Next
+REVERSE_TEXT = reversedString
+End Function
+Public Function REVERSE_WORDS(ByVal string1$, Optional ByVal delimiterCharacter$ = " ") As String
+Dim i%
+Dim stringArray() As String
+Dim stringArrayLength%
+Dim reversedStringArray() As String
+stringArray = SPLIT(string1, delimiterCharacter)
+stringArrayLength = (UBound(stringArray) - LBound(stringArray))
+ReDim reversedStringArray(stringArrayLength)
+For i = 0 To stringArrayLength
+reversedStringArray(i) = stringArray(stringArrayLength - i)
+Next
+REVERSE_WORDS = Join(reversedStringArray, delimiterCharacter)
+End Function
+Public Function INDENT(ByVal string1$, Optional ByVal indentAmount As Byte = 4) As String
+Dim i%
+Dim stringArray() As String
+stringArray = SPLIT(string1, Chr(10))
+string1 = ""
+For i = 1 To indentAmount
+string1 = string1 & " "
+Next
+For i = 0 To (UBound(stringArray) - LBound(stringArray))
+stringArray(i) = string1 & stringArray(i)
+Next
+INDENT = Join(stringArray, Chr(10))
+End Function
+Public Function DEDENT(ByVal string1$) As String
+Dim i%
+Dim stringArray() As String
+stringArray = SPLIT(string1, Chr(10))
+For i = 0 To (UBound(stringArray) - LBound(stringArray))
+stringArray(i) = Trim(stringArray(i))
+Next
+DEDENT = Join(stringArray, Chr(10))
+End Function
+Public Function SHORTEN(ByVal string1$, Optional ByVal shortenWidth% = 80, Optional ByVal placeholderText$ = "[...]", Optional ByVal delimiterCharacter$ = " ") As String
+Dim shortenedString$
+Dim individualString
+Dim stringArray() As String
+If Len(string1) <= (shortenWidth - Len(placeholderText) - Len(delimiterCharacter)) Then
+SHORTEN = string1
+Exit Function
+End If
+stringArray = SPLIT(string1, delimiterCharacter)
+For Each individualString In stringArray
+If Len(shortenedString & individualString) > (shortenWidth - Len(placeholderText) - Len(delimiterCharacter)) Then
+shortenedString = shortenedString & placeholderText
+Exit For
+Else
+shortenedString = shortenedString & individualString & delimiterCharacter
+End If
+Next
+SHORTEN = shortenedString
+End Function
+Public Function INSPLIT(ByVal string1$, ByVal splitString$, Optional ByVal delimiterCharacter$ = " ") As Boolean
+Dim individualString
+For Each individualString In SPLIT(splitString, delimiterCharacter)
+If string1 = individualString Then
+INSPLIT = True
+Exit Function
+End If
+Next
+INSPLIT = False
+End Function
+Public Function ELITE_CASE(ByVal string1$) As String
+string1 = Replace(string1, "o", "0", Compare:=vbTextCompare)
+string1 = Replace(string1, "l", "1", Compare:=vbTextCompare)
+string1 = Replace(string1, "z", "2", Compare:=vbTextCompare)
+string1 = Replace(string1, "e", "3", Compare:=vbTextCompare)
+string1 = Replace(string1, "a", "4", Compare:=vbTextCompare)
+string1 = Replace(string1, "s", "5", Compare:=vbTextCompare)
+string1 = Replace(string1, "t", "7", Compare:=vbTextCompare)
+ELITE_CASE = string1
+End Function
+Public Function SCRAMBLE_CASE(ByVal string1$) As String
+Dim i%
+For i = 1 To Len(string1)
+If WorksheetFunction.RandBetween(0, 1) = 1 Then
+Mid(string1, i, 1) = UCase(Mid(string1, i, 1))
+Else
+Mid(string1, i, 1) = LCase(Mid(string1, i, 1))
+End If
+Next
+SCRAMBLE_CASE = string1
+End Function
+Public Function LEFT_SPLIT(ByVal string1$, ByVal numberOfSplit%, Optional ByVal delimiterCharacter$ = " ") As String
+Dim i%
+Dim newString$
+Dim stringArray() As String
+Dim stringArrayLength%
+numberOfSplit = numberOfSplit - 1
+stringArray = SPLIT(string1, delimiterCharacter)
+stringArrayLength = (UBound(stringArray) - LBound(stringArray) + 1)
+If numberOfSplit >= stringArrayLength Then
+LEFT_SPLIT = string1
+Exit Function
+End If
+For i = 0 To numberOfSplit
+If i = numberOfSplit Then
+newString = newString & stringArray(i)
+Else
+newString = newString & stringArray(i) & delimiterCharacter
+End If
+Next
+LEFT_SPLIT = newString
+End Function
+Public Function RIGHT_SPLIT(ByVal string1$, ByVal numberOfSplit%, Optional ByVal delimiterCharacter$ = " ") As String
+Dim i%
+Dim newString$
+Dim stringArray() As String
+Dim stringArrayLength%
+numberOfSplit = numberOfSplit - 1
+stringArray = SPLIT(string1, delimiterCharacter)
+stringArrayLength = (UBound(stringArray) - LBound(stringArray) + 1)
+If numberOfSplit >= stringArrayLength Then
+RIGHT_SPLIT = string1
+Exit Function
+End If
+For i = 0 To numberOfSplit
+If i = numberOfSplit Then
+newString = newString & stringArray(stringArrayLength - (numberOfSplit - i) - 1)
+Else
+newString = newString & stringArray(stringArrayLength - (numberOfSplit - i) - 1) & delimiterCharacter
+End If
+Next
+RIGHT_SPLIT = newString
+End Function
+Public Function SUBSTITUTE_ALL(ByVal string1$, ByVal oldTextRange As Range, ByVal newTextRange As Range) As String
+If oldTextRange.Count <> newTextRange.Count Then
+SUBSTITUTE_ALL = "#OldAndNewRangeNotSameLength!"
+Exit Function
+End If
+If oldTextRange.Columns.Count <> newTextRange.Columns.Count Then
+SUBSTITUTE_ALL = "#OldAndNewRangeNotSameLength!"
+Exit Function
+End If
+If oldTextRange.Rows.Count <> newTextRange.Rows.Count Then
+SUBSTITUTE_ALL = "#OldAndNewRangeNotSameLength!"
+Exit Function
+End If
+Dim i%
+For i = 1 To oldTextRange.Count
+string1 = Replace(string1, oldTextRange(i), newTextRange(i))
+Next
+SUBSTITUTE_ALL = string1
+End Function
+Public Function INSTRING(ByVal string1$, ParamArray stringArray()) As Boolean
+Dim individualString
+For Each individualString In stringArray
+If InStr(1, string1, individualString) > 0 Then
+INSTRING = True
+Exit Function
+End If
+Next
+INSTRING = False
+End Function
+Public Function TRIM_CHAR(ByVal string1$, Optional ByVal trimCharacter$ = " ") As String
+While Left(string1, 1) = trimCharacter
+Mid(string1, 1) = Chr(1)
+string1 = Replace(string1, Chr(1), "")
+Wend
+While Right(string1, 1) = trimCharacter
+Mid(string1, Len(string1)) = Chr(1)
+string1 = Replace(string1, Chr(1), "")
+Wend
+TRIM_CHAR = string1
+End Function
+Public Function TRIM_LEFT(ByVal string1$, Optional ByVal trimCharacter$ = " ") As String
+While Left(string1, 1) = trimCharacter
+Mid(string1, 1) = Chr(1)
+string1 = Replace(string1, Chr(1), "")
+Wend
+TRIM_LEFT = string1
+End Function
+Public Function TRIM_RIGHT(ByVal string1$, Optional ByVal trimCharacter$ = " ") As String
+While Right(string1, 1) = trimCharacter
+Mid(string1, Len(string1)) = Chr(1)
+string1 = Replace(string1, Chr(1), "")
+Wend
+TRIM_RIGHT = string1
+End Function
+Public Function COUNT_UPPERCASE_CHARACTERS(ByVal string1$) As Integer
+Dim i%
+Dim characterAsciiCode As Byte
+Dim uppercaseCounter%
+For i = 1 To Len(string1)
+characterAsciiCode = Asc(Mid(string1, i, 1))
+If characterAsciiCode >= 65 And characterAsciiCode <= 90 Then
+uppercaseCounter = uppercaseCounter + 1
+End If
+Next
+COUNT_UPPERCASE_CHARACTERS = uppercaseCounter
+End Function
+Public Function COUNT_LOWERCASE_CHARACTERS(ByVal string1$) As Integer
+Dim i%
+Dim characterAsciiCode As Byte
+Dim lowercaseCounter%
+For i = 1 To Len(string1)
+characterAsciiCode = Asc(Mid(string1, i, 1))
+If characterAsciiCode >= 97 And characterAsciiCode <= 122 Then
+lowercaseCounter = lowercaseCounter + 1
+End If
+Next
+COUNT_LOWERCASE_CHARACTERS = lowercaseCounter
+End Function
 Public Function HAMMING(string1$, string2$) As Integer
 If Len(string1) <> Len(string2) Then
 HAMMING = CVErr(xlErrValue)
@@ -1214,19 +2012,10 @@ operationCost = 0
 Else
 operationCost = 1
 End If
-distanceArray(r, c) = Min3(distanceArray(r - 1, c) + 1, distanceArray(r, c - 1) + 1, distanceArray(r - 1, c - 1) + operationCost)
+distanceArray(r, c) = WorksheetFunction.Min(distanceArray(r - 1, c) + 1, distanceArray(r, c - 1) + 1, distanceArray(r - 1, c - 1) + operationCost)
 Next
 Next
 LEVENSHTEIN = distanceArray(numberOfRows, numberOfColumns)
-End Function
-Private Function Min3(integer1%, integer2%, integer3%) As Integer
-If integer1 <= integer2 And integer1 <= integer3 Then
-Min3 = integer1
-ElseIf integer2 <= integer1 And integer2 <= integer3 Then
-Min3 = integer2
-ElseIf integer3 <= integer1 And integer3 <= integer2 Then
-Min3 = integer3
-End If
 End Function
 Public Function LEV_STR(range1 As Range, rangeArray As Range) As String
 Dim lngBestDistance&
@@ -1343,7 +2132,7 @@ If Mid(string1, i, 1) = Mid(string2, k, 1) Then
 cost = 0
 db = k
 End If
-H(i + 1, k + 1) = Min4(H(i, k) + cost, H(i + 1, k) + 1, H(i, k + 1) + 1, H(i1, k1) + (i - i1 - 1) + 1 + (k - k1 - 1))
+H(i + 1, k + 1) = WorksheetFunction.Min(H(i, k) + cost, H(i + 1, k) + 1, H(i, k + 1) + 1, H(i1, k1) + (i - i1 - 1) + 1 + (k - k1 - 1))
 Next
 If da.exists(Mid(string1, i, 1)) Then
 da.Remove Mid(string1, i, 1)
@@ -1353,17 +2142,6 @@ da.Add Mid(string1, i, 1), CStr(i)
 End If
 Next
 DAMERAU = H(Len(string1) + 1, Len(string2) + 1)
-End Function
-Private Function Min4(integer1%, integer2%, integer3%, integer4%) As Long
-If integer1 <= integer2 And integer1 <= integer3 And integer1 <= integer4 Then
-Min4 = integer1
-ElseIf integer2 <= integer1 And integer2 <= integer3 And integer2 <= integer4 Then
-Min4 = integer2
-ElseIf integer3 <= integer1 And integer3 <= integer2 And integer3 <= integer4 Then
-Min4 = integer3
-ElseIf integer4 <= integer1 And integer4 <= integer2 And integer4 <= integer3 Then
-Min4 = integer4
-End If
 End Function
 Public Function DAM_STR(range1 As Range, rangeArray As Range) As String
 Dim lngBestDistance&
@@ -1697,6 +2475,105 @@ End If
 End If
 SPEAK_TEXT = combinedString
 End Function
+Public Function EVALUATE_FORMULA(ByVal formulaText$, ParamArray rangeArray())
+Dim i%
+Dim individualRange
+For i = 1 To (UBound(rangeArray) - LBound(rangeArray) + 1)
+For Each individualRange In rangeArray
+formulaText = Replace(formulaText, "{" & i & "}", individualRange.Address)
+Next
+Next
+EVALUATE_FORMULA = Application.Evaluate(formulaText)
+End Function
+Public Function ISBADERROR(ParamArray rangeArray()) As Boolean
+Dim individualRange
+Dim individualCell As Range
+For Each individualRange In rangeArray
+For Each individualCell In individualRange
+If Not IsEmpty(individualCell) Then
+If individualCell.Value = CVErr(2000) Then
+ISBADERROR = True
+Exit Function
+End If
+If individualCell.Value = CVErr(2029) Then
+ISBADERROR = True
+Exit Function
+End If
+If individualCell.Value = CVErr(2023) Then
+ISBADERROR = True
+Exit Function
+End If
+If individualCell.Value = CVErr(2007) Then
+ISBADERROR = True
+Exit Function
+End If
+If individualCell.Value = CVErr(2036) Then
+ISBADERROR = True
+Exit Function
+End If
+End If
+Next
+Next
+ISBADERROR = False
+End Function
+Public Function REFERENCE_EXISTS(ByVal referenceName$, Optional ByVal partialNameFlag As Boolean) As Boolean
+Application.Volatile
+Dim individualReference
+For Each individualReference In ThisWorkbook.VBProject.References
+If Not partialNameFlag Then
+If UCase(individualReference.Name) = UCase(referenceName) Then
+REFERENCE_EXISTS = True
+Exit Function
+End If
+Else
+If InStr(1, individualReference.Name, referenceName, vbTextCompare) >= 0 Then
+REFERENCE_EXISTS = True
+Exit Function
+End If
+End If
+Next
+REFERENCE_EXISTS = False
+End Function
+Public Function ADDIN_EXISTS(ByVal addinName$, Optional ByVal partialNameFlag As Boolean) As Boolean
+Application.Volatile
+Dim individualAddin As AddIn
+For Each individualAddin In Application.AddIns
+If Not partialNameFlag Then
+If UCase(individualAddin.Name) = UCase(addinName) Then
+ADDIN_EXISTS = True
+Exit Function
+End If
+Else
+If InStr(1, individualAddin.Name, addinName, vbTextCompare) >= 0 Then
+ADDIN_EXISTS = True
+Exit Function
+End If
+End If
+Next
+ADDIN_EXISTS = False
+End Function
+Public Function ADDIN_INSTALLED(ByVal addinName$, Optional ByVal partialNameFlag As Boolean) As Boolean
+Application.Volatile
+Dim individualAddin As AddIn
+For Each individualAddin In Application.AddIns
+If Not partialNameFlag Then
+If UCase(individualAddin.Name) = UCase(addinName) Then
+If individualAddin.Installed Then
+ADDIN_INSTALLED = True
+Exit Function
+End If
+End If
+Else
+If InStr(1, individualAddin.Name, addinName, vbTextCompare) >= 0 Then
+If individualAddin.Installed Then
+ADDIN_INSTALLED = True
+Exit Function
+End If
+End If
+End If
+Next
+ADDIN_INSTALLED = False
+End Function
 Public Function IS_EMAIL(ByVal string1$) As Boolean
 Dim Regex As Object
 Set Regex = CreateObject("VBScript.RegExp")
@@ -1759,6 +2636,17 @@ With Regex
 End With
 IS_IP_FOUR = Regex.Test(string1)
 End Function
+Public Function IS_MAC_ADDRESS(ByVal string1$) As Boolean
+Dim Regex As Object
+Set Regex = CreateObject("VBScript.RegExp")
+With Regex
+.Global = True
+.IgnoreCase = True
+.MultiLine = True
+.Pattern = "^(([a-fA-F0-9]{2}([:]|[-])){5}[a-fA-F0-9]{2}|([a-fA-F0-9]{3}[.]){3}[a-fA-F0-9]{3})$"
+End With
+IS_MAC_ADDRESS = Regex.Test(string1)
+End Function
 Public Function CREDIT_CARD_NAME(ByVal string1$) As String
 Dim Regex As Object
 Set Regex = CreateObject("VBScript.RegExp")
@@ -1819,4 +2707,43 @@ FORMAT_CREDIT_CARD = Left(string1, 4) & "-" & Mid(string1, 5, 4) & "-" & Mid(str
 Else
 FORMAT_CREDIT_CARD = "#NotAValidCreditCardNumber!"
 End If
+End Function
+Public Function FORMAT_FORMULA(ByVal range1 As Range) As String
+Dim i%
+Dim k%
+Dim indentLevel As Byte
+Dim formulaString$
+Dim buildFormulaString$
+Dim formulaStringLength%
+Dim currentIndentAmount As Byte
+Dim currentCharacter$
+formulaString = range1.Formula
+formulaStringLength = Len(formulaString)
+For i = 1 To formulaStringLength
+currentCharacter = Mid(formulaString, i, 1)
+If currentCharacter = "(" Then
+buildFormulaString = buildFormulaString & "(" & Chr(10)
+indentLevel = indentLevel + 4
+currentIndentAmount = currentIndentAmount + 1
+For k = 1 To indentLevel
+buildFormulaString = buildFormulaString & " "
+Next
+ElseIf currentCharacter = ")" Then
+buildFormulaString = buildFormulaString & Chr(10)
+indentLevel = indentLevel - 4
+currentIndentAmount = currentIndentAmount - 1
+For k = 1 To indentLevel
+buildFormulaString = buildFormulaString & " "
+Next
+buildFormulaString = buildFormulaString & ")"
+ElseIf currentCharacter = "," Then
+buildFormulaString = buildFormulaString & "," & Chr(10)
+For k = 1 To indentLevel
+buildFormulaString = buildFormulaString & " "
+Next
+Else
+buildFormulaString = buildFormulaString & currentCharacter
+End If
+Next
+FORMAT_FORMULA = buildFormulaString
 End Function

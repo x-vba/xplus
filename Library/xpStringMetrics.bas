@@ -1,5 +1,5 @@
 Attribute VB_Name = "xpStringMetrics"
-'@Module: This module contains a set of functions for performing fuzzy string matches. It can be useful when you have 2 columns containing text that is close but not 100% the same. However, since the functions in this module only perform fuzzy matches, there is no guarentee that there will be 100% accuracy in the matches. However, for small groups of string where each string is very different than the other (such as a small group of fairly disimilar names), these functions can be highly accurate. Finally, some of the functions in this Module will take a long time to calculate for large numbers of cells, as the number of calculations for some functions will grow exponentially, but for small sets of data (such as 100 strings to compare), these functions perform fairly quickly.
+'@Module: This module contains a set of functions for performing fuzzy string matches. It can be useful when you have 2 columns containing text that is close but not 100% the same. However, since the functions in this module only perform fuzzy matches, there is no guarantee that there will be 100% accuracy in the matches. However, for small groups of string where each string is very different than the other (such as a small group of fairly dissimilar names), these functions can be highly accurate. Finally, some of the functions in this Module will take a long time to calculate for large numbers of cells, as the number of calculations for some functions will grow exponentially, but for small sets of data (such as 100 strings to compare), these functions perform fairly quickly.
 
 Option Explicit
 
@@ -13,7 +13,7 @@ Public Function HAMMING( _
     string2 As String) _
 As Integer
 
-    '@Description: This function takes two strings of the same length and calculates the Hamming Distance between them. Hamming Distance measures how close two strings are by checking how many Subsitutions are needed to turn one string into the other. Lower numbers mean the strings are closer than high numbers.
+    '@Description: This function takes two strings of the same length and calculates the Hamming Distance between them. Hamming Distance measures how close two strings are by checking how many Substitutions are needed to turn one string into the other. Lower numbers mean the strings are closer than high numbers.
     '@Author: Anthony Mancini
     '@Version: 1.0.0
     '@License: MIT
@@ -54,9 +54,9 @@ Public Function LEVENSHTEIN( _
     string2 As String) _
 As Long
 
-    '@Description: This function takes two strings of any length and calculates the Levenshtein Distance between them. Levenshtein Distance measures how close two strings are by checking how many Insertions, Deletions, or Subsitutions are needed to turn one string into the other. Lower numbers mean the strings are closer than high numbers. Unlike Hamming Distance, Levenshtein Distance works for strings of any length and includes 2 more operations. However, calculation time will be slower than Hamming Distance for same length strings, so if you know the two strings are the same length, its preferred to use Hamming Distance.
+    '@Description: This function takes two strings of any length and calculates the Levenshtein Distance between them. Levenshtein Distance measures how close two strings are by checking how many Insertions, Deletions, or Substitutions are needed to turn one string into the other. Lower numbers mean the strings are closer than high numbers. Unlike Hamming Distance, Levenshtein Distance works for strings of any length and includes 2 more operations. However, calculation time will be slower than Hamming Distance for same length strings, so if you know the two strings are the same length, its preferred to use Hamming Distance.
     '@Author: Anthony Mancini
-    '@Version: 1.0.0
+    '@Version: 1.1.0
     '@License: MIT
     '@Param: string1 is the first string
     '@Param: string2 is the second string that will be compared to the first string
@@ -118,37 +118,11 @@ As Long
                 operationCost = 1
             End If
                                                            
-            distanceArray(r, c) = Min3(distanceArray(r - 1, c) + 1, distanceArray(r, c - 1) + 1, distanceArray(r - 1, c - 1) + operationCost)
+            distanceArray(r, c) = WorksheetFunction.Min(distanceArray(r - 1, c) + 1, distanceArray(r, c - 1) + 1, distanceArray(r - 1, c - 1) + operationCost)
         Next
     Next
     
     LEVENSHTEIN = distanceArray(numberOfRows, numberOfColumns)
-
-End Function
-
-
-Private Function Min3( _
-    integer1 As Integer, _
-    integer2 As Integer, _
-    integer3 As Integer) _
-As Integer
-
-    '@Description: This function takes 3 integers and returns the minimum of them.
-    '@Author: Anthony Mancini
-    '@Version: 1.0.0
-    '@License: MIT
-    '@Todo: Check if WorksheetFunction.Min() is quicker than this function at calculating the minimum value, or check if there are alternative ways to calculate the min.
-    '@Param: integer1 - integer3 are the integers to be compared
-    '@Returns: Returns a the minimum integer
-    '@Example: =Min3(4,10,6) -> 4
-
-    If integer1 <= integer2 And integer1 <= integer3 Then
-        Min3 = integer1
-    ElseIf integer2 <= integer1 And integer2 <= integer3 Then
-        Min3 = integer2
-    ElseIf integer3 <= integer1 And integer3 <= integer2 Then
-        Min3 = integer3
-    End If
 
 End Function
 
@@ -163,7 +137,7 @@ As String
     '@Version: 1.0.0
     '@License: MIT
     '@Todo: See if I can replace the first argument as a range with a string instead.
-    '@Warning: This function will require exponential numbers of calculations for large amounts of strings. In cases where the number of strings are very large (more than 1000 strings), a better solution would be to use an external program other than Excel.
+    '@Warning: This function will require exponential numbers of calculations for large amounts of strings. In cases where the number of strings are very large (a couple thousand strings for example), a better solution would be to use an external program other than Excel.
     '@Param: range1 contains the string we want to find the closest string in the rangeArray to
     '@Param: rangeArray is a range of all strings that will be compared to the string in range1
     '@Returns: Returns the string that is closest from the rangeArray
@@ -209,7 +183,7 @@ Public Function LEV_STR_OPT( _
     plusOrMinusLengthBound As Integer) _
 As String
 
-    '@Description: This function is the same as LEV_STR except that it adds two more arguments which can be used to optimize the speed of searches when the number of strings to search is very large. Since the number of calculations will increase exponentially to find the best fit string, this function can exclude a lot of strings that are unlikely to have the lowest Levenshtein Distance. The additional two parameters are a paramter that first checks a certain number of characters at the left of the strings and if the strings don't have the same characters on the left, then that string is excluded. The second of the two parameters sets the maximum length difference between the two strings, and if the length of string2 is not within the bounds of string1 length +/- the length bound, then this string is excluded. Setting high values for these parameters will essentially conver this function into a slightly slower version of LEV_STR.
+    '@Description: This function is the same as LEV_STR except that it adds two more arguments which can be used to optimize the speed of searches when the number of strings to search is very large. Since the number of calculations will increase exponentially to find the best fit string, this function can exclude a lot of strings that are unlikely to have the lowest Levenshtein Distance. The additional two parameters are a parameter that first checks a certain number of characters at the left of the strings and if the strings don't have the same characters on the left, then that string is excluded. The second of the two parameters sets the maximum length difference between the two strings, and if the length of string2 is not within the bounds of string1 length +/- the length bound, then this string is excluded. Setting high values for these parameters will essentially convert this function into a slightly slower version of LEV_STR.
     '@Author: Anthony Mancini
     '@Version: 1.0.0
     '@License: MIT
@@ -220,7 +194,7 @@ As String
     '@Param: numberOfLeftCharactersBound is the number of left characters that will be checked first on both strings before calculating their Levenshtein Distance
     '@Param: plusOrMinusLengthBound is the number plus or minus the length of the first string that will be checked compared to the second string before calculating their Levenshtein Distance
     '@Returns: Returns the string that is closest from the rangeArray
-    '@Example: Where A1:A3 contains ["Car", "C Programming Langauge", "Dog"] =LEV_STR_OPT("Cat", A1:A3, 1, 2) -> "Car"; The calculation won't be performed on "Dog" since "Dog" doesn't start with the character "C", and "C Programming Langauge" won't be calculated either since its length is greating than LEN("Cat") +/- 2 (its length is not between 0-5 characters long).
+    '@Example: =LEV_STR_OPT("Cat", A1:A3, 1, 2) -> "Car"; Where A1:A3 contains ["Car", "C Programming Langauge", "Dog"]; The calculation won't be performed on "Dog" since "Dog" doesn't start with the character "C", and "C Programming Langauge" won't be calculated either since its length is greating than LEN("Cat") +/- 2 (its length is not between 0-5 characters long).
 
     Dim lngBestDistance As Long
     Dim lngCurrentDistance As Long
@@ -275,7 +249,7 @@ As Integer
 
     '@Description: This function takes two strings of any length and calculates the Damerau-Levenshtein Distance between them. Damerau-Levenshtein Distance differs from Levenshtein Distance in that it includes an additional operation, called Transpositions, which occurs when two adjacent characters are swapped. Thus, Damerau-Levenshtein Distance calculates the number of Insertions, Deletions, Substitutions, and Transpositons needed to convert string1 into string2. As a result, this function is good when it is likely that spelling errors have occured between two string where the error is simply a transposition of 2 adjacent characters.
     '@Author: Anthony Mancini
-    '@Version: 1.0.0
+    '@Version: 1.1.0
     '@License: MIT
     '@Param: string1 is the first string
     '@Param: string2 is the second string that will be compared to the first string
@@ -353,10 +327,10 @@ As Integer
                 db = k
             End If
             
-            H(i + 1, k + 1) = Min4(H(i, k) + cost, _
-                                   H(i + 1, k) + 1, _
-                                   H(i, k + 1) + 1, _
-                                   H(i1, k1) + (i - i1 - 1) + 1 + (k - k1 - 1))
+            H(i + 1, k + 1) = WorksheetFunction.Min(H(i, k) + cost, _
+                                                    H(i + 1, k) + 1, _
+                                                    H(i, k + 1) + 1, _
+                                                    H(i1, k1) + (i - i1 - 1) + 1 + (k - k1 - 1))
                            
             
         Next
@@ -375,35 +349,6 @@ As Integer
 End Function
 
 
-Private Function Min4( _
-    integer1 As Integer, _
-    integer2 As Integer, _
-    integer3 As Integer, _
-    integer4 As Integer) _
-As Long
-
-    '@Description: This function takes 4 integers and returns the minimum of them.
-    '@Author: Anthony Mancini
-    '@Version: 1.0.0
-    '@License: MIT
-    '@Todo: Check if WorksheetFunction.Min() is quicker than this function at calculating the minimum value, or check if there are alternative ways to calculate the min.
-    '@Param: integer1 - integer4 are the integers to be compared
-    '@Returns: Returns a the minimum integer
-    '@Example: =Min4(4,10,6,3) -> 3
-
-    If integer1 <= integer2 And integer1 <= integer3 And integer1 <= integer4 Then
-        Min4 = integer1
-    ElseIf integer2 <= integer1 And integer2 <= integer3 And integer2 <= integer4 Then
-        Min4 = integer2
-    ElseIf integer3 <= integer1 And integer3 <= integer2 And integer3 <= integer4 Then
-        Min4 = integer3
-    ElseIf integer4 <= integer1 And integer4 <= integer2 And integer4 <= integer3 Then
-        Min4 = integer4
-    End If
-
-End Function
-
-
 Public Function DAM_STR( _
     range1 As Range, _
     rangeArray As Range) _
@@ -414,11 +359,11 @@ As String
     '@Version: 1.0.0
     '@License: MIT
     '@Todo: See if I can replace the first argument as a range with a string instead.
-    '@Warning: This function will require exponential numbers of calculations for large amounts of strings. In cases where the number of strings are very large (more than 1000 strings), a better solution would be to use an external program other than Excel. Also this function will perform well in the case of comparing two lists with the same content but with spelling errors, but in cases where transpositions are unlikely, this LEV_STR should be used as this function will be slower.
+    '@Warning: This function will require exponential numbers of calculations for large amounts of strings. In cases where the number of strings are very large (a couple thousand strings for example), a better solution would be to use an external program other than Excel. Also this function will perform well in the case of comparing two lists with the same content but with spelling errors, but in cases where transpositions are unlikely, thus LEV_STR should be used as this function will be slower.
     '@Param: range1 contains the string we want to find the closest string in the rangeArray to
     '@Param: rangeArray is a range of all strings that will be compared to the string in range1
     '@Returns: Returns the string that is closest from the rangeArray
-    '@Example: Where A1:A3 contains ["Bath", "Hello", "Cta"] =DAM_STR("Cat", A1:A3) -> "Cta"; LEV_STR will actually return "Bath" in this case since it comes first in the range and since "Bath" and "Cta" will actually both have a LEV=2, but while "Bath" with have DAM=2, for "Cta" only one operation is required (a single Transposition instead of a Substitution and a Deletion) and thus for "Cta" DAM=1
+    '@Example: =DAM_STR("Cat", A1:A3) -> "Cta"; Where A1:A3 contains ["Bath", "Hello", "Cta"]; LEV_STR will actually return "Bath" in this case since it comes first in the range and since "Bath" and "Cta" will actually both have a LEV=2, but while "Bath" with have DAM=2, for "Cta" only one operation is required (a single Transposition instead of a Substitution and a Deletion) and thus for "Cta" DAM=1
 
     Dim lngBestDistance As Long
     Dim lngCurrentDistance As Long
@@ -460,7 +405,7 @@ Public Function DAM_STR_OPT( _
     plusOrMinusLengthBound) _
 As String
 
-    '@Description: This function is the same as DAM_STR except that it adds two more arguments which can be used to optimize the speed of searches when the number of strings to search is very large. Since the number of calculations will increase exponentially to find the best fit string, this function can exclude a lot of strings that are unlikely to have the lowest Damerau–Levenshtein Distance. The additional two parameters are a paramter that first checks a certain number of characters at the left of the strings and if the strings don't have the same characters on the left, then that string is excluded. The second of the two parameters sets the maximum length difference between the two strings, and if the length of string2 is not within the bounds of string1 length +/- the length bound, then this string is excluded. Setting high values for these parameters will essentially conver this function into a slightly slower version of DAM_STR.
+    '@Description: This function is the same as DAM_STR except that it adds two more arguments which can be used to optimize the speed of searches when the number of strings to search is very large. Since the number of calculations will increase exponentially to find the best fit string, this function can exclude a lot of strings that are unlikely to have the lowest Damerau–Levenshtein Distance. The additional two parameters are a parameter that first checks a certain number of characters at the left of the strings and if the strings don't have the same characters on the left, then that string is excluded. The second of the two parameters sets the maximum length difference between the two strings, and if the length of string2 is not within the bounds of string1 length +/- the length bound, then this string is excluded. Setting high values for these parameters will essentially convert this function into a slightly slower version of DAM_STR.
     '@Author: Anthony Mancini
     '@Version: 1.0.0
     '@License: MIT
@@ -471,7 +416,7 @@ As String
     '@Param: numberOfLeftCharactersBound is the number of left characters that will be checked first on both strings before calculating their Levenshtein Distance
     '@Param: plusOrMinusLengthBound is the number plus or minus the length of the first string that will be checked compared to the second string before calculating their Levenshtein Distance
     '@Returns: Returns the string that is closest from the rangeArray
-    '@Example: Where A1:A3 contains ["Car", "C Programming Langauge", "Dog"] =DAM_STR_OPT("Cat", A1:A3, 1, 2) -> "Car"; The calculation won't be performed on "Dog" since "Dog" doesn't start with the character "C", and "C Programming Langauge" won't be calculated either since its length is greating than LEN("Cat") +/- 2 (its length is not between 0-5 characters long).
+    '@Example: =DAM_STR_OPT("Cat", A1:A3, 1, 2) -> "Car"; Where A1:A3 contains ["Car", "C Programming Langauge", "Dog"]; The calculation won't be performed on "Dog" since "Dog" doesn't start with the character "C", and "C Programming Langauge" won't be calculated either since its length is greating than LEN("Cat") +/- 2 (its length is not between 0-5 characters long).
     
     Dim lngBestDistance As Long
     Dim lngCurrentDistance As Long
@@ -524,12 +469,12 @@ As String
     '@Version: 1.0.0
     '@License: MIT
     '@Todo: See if I can replace the first argument as a range with a string instead.
-    '@Note: This function is an alias for DAM_STR, and works in the exact same way.
-    '@Warning: This function will require exponential numbers of calculations for large amounts of strings. In cases where the number of strings are very large (more than 1000 strings), a better solution would be to use an external program other than Excel. Also this function will perform well in the case of comparing two lists with the same content but with spelling errors, but in cases where transpositions are unlikely, this LEV_STR should be used as this function will be slower.
+    '@Note: This function is an alias for DAM_STR, and for a more in-depth explaination of the underlying logic used in the function to calculate the partial lookup, see the DAM_STR function.
+    '@Warning: This function will require exponential numbers of calculations for large amounts of strings. In cases where the number of strings are very large (more than 1000 strings), a better solution would be to use an external program other than Excel. Also this function will perform well in the case of comparing two lists with the same content but with spelling errors, but in cases where transpositions are unlikely, thus LEV_STR should be used as this function will be slower.
     '@Param: range1 contains the string we want to find the closest string in the rangeArray to
     '@Param: rangeArray is a range of all strings that will be compared to the string in range1
     '@Returns: Returns the string that is closest from the rangeArray
-    '@Example: Where A1:A3 contains ["Bath", "Hello", "Cta"] =DAM_STR("Cat", A1:A3) -> "Cta"; LEV_STR will actually return "Bath" in this case since it comes first in the range and since "Bath" and "Cta" will actually both have a LEV=2, but while "Bath" with have DAM=2, for "Cta" only one operation is required (a single Transposition instead of a Substitution and a Deletion) and thus for "Cta" DAM=1
+    '@Example: =PARTIAL_LOOKUP("Cta", A1:A3) -> "Cat"; Where A1:A3 contains ["Bath", "Hello", "Cat"];
 
     PARTIAL_LOOKUP = DAM_STR(range1, rangeArray)
 
